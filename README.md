@@ -1,4 +1,10 @@
-<center><img src='https://i.imgur.com/3dHOaoF.gif'></center>
+<p align="center">
+<img src='https://i.imgur.com/3dHOaoF.gif'>
+</p>
+<p align="center">
+ <img src="https://img.shields.io/pub/v/multiple_search_selection?color=637d0d&style=for-the-badge" alt="Version" /> <img src="https://img.shields.io/github/languages/code-size/esentis/multiple_search_selection?color=637d0d&style=for-the-badge&label=size" alt="Version" />
+</br>
+</p>
 
 #### A highly customizable multiple selection widget with search functionality.
 
@@ -71,4 +77,4 @@ onItemRemoved: (item) {
 
 ## Issues / Features
 
-Found a bug or want a new feature? Open an issue in the Github repository of the project.
+Found a bug or want a new feature? Open an issue in the [Github repository](https://github.com/esentis/multiple_search_selection) of the project.
