@@ -93,6 +93,8 @@ class MultipleSearchSelection extends StatefulWidget {
     this.searchItemTextContentPadding,
     this.pickedItemsBorderColor,
     this.outerContainerBorderColor,
+    this.pickedItemsScrollController,
+    this.showedItemsScrollController,
     Key? key,
   }) : super(key: key);
 
@@ -369,6 +371,11 @@ class MultipleSearchSelection extends StatefulWidget {
   /// A callback when a showed item is tapped.
   final VoidCallback? onTapShowedItem;
 
+  /// The scroll controller of the picked items list.
+  final ScrollController? pickedItemsScrollController;
+
+  /// The scroll controller of showed items list.
+  final ScrollController? showedItemsScrollController;
   @override
   _MultipleSearchSelectionState createState() =>
       _MultipleSearchSelectionState();
@@ -381,8 +388,8 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
   bool expanded = false;
 
   List<String> pickedItems = [];
-  final ScrollController _pickedProductController = ScrollController();
-  final ScrollController _productScrollController = ScrollController();
+  final ScrollController _pickedItemsController = ScrollController();
+  final ScrollController _showedItemsScrollController = ScrollController();
   final TextEditingController _textEditingController = TextEditingController();
 
   final FocusNode _textFieldFocus = FocusNode();
@@ -432,12 +439,14 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                 thickness: widget.pickedItemScrollbarThickness ?? 10,
                 radius: widget.pickedItemScrollbarRadius ??
                     const Radius.circular(5),
-                controller: _pickedProductController,
+                controller: widget.pickedItemsScrollController ??
+                    _pickedItemsController,
                 child: ScrollConfiguration(
                   behavior: ScrollConfiguration.of(context)
                       .copyWith(scrollbars: false),
                   child: SingleChildScrollView(
-                    controller: _pickedProductController,
+                    controller: widget.pickedItemsScrollController ??
+                        _pickedItemsController,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Wrap(
@@ -712,7 +721,8 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
               ),
             ),
             child: RawScrollbar(
-              controller: _productScrollController,
+              controller: widget.showedItemsScrollController ??
+                  _showedItemsScrollController,
               thumbColor: widget.showedItemsScrollbarColor,
               thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
               minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
@@ -726,7 +736,8 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
                 child: ListView.builder(
                   shrinkWrap: true,
-                  controller: _productScrollController,
+                  controller: widget.showedItemsScrollController ??
+                      _showedItemsScrollController,
                   itemBuilder: (context, index) {
                     if (showedItems.isEmpty) {
                       return Padding(
