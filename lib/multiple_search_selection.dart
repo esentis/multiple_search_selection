@@ -95,6 +95,8 @@ class MultipleSearchSelection extends StatefulWidget {
     this.outerContainerBorderColor,
     this.pickedItemsScrollController,
     this.showedItemsScrollController,
+    this.pickedItemsScrollPhysics,
+    this.showedItemsScrollPhysics,
     Key? key,
   }) : super(key: key);
 
@@ -371,11 +373,18 @@ class MultipleSearchSelection extends StatefulWidget {
   /// A callback when a showed item is tapped.
   final VoidCallback? onTapShowedItem;
 
-  /// The scroll controller of the picked items list.
+  /// The [ScrollController] of the picked items list.
   final ScrollController? pickedItemsScrollController;
 
-  /// The scroll controller of showed items list.
+  /// The [ScrollController] of showed items list.
   final ScrollController? showedItemsScrollController;
+
+  /// The [ScrollPhysics] of the picked items list.
+  final ScrollPhysics? pickedItemsScrollPhysics;
+
+  /// The [ScrollPhysics] of showed items list.
+  final ScrollPhysics? showedItemsScrollPhysics;
+
   @override
   _MultipleSearchSelectionState createState() =>
       _MultipleSearchSelectionState();
@@ -447,6 +456,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                   child: SingleChildScrollView(
                     controller: widget.pickedItemsScrollController ??
                         _pickedItemsController,
+                    physics: widget.pickedItemsScrollPhysics,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Wrap(
@@ -738,6 +748,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                   shrinkWrap: true,
                   controller: widget.showedItemsScrollController ??
                       _showedItemsScrollController,
+                  physics: widget.showedItemsScrollPhysics,
                   itemBuilder: (context, index) {
                     if (showedItems.isEmpty) {
                       return Padding(
