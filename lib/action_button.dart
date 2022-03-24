@@ -66,29 +66,26 @@ class _ActionButtonState extends State<ActionButton> {
           ),
         ),
         child: Padding(
-            padding: widget.contentPadding,
-            child: AnimatedDefaultTextStyle(
-              duration: widget.animationDuration,
-              curve: Curves.easeInOut,
-              style: widget.textStyle?.copyWith(
-                    color:
-                        isHovered ? widget.onHoverTextColor : widget.textColor,
-                    fontWeight: isHovered
-                        ? widget.onHoverFontWeight
-                        : widget.fontWeight,
-                  ) ??
-                  TextStyle(
-                    fontSize: widget.fontSize ?? 13,
-                    color:
-                        isHovered ? widget.onHoverTextColor : widget.textColor,
-                    fontWeight: isHovered
-                        ? widget.onHoverFontWeight
-                        : widget.fontWeight,
-                  ),
-              child: Text(
-                widget.text,
-              ),
-            )),
+          padding: widget.contentPadding,
+          child: AnimatedDefaultTextStyle(
+            duration: widget.animationDuration,
+            curve: Curves.easeInOut,
+            style: widget.textStyle?.copyWith(
+                  color: isHovered ? widget.onHoverTextColor : widget.textColor,
+                  fontWeight:
+                      isHovered ? widget.onHoverFontWeight : widget.fontWeight,
+                ) ??
+                TextStyle(
+                  fontSize: widget.fontSize ?? 13,
+                  color: isHovered ? widget.onHoverTextColor : widget.textColor,
+                  fontWeight:
+                      isHovered ? widget.onHoverFontWeight : widget.fontWeight,
+                ),
+            child: Text(
+              widget.text,
+            ),
+          ),
+        ),
       ),
     );
   }

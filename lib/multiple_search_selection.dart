@@ -421,7 +421,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
           if (widget.title != null) ...[
             Padding(
               padding: widget.titlePadding ?? EdgeInsets.zero,
-              child: widget.title!,
+              child: widget.title,
             ),
           ],
           if (pickedItems.isNotEmpty)
@@ -462,7 +462,6 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                       child: Wrap(
                         spacing: widget.pickedItemSpacing ?? 5,
                         runSpacing: widget.pickedItemSpacing ?? 5,
-                        alignment: WrapAlignment.start,
                         children: [
                           ...pickedItems.map(
                             (e) => widget.showTooltipOnpickedItem
@@ -508,10 +507,11 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                         pickedItems.remove(e);
                                         allItems.add(e);
                                         showedItems = allItems
-                                            .where((p) => p
-                                                .toLowerCase()
-                                                .contains(_textEditingController
-                                                    .text))
+                                            .where(
+                                              (p) => p.toLowerCase().contains(
+                                                    _textEditingController.text,
+                                                  ),
+                                            )
                                             .toList();
                                         if (showedItems.isNotEmpty) {
                                           showedItems.sort();
@@ -559,10 +559,11 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                       pickedItems.remove(e);
                                       allItems.add(e);
                                       showedItems = allItems
-                                          .where((p) => p
-                                              .toLowerCase()
-                                              .contains(
-                                                  _textEditingController.text))
+                                          .where(
+                                            (p) => p.toLowerCase().contains(
+                                                  _textEditingController.text,
+                                                ),
+                                          )
                                           .toList();
                                       if (showedItems.isNotEmpty) {
                                         showedItems.sort();
@@ -619,9 +620,11 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                       allItems.removeWhere((e) => showedItems.contains(e));
 
                       showedItems = allItems
-                          .where((p) => p
-                              .toLowerCase()
-                              .contains(_textEditingController.text))
+                          .where(
+                            (p) => p
+                                .toLowerCase()
+                                .contains(_textEditingController.text),
+                          )
                           .toList();
                       if (showedItems.isNotEmpty) {
                         showedItems.sort();
@@ -658,9 +661,11 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     onTap: () {
                       allItems.addAll(pickedItems);
                       showedItems = allItems
-                          .where((p) => p
-                              .toLowerCase()
-                              .contains(_textEditingController.text))
+                          .where(
+                            (p) => p
+                                .toLowerCase()
+                                .contains(_textEditingController.text),
+                          )
                           .toList();
                       if (showedItems.isNotEmpty) {
                         showedItems.sort();
@@ -681,14 +686,17 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5)),
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
                 left: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5)),
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
                 right: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5)),
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
               ),
             ),
             child: TextField(
@@ -721,7 +729,8 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
           ),
           Container(
             constraints: BoxConstraints(
-                maxHeight: widget.maximumShowItemsHeight, minHeight: 0),
+              maxHeight: widget.maximumShowItemsHeight,
+            ),
             decoration: BoxDecoration(
               color: widget.showedItemsBackgroundColor ??
                   Colors.grey.withOpacity(0.1),
@@ -753,7 +762,9 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     if (showedItems.isEmpty) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 12),
+                          vertical: 12.0,
+                          horizontal: 12,
+                        ),
                         child: widget.noResultsWidget ??
                             Text(
                               'No results found',
@@ -781,7 +792,10 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                         child: Padding(
                           padding: widget.showedItemContainerPadding ??
                               const EdgeInsets.only(
-                                  right: 15.0, left: 0.0, top: 5, bottom: 2),
+                                right: 15.0,
+                                top: 5,
+                                bottom: 2,
+                              ),
                           child: Container(
                             height: widget.showedItemContainerHeight ?? 50,
                             decoration: widget.showedItemContainerDecoration ??
