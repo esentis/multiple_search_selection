@@ -20,6 +20,8 @@ class MultipleSearchSelection extends StatefulWidget {
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
     this.showTooltipOnpickedItem = false,
+    this.sortPickedItems = false,
+    this.sortShowedItems = false,
     this.tooltipDecoration,
     this.tooltipContentPadding,
     this.showedItemTextStyle,
@@ -385,6 +387,11 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The [ScrollPhysics] of showed items list.
   final ScrollPhysics? showedItemsScrollPhysics;
 
+  /// Whether the picked items are sorted alphabetically. Defaults to [false]
+  final bool sortPickedItems;
+
+  /// Whether the showed items are sorted alphabetically. Defaults to [false]
+  final bool sortShowedItems;
   @override
   _MultipleSearchSelectionState createState() =>
       _MultipleSearchSelectionState();
@@ -407,8 +414,10 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
     super.initState();
     showedItems = [...widget.items];
     allItems = [...widget.items];
-    showedItems.sort();
-    allItems.sort();
+    if (widget.sortShowedItems) {
+      showedItems.sort();
+      allItems.sort();
+    }
   }
 
   @override
@@ -514,9 +523,13 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                             )
                                             .toList();
                                         if (showedItems.isNotEmpty) {
-                                          showedItems.sort();
+                                          if (widget.sortShowedItems) {
+                                            showedItems.sort();
+                                          }
                                         }
-                                        allItems.sort();
+                                        if (widget.sortShowedItems) {
+                                          allItems.sort();
+                                        }
 
                                         widget.onPickedChange(pickedItems);
                                         widget.onItemRemoved?.call(e);
@@ -566,9 +579,13 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                           )
                                           .toList();
                                       if (showedItems.isNotEmpty) {
-                                        showedItems.sort();
+                                        if (widget.sortShowedItems) {
+                                          showedItems.sort();
+                                        }
                                       }
-                                      allItems.sort();
+                                      if (widget.sortShowedItems) {
+                                        allItems.sort();
+                                      }
 
                                       widget.onPickedChange(pickedItems);
                                       widget.onItemRemoved?.call(e);
@@ -617,6 +634,9 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                         widget.selectAllOnHoverTextColor ?? Colors.white,
                     onTap: () {
                       pickedItems.addAll(showedItems);
+                      if (widget.sortPickedItems) {
+                        pickedItems.sort();
+                      }
                       allItems.removeWhere((e) => showedItems.contains(e));
 
                       showedItems = allItems
@@ -627,7 +647,9 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                           )
                           .toList();
                       if (showedItems.isNotEmpty) {
-                        showedItems.sort();
+                        if (widget.sortShowedItems) {
+                          showedItems.sort();
+                        }
                       }
 
                       widget.onPickedChange(pickedItems);
@@ -668,10 +690,14 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                           )
                           .toList();
                       if (showedItems.isNotEmpty) {
-                        showedItems.sort();
+                        if (widget.sortShowedItems) {
+                          showedItems.sort();
+                        }
                       }
                       pickedItems.removeRange(0, pickedItems.length);
-                      allItems.sort();
+                      if (widget.sortShowedItems) {
+                        allItems.sort();
+                      }
                       widget.onPickedChange(pickedItems);
                       setState(() {});
                     },
@@ -781,6 +807,9 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                         widget.onTapShowedItem?.call();
                         final String pickedItem = showedItems[index];
                         pickedItems.add(pickedItem);
+                        if (widget.sortPickedItems) {
+                          pickedItems.sort();
+                        }
                         allItems.remove(pickedItem);
                         showedItems.remove(pickedItem);
                         widget.onPickedChange(pickedItems);
