@@ -17,6 +17,7 @@ class PickedItemChip extends StatefulWidget {
     required this.fontWeight,
     required this.onHoverFontWeight,
     this.textStyle,
+    this.removeIcon,
   }) : super(key: key);
 
   final String currentItem;
@@ -34,6 +35,9 @@ class PickedItemChip extends StatefulWidget {
 
   final FontWeight fontWeight;
   final FontWeight onHoverFontWeight;
+
+  final Widget? removeIcon;
+
   @override
   State<PickedItemChip> createState() => _PickedItemChipState();
 }
@@ -83,13 +87,14 @@ class _PickedItemChipState extends State<PickedItemChip> {
                 const SizedBox(
                   width: 5,
                 ),
-                Icon(
-                  Icons.close,
-                  size: widget.iconSize,
-                  color: isHovered
-                      ? widget.hoveredRemoveIconColor
-                      : widget.removedIconColor,
-                )
+                widget.removeIcon ??
+                    Icon(
+                      Icons.close,
+                      size: widget.iconSize,
+                      color: isHovered
+                          ? widget.hoveredRemoveIconColor
+                          : widget.removedIconColor,
+                    )
               ],
             ),
           ),

@@ -77,6 +77,7 @@ class MultipleSearchSelection extends StatefulWidget {
     this.pickedItemOnHoverFontWeight,
     this.pickedItemsContainerMaxHeight,
     this.pickedItemsContainerMinHeight,
+    this.pickedItemRemoveIcon,
     this.showedItemsScrollbarColor,
     this.showedItemsScrollbarMinOverscrollLength,
     this.showedItemsScrollbarMinThumbLength,
@@ -342,6 +343,9 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The remove icon size of the picked item chip.
   final double? pickedItemRemoveIconSize;
 
+  /// The picked item remove icon. Defaults to [Icons.close]
+  final Widget? pickedItemRemoveIcon;
+
   /// The content padding of the picked items' chip.
   final EdgeInsets? pickedItemContentPadding;
 
@@ -482,6 +486,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                     decoration: widget.tooltipDecoration,
                                     padding: widget.tooltipContentPadding,
                                     child: PickedItemChip(
+                                      removeIcon: widget.pickedItemRemoveIcon,
                                       textStyle: widget.pickedItemTextStyle,
                                       fontWeight: widget.pickedItemFontWeight ??
                                           FontWeight.w100,
@@ -539,6 +544,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                   )
                                 : PickedItemChip(
                                     textStyle: widget.pickedItemTextStyle,
+                                    removeIcon: widget.pickedItemRemoveIcon,
                                     fontWeight: widget.pickedItemFontWeight ??
                                         FontWeight.w100,
                                     onHoverFontWeight:
