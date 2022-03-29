@@ -59,6 +59,7 @@ class MultipleSearchSelection extends StatefulWidget {
     this.pickedItemSpacing,
     this.pickedItemBackgroundColor,
     this.pickedItemBorderRadius,
+    this.pickedItemBoxDecoration,
     this.pickedItemOnHoverBackgroundColor,
     this.pickedItemFontSIze,
     this.pickedItemOnHoverTextColor,
@@ -322,7 +323,7 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The minimum height of which the picked items container can extend. Defaults to 50 pixels.
   final double? pickedItemsContainerMinHeight;
 
-  /// The border radius of the picked item chip.
+  /// The border radius of the picked item chip. This is overriden if [pickedItemBoxDecoration] is provided.
   final double? pickedItemBorderRadius;
 
   /// The color of the picked item text, on idle state. This is overriden if [pickedItemTextStyle] is provided.
@@ -337,7 +338,7 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The remove icon color of the picked item chip, on idle state.
   final Color? pickedItemRemoveIconColor;
 
-  /// The remove icon color of the picked item chip, when hovered.
+  /// The remove icon color of the picked item chip, when hovered.  This is overriden if [pickedItemBoxDecoration] is provided.
   final Color? pickedItemOnHoveredRemoveIconColor;
 
   /// The remove icon size of the picked item chip.
@@ -369,6 +370,9 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// The picked item's font weight, on hover. Defaults to [FontWeight.bold]
   final FontWeight? pickedItemOnHoverFontWeight;
+
+  /// The picked item's [BoxDecoration].
+  final BoxDecoration? pickedItemBoxDecoration;
 
   /// Hide or show picked items' scrollbar, defaults to [true]
   final bool showPickedItemScrollbar;
@@ -487,6 +491,10 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                     padding: widget.tooltipContentPadding,
                                     child: PickedItemChip(
                                       removeIcon: widget.pickedItemRemoveIcon,
+                                      decoration:
+                                          widget.pickedItemBoxDecoration,
+                                      borderRadius:
+                                          widget.pickedItemBorderRadius ?? 4,
                                       textStyle: widget.pickedItemTextStyle,
                                       fontWeight: widget.pickedItemFontWeight ??
                                           FontWeight.w100,
@@ -545,8 +553,11 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                 : PickedItemChip(
                                     textStyle: widget.pickedItemTextStyle,
                                     removeIcon: widget.pickedItemRemoveIcon,
+                                    decoration: widget.pickedItemBoxDecoration,
                                     fontWeight: widget.pickedItemFontWeight ??
                                         FontWeight.w100,
+                                    borderRadius:
+                                        widget.pickedItemBorderRadius ?? 4,
                                     onHoverFontWeight:
                                         widget.pickedItemOnHoverFontWeight ??
                                             FontWeight.bold,
