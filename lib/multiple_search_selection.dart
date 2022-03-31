@@ -40,6 +40,7 @@ class MultipleSearchSelection extends StatefulWidget {
     this.selectAllFontSize,
     this.selectAllOnHoverBackgroundColor,
     this.selectAllOnHoverBorderColor,
+    this.selectAllAnimationCurve,
     this.clearAllText,
     this.clearAllTextStyle,
     this.clearAllBorderRadius,
@@ -55,6 +56,7 @@ class MultipleSearchSelection extends StatefulWidget {
     this.clearAllOnHoverFontWeight,
     this.clearAllTextColor,
     this.clearAllOnHoverTextColor,
+    this.clearAllAnimationCurve,
     this.pickedItemTextStyle,
     this.pickedItemSpacing,
     this.pickedItemBackgroundColor,
@@ -213,6 +215,9 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The background color of the select all button on idle state.
   final Color? selectAllBackgroundColor;
 
+  /// The animation [Curve] of the select all button style. Defaults to [Curves.easeInOut].
+  final Curve? selectAllAnimationCurve;
+
   /// The background color of the select all button when hovered.
   final Color? selectAllOnHoverBackgroundColor;
 
@@ -261,6 +266,9 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// The background color of the clear all button on idle state.
   final Color? clearAllBackgroundColor;
+
+  /// The animation [Curve] of the clear all button style. Defaults to [Curves.easeInOut].
+  final Curve? clearAllAnimationCurve;
 
   /// The background color of the clear all button when hovered.
   final Color? clearAllOnHoverBackgroundColor;
@@ -400,6 +408,7 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// Whether the showed items are sorted alphabetically. Defaults to [false]
   final bool sortShowedItems;
+
   @override
   _MultipleSearchSelectionState createState() =>
       _MultipleSearchSelectionState();
@@ -630,6 +639,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     textStyle: widget.selectAllTextStyle,
                     backgroundColor:
                         widget.selectAllBackgroundColor ?? Colors.white,
+                    actionButtonAnimationCurve: widget.selectAllAnimationCurve,
                     onHoverBackgroundColor:
                         widget.selectAllOnHoverBackgroundColor ??
                             Colors.blue[300]!,
@@ -684,6 +694,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     textStyle:
                         widget.clearAllTextStyle ?? widget.clearAllTextStyle,
                     borderRadius: widget.clearAllBorderRadius ?? 0,
+                    actionButtonAnimationCurve: widget.clearAllAnimationCurve,
                     borderColor: widget.clearAllBorderColor ?? Colors.red,
                     contentPadding: widget.clearAllContentPadding ??
                         const EdgeInsets.all(8),

@@ -16,6 +16,7 @@ class ActionButton extends StatefulWidget {
     required this.onHoverBorderColor,
     required this.borderRadius,
     required this.contentPadding,
+    this.actionButtonAnimationCurve,
     this.fontSize,
     this.textStyle,
   }) : super(key: key);
@@ -36,7 +37,7 @@ class ActionButton extends StatefulWidget {
   final FontWeight onHoverFontWeight;
   final Duration animationDuration;
   final EdgeInsets contentPadding;
-
+  final Curve? actionButtonAnimationCurve;
   final TextStyle? textStyle;
   @override
   State<ActionButton> createState() => _ActionButtonState();
@@ -55,7 +56,7 @@ class _ActionButtonState extends State<ActionButton> {
       onTap: widget.onTap,
       child: AnimatedContainer(
         duration: widget.animationDuration,
-        curve: Curves.easeInOut,
+        curve: widget.actionButtonAnimationCurve ?? Curves.easeInOut,
         decoration: BoxDecoration(
           color: isHovered
               ? widget.onHoverBackgroundColor
