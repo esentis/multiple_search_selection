@@ -1,6 +1,6 @@
 name: multiple_search_selection
 description: A highly customizable multiple selection widget with search functionality.
-version: 1.0.0
+version: 1.0.1
 homepage: "https://github.com/esentis/multiple_search_selection"
 
 environment:
@@ -10,6 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  lint: ^1.8.2
 
 dev_dependencies:
   flutter_test:

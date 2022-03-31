@@ -16,7 +16,10 @@ class PickedItemChip extends StatefulWidget {
     required this.backgroundColor,
     required this.fontWeight,
     required this.onHoverFontWeight,
+    required this.borderRadius,
+    this.decoration,
     this.textStyle,
+    this.removeIcon,
   }) : super(key: key);
 
   final String currentItem;
@@ -34,6 +37,10 @@ class PickedItemChip extends StatefulWidget {
 
   final FontWeight fontWeight;
   final FontWeight onHoverFontWeight;
+
+  final Widget? removeIcon;
+  final BoxDecoration? decoration;
+  final double borderRadius;
   @override
   State<PickedItemChip> createState() => _PickedItemChipState();
 }
@@ -43,7 +50,7 @@ class _PickedItemChipState extends State<PickedItemChip> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: BorderRadius.circular(widget.borderRadius),
       onHover: (v) {
         isHovered = v;
         setState(() {});
@@ -53,12 +60,13 @@ class _PickedItemChipState extends State<PickedItemChip> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 350),
-        decoration: BoxDecoration(
-          color: isHovered
-              ? widget.hoveredBackgroundColor
-              : widget.backgroundColor,
-          borderRadius: BorderRadius.circular(4),
-        ),
+        decoration: widget.decoration ??
+            BoxDecoration(
+              color: isHovered
+                  ? widget.hoveredBackgroundColor
+                  : widget.backgroundColor,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+            ),
         child: Padding(
           padding: widget.contentPadding,
           child: AnimatedDefaultTextStyle(
@@ -83,13 +91,14 @@ class _PickedItemChipState extends State<PickedItemChip> {
                 const SizedBox(
                   width: 5,
                 ),
-                Icon(
-                  Icons.close,
-                  size: widget.iconSize,
-                  color: isHovered
-                      ? widget.hoveredRemoveIconColor
-                      : widget.removedIconColor,
-                )
+                widget.removeIcon ??
+                    Icon(
+                      Icons.close,
+                      size: widget.iconSize,
+                      color: isHovered
+                          ? widget.hoveredRemoveIconColor
+                          : widget.removedIconColor,
+                    )
               ],
             ),
           ),

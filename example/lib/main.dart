@@ -78,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
           fontSize: 13,
         ),
         pickedItemBackgroundColor: Colors.grey[300]!.withOpacity(0.5),
+        pickedItemBorderRadius: 6,
         pickedItemTextColor: Colors.black,
         showedItemTextStyle: kStyleDefault.copyWith(
           fontWeight: FontWeight.w500,
