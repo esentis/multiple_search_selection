@@ -1,8 +1,9 @@
 library multiple_search_selection;
 
 import 'package:flutter/material.dart';
-import 'package:multiple_search_selection/action_button.dart';
-import 'package:multiple_search_selection/picked_item_chip.dart';
+import 'package:multiple_search_selection/helpers/levenshtein.dart';
+import 'package:multiple_search_selection/widgets/action_button.dart';
+import 'package:multiple_search_selection/widgets/picked_item_chip.dart';
 
 class MultipleSearchSelection extends StatefulWidget {
   const MultipleSearchSelection({
@@ -103,6 +104,8 @@ class MultipleSearchSelection extends StatefulWidget {
     this.showedItemsScrollController,
     this.pickedItemsScrollPhysics,
     this.showedItemsScrollPhysics,
+    this.fuzzySearch = false,
+    this.fuzzyDistance = 2,
     Key? key,
   }) : super(key: key);
 
@@ -409,6 +412,13 @@ class MultipleSearchSelection extends StatefulWidget {
   /// Whether the showed items are sorted alphabetically. Defaults to [false]
   final bool sortShowedItems;
 
+  /// Whether the search results include fuzzy results. Defaults to [false]
+  final bool fuzzySearch;
+
+  /// The maximum Levenshtein distance for the search results, when fuzzy search is on.
+  ///
+  /// The smaller the number the more alike the two strings are. Defaults to 2.
+  final int fuzzyDistance;
   @override
   _MultipleSearchSelectionState createState() =>
       _MultipleSearchSelectionState();
@@ -773,9 +783,19 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     ),
                   ),
               onChanged: (value) {
-                showedItems = allItems
-                    .where((p) => p.toLowerCase().contains(value))
-                    .toList();
+                if (widget.fuzzySearch) {
+                  showedItems = allItems
+                      .where(
+                        (p) =>
+                            p.toLowerCase().contains(value) ||
+                            (getLevenshtein(p, value) <= widget.fuzzyDistance),
+                      )
+                      .toList();
+                } else {
+                  showedItems = allItems
+                      .where((p) => p.toLowerCase().contains(value))
+                      .toList();
+                }
                 expanded = true;
                 setState(() {});
               },
