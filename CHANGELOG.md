@@ -1,6 +1,6 @@
 # 1.0.2
 
-- Adds [fuzzySearch] `bool` flag to toggle fuzzy search functionality using Levenshtein distance. [fuzzyDistance] `int` defaults to 2 (two possibble edits of the `String` to match the word - insertion, deletion or substitution), can be changed for a more elastic search.
+- Adds fuzzy search functionality. New `enum` `FuzzySearch` added to choose from available fuzzy algorithms (Jaro & Levenshtein). Defaults to [FuzzySearch.none].
 
 ## 1.0.1
 
