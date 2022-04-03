@@ -1,9 +1,16 @@
 library multiple_search_selection;
 
 import 'package:flutter/material.dart';
+import 'package:multiple_search_selection/helpers/jaro.dart';
 import 'package:multiple_search_selection/helpers/levenshtein.dart';
 import 'package:multiple_search_selection/widgets/action_button.dart';
 import 'package:multiple_search_selection/widgets/picked_item_chip.dart';
+
+enum FuzzySearch {
+  levenshtein,
+  jaro,
+  none,
+}
 
 class MultipleSearchSelection extends StatefulWidget {
   const MultipleSearchSelection({
@@ -104,8 +111,7 @@ class MultipleSearchSelection extends StatefulWidget {
     this.showedItemsScrollController,
     this.pickedItemsScrollPhysics,
     this.showedItemsScrollPhysics,
-    this.fuzzySearch = false,
-    this.fuzzyDistance = 2,
+    this.fuzzySearch = FuzzySearch.none,
     Key? key,
   }) : super(key: key);
 
@@ -115,7 +121,7 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The padding of the whole widget.
   final EdgeInsets? padding;
 
-  /// The padding of the title Widget. Defaults to [EdgeInsets.zero]
+  /// The padding of the title Widget. Defaults to [EdgeInsets.zero].
   final EdgeInsets? titlePadding;
 
   /// The border color of the picked items container.
@@ -355,7 +361,7 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The remove icon size of the picked item chip.
   final double? pickedItemRemoveIconSize;
 
-  /// The picked item remove icon. Defaults to [Icons.close]
+  /// The picked item remove icon. Defaults to [Icons.close].
   final Widget? pickedItemRemoveIcon;
 
   /// The content padding of the picked items' chip.
@@ -376,16 +382,16 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The minimum length of the picked items' scrollbar thumb.
   final double? pickedItemScrollbarMinThumbLength;
 
-  /// The picked item's font weight, on idle state. Defaults to [FontWeight.w100]
+  /// The picked item's font weight, on idle state. Defaults to [FontWeight.w100].
   final FontWeight? pickedItemFontWeight;
 
-  /// The picked item's font weight, on hover. Defaults to [FontWeight.bold]
+  /// The picked item's font weight, on hover. Defaults to [FontWeight.bold].
   final FontWeight? pickedItemOnHoverFontWeight;
 
   /// The picked item's [BoxDecoration].
   final BoxDecoration? pickedItemBoxDecoration;
 
-  /// Hide or show picked items' scrollbar, defaults to [true]
+  /// Hide or show picked items' scrollbar, defaults to [true].
   final bool showPickedItemScrollbar;
 
   /// The content padding of the search item textfield. This is overriden if [searchItemTextInputDecoration] is provided.
@@ -406,19 +412,27 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The [ScrollPhysics] of showed items list.
   final ScrollPhysics? showedItemsScrollPhysics;
 
-  /// Whether the picked items are sorted alphabetically. Defaults to [false]
+  /// Whether the picked items are sorted alphabetically. Defaults to [false].
   final bool sortPickedItems;
 
-  /// Whether the showed items are sorted alphabetically. Defaults to [false]
+  /// Whether the showed items are sorted alphabetically. Defaults to [false].
   final bool sortShowedItems;
 
-  /// Whether the search results include fuzzy results. Defaults to [false]
-  final bool fuzzySearch;
-
-  /// The maximum Levenshtein distance for the search results, when fuzzy search is on.
+  /// Fuzzy search functionality. Defaults to [FuzzySearch.none].
   ///
-  /// The smaller the number the more alike the two strings are. Defaults to 2.
-  final int fuzzyDistance;
+  /// Currently available fuzzy algorithms :
+  ///
+  /// ```dart
+  /// FuzzySearch.jaro // Measures characters in common, considerating transpositions.
+  /// ```
+  /// ### Shows results with score higher of 0.8.
+  ///
+  /// ```dart
+  /// FuzzySearch.levenshtein // The number of edits required to convert one string to other.
+  /// ```
+  /// ### Shows results with minimum 2 edits.
+  final FuzzySearch fuzzySearch;
+
   @override
   _MultipleSearchSelectionState createState() =>
       _MultipleSearchSelectionState();
@@ -783,14 +797,20 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                     ),
                   ),
               onChanged: (value) {
-                if (widget.fuzzySearch) {
-                  showedItems = allItems
-                      .where(
-                        (p) =>
-                            p.toLowerCase().contains(value) ||
-                            (getLevenshtein(p, value) <= widget.fuzzyDistance),
-                      )
-                      .toList();
+                if (widget.fuzzySearch == FuzzySearch.jaro) {
+                  showedItems = allItems.where(
+                    (p) {
+                      return p.toLowerCase().contains(value) ||
+                          (getJaro(p, value) >= 0.8);
+                    },
+                  ).toList();
+                } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
+                  showedItems = allItems.where(
+                    (p) {
+                      return p.toLowerCase().contains(value) ||
+                          (getLevenshtein(p, value) <= 2);
+                    },
+                  ).toList();
                 } else {
                   showedItems = allItems
                       .where((p) => p.toLowerCase().contains(value))
