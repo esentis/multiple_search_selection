@@ -11,8 +11,7 @@
 ```dart
 MultipleSearchSelection(
     items: countries, // List<String>
-    fuzzySearch: true,
-    fuzzyDistance: 2,
+    fuzzySearch: FuzzySearch.jaro,
     padding: const EdgeInsets.all(20),
     title: Text(
         'Countries',
