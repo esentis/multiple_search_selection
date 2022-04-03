@@ -1,4 +1,8 @@
-# 1.0.1
+# 1.0.2
+
+- Adds fuzzy search functionality. New `enum` `FuzzySearch` added to choose from available fuzzy algorithms (Jaro & Levenshtein). Defaults to [FuzzySearch.none].
+
+## 1.0.1
 
 - Adds [ScrollController] for showed & picked items.
 - Adds [ScrollPhysics] for showed & picked items.

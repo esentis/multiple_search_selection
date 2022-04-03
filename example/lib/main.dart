@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: MultipleSearchSelection(
         items: countries, // List<String>
+        fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
         title: Text(
           'Countries',
