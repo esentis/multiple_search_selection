@@ -49,13 +49,17 @@ MultipleSearchSelection(
         fontWeight: FontWeight.w500,
     ),
     showedItemsBackgroundColor: Colors.grey.withOpacity(0.1),
+    showShowedItemsScrollbar: false,
     searchItemTextStyle: kStyleDefault,
-    noResultsWidget: Text(
+    noResultsWidget: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
         'No items found',
         style: kStyleDefault.copyWith(
-        color: Colors.grey[400],
-        fontSize: 13,
-        fontWeight: FontWeight.w100,
+            color: Colors.grey[400],
+            fontSize: 13,
+            fontWeight: FontWeight.w100,
+        ),
         ),
     ),
     onTapShowedItem: () {},
@@ -66,7 +70,7 @@ MultipleSearchSelection(
     onItemRemoved: (item) {
         print('$item removed from picked items');
     },
-    )
+)
 ```
 
 ## Issues / Features
