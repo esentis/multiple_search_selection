@@ -20,6 +20,7 @@ class PickedItemChip extends StatefulWidget {
     this.decoration,
     this.textStyle,
     this.removeIcon,
+    this.mouseCursor,
   }) : super(key: key);
 
   final String currentItem;
@@ -39,6 +40,7 @@ class PickedItemChip extends StatefulWidget {
   final FontWeight onHoverFontWeight;
 
   final Widget? removeIcon;
+  final MouseCursor? mouseCursor;
   final BoxDecoration? decoration;
   final double borderRadius;
   @override
@@ -51,6 +53,7 @@ class _PickedItemChipState extends State<PickedItemChip> {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(widget.borderRadius),
+      mouseCursor: widget.mouseCursor,
       onHover: (v) {
         isHovered = v;
         setState(() {});

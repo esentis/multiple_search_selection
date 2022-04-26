@@ -16,6 +16,7 @@ class MultipleSearchSelection extends StatefulWidget {
   const MultipleSearchSelection({
     required this.items,
     required this.onPickedChange,
+    this.fuzzySearch = FuzzySearch.none,
     this.padding,
     this.onItemAdded,
     this.onItemRemoved,
@@ -84,34 +85,37 @@ class MultipleSearchSelection extends StatefulWidget {
     this.pickedItemScrollbarRadius,
     this.pickedItemScrollbarThickness,
     this.pickedItemScrollbarMinThumbLength,
+    this.pickedItemsBoxDecoration,
     this.pickedItemFontWeight,
     this.pickedItemOnHoverFontWeight,
     this.pickedItemsContainerMaxHeight,
     this.pickedItemsContainerMinHeight,
+    this.pickedItemsBorderColor,
     this.pickedItemRemoveIcon,
+    this.pickedItemsScrollController,
+    this.pickedItemsScrollPhysics,
+    this.pickedItemMouseCursor,
+    this.showShowedItemsScrollbar = true,
+    this.showPickedItemScrollbar = true,
     this.showedItemsScrollbarColor,
     this.showedItemsScrollbarMinOverscrollLength,
     this.showedItemsScrollbarMinThumbLength,
     this.showedItemsScrollbarRadius,
     this.showedItemsScrollbarThickness,
-    this.showItemsScrollbar = true,
-    this.showPickedItemScrollbar = true,
     this.showedItemContainerContentPadding,
     this.showedItemContainerDecoration,
     this.showedItemContainerHeight,
     this.showedItemContainerPadding,
     this.showedItemsBackgroundColor,
+    this.showedItemMouseCursor,
+    this.showedItemsScrollController,
+    this.showedItemsScrollPhysics,
+    this.showedItemsBoxDecoration,
     this.searchItemTextInputDecoration,
-    this.noResultsWidget,
     this.searchItemTextStyle,
     this.searchItemTextContentPadding,
-    this.pickedItemsBorderColor,
+    this.noResultsWidget,
     this.outerContainerBorderColor,
-    this.pickedItemsScrollController,
-    this.showedItemsScrollController,
-    this.pickedItemsScrollPhysics,
-    this.showedItemsScrollPhysics,
-    this.fuzzySearch = FuzzySearch.none,
     Key? key,
   }) : super(key: key);
 
@@ -166,8 +170,11 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The decoration of the showed item container.
   final BoxDecoration? showedItemContainerDecoration;
 
+  /// The mouse cursor when hovered over showed item container. Defaults to [SystemMouseCursors.click]
+  final MouseCursor? showedItemMouseCursor;
+
   /// Hide or show items' scrollbar, defaults to [true]
-  final bool showItemsScrollbar;
+  final bool showShowedItemsScrollbar;
 
   /// Hide or show select all button.
   final bool showSelectAllButton;
@@ -382,6 +389,9 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The minimum length of the picked items' scrollbar thumb.
   final double? pickedItemScrollbarMinThumbLength;
 
+  /// The [BoxDecoration] of the picked items container.
+  final BoxDecoration? pickedItemsBoxDecoration;
+
   /// The picked item's font weight, on idle state. Defaults to [FontWeight.w100].
   final FontWeight? pickedItemFontWeight;
 
@@ -390,6 +400,9 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// The picked item's [BoxDecoration].
   final BoxDecoration? pickedItemBoxDecoration;
+
+  /// The mouse cursor when hovered over picked item.
+  final MouseCursor? pickedItemMouseCursor;
 
   /// Hide or show picked items' scrollbar, defaults to [true].
   final bool showPickedItemScrollbar;
@@ -411,6 +424,9 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// The [ScrollPhysics] of showed items list.
   final ScrollPhysics? showedItemsScrollPhysics;
+
+  /// The [BoxDecoration] of the showed items container.
+  final BoxDecoration? showedItemsBoxDecoration;
 
   /// Whether the picked items are sorted alphabetically. Defaults to [false].
   final bool sortPickedItems;
@@ -482,13 +498,14 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                 maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
                 minHeight: widget.pickedItemsContainerMinHeight ?? 50,
               ),
-              decoration: BoxDecoration(
-                border: pickedItems.isNotEmpty
-                    ? Border.all(
-                        color: Colors.grey.withOpacity(0.5),
-                      )
-                    : null,
-              ),
+              decoration: widget.pickedItemsBoxDecoration ??
+                  BoxDecoration(
+                    border: pickedItems.isNotEmpty
+                        ? Border.all(
+                            color: Colors.grey.withOpacity(0.5),
+                          )
+                        : null,
+                  ),
               child: RawScrollbar(
                 isAlwaysShown: widget.showPickedItemScrollbar,
                 thumbColor: widget.pickedItemScrollbarColor,
@@ -524,6 +541,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                     padding: widget.tooltipContentPadding,
                                     child: PickedItemChip(
                                       removeIcon: widget.pickedItemRemoveIcon,
+                                      mouseCursor: widget.pickedItemMouseCursor,
                                       decoration:
                                           widget.pickedItemBoxDecoration,
                                       borderRadius:
@@ -762,6 +780,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
           ),
           DecoratedBox(
             decoration: BoxDecoration(
+              color: Colors.white,
               border: Border(
                 top: BorderSide(
                   color: widget.outerContainerBorderColor ??
@@ -774,6 +793,9 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                 right: BorderSide(
                   color: widget.outerContainerBorderColor ??
                       Colors.grey.withOpacity(0.5),
+                ),
+                bottom: BorderSide(
+                  color: Colors.grey.withOpacity(0.5),
                 ),
               ),
             ),
@@ -825,14 +847,25 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
             constraints: BoxConstraints(
               maxHeight: widget.maximumShowItemsHeight,
             ),
-            decoration: BoxDecoration(
-              color: widget.showedItemsBackgroundColor ??
-                  Colors.grey.withOpacity(0.1),
-              border: Border.all(
-                color: widget.outerContainerBorderColor ??
-                    Colors.grey.withOpacity(0.5),
-              ),
-            ),
+            decoration: widget.showedItemsBoxDecoration ??
+                BoxDecoration(
+                  color: widget.showedItemsBackgroundColor ??
+                      Colors.grey.withOpacity(0.1),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                    left: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                    right: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                  ),
+                ),
             child: RawScrollbar(
               controller: widget.showedItemsScrollController ??
                   _showedItemsScrollController,
@@ -843,7 +876,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                   widget.showedItemsScrollbarMinOverscrollLength ?? 5,
               radius:
                   widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
-              isAlwaysShown: widget.showItemsScrollbar,
+              isAlwaysShown: widget.showShowedItemsScrollbar,
               child: ScrollConfiguration(
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
@@ -854,13 +887,13 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                   physics: widget.showedItemsScrollPhysics,
                   itemBuilder: (context, index) {
                     if (showedItems.isEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12.0,
-                          horizontal: 12,
-                        ),
-                        child: widget.noResultsWidget ??
-                            Text(
+                      return widget.noResultsWidget ??
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 12.0,
+                              horizontal: 12,
+                            ),
+                            child: Text(
                               'No results found',
                               style: TextStyle(
                                 fontSize: 14,
@@ -868,7 +901,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                                 color: Colors.grey[400],
                               ),
                             ),
-                      );
+                          );
                     }
                     return GestureDetector(
                       onTap: () {
@@ -885,11 +918,13 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                         setState(() {});
                       },
                       child: MouseRegion(
-                        cursor: SystemMouseCursors.click,
+                        cursor: widget.showedItemMouseCursor ??
+                            SystemMouseCursors.click,
                         child: Padding(
                           padding: widget.showedItemContainerPadding ??
-                              const EdgeInsets.only(
-                                right: 15.0,
+                              EdgeInsets.only(
+                                right:
+                                    !widget.showShowedItemsScrollbar ? 0 : 15.0,
                                 top: 5,
                                 bottom: 2,
                               ),
@@ -935,7 +970,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );

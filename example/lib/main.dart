@@ -49,6 +49,8 @@ class _MyHomePageState extends State<MyHomePage> {
         items: countries, // List<String>
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
+        selectAllBorderRadius: 5,
+        clearAllBorderRadius: 5,
         title: Text(
           'Countries',
           style: kStyleDefault.copyWith(
@@ -81,17 +83,29 @@ class _MyHomePageState extends State<MyHomePage> {
         pickedItemBackgroundColor: Colors.grey[300]!.withOpacity(0.5),
         pickedItemBorderRadius: 6,
         pickedItemTextColor: Colors.black,
+        pickedItemsBoxDecoration: BoxDecoration(
+          border: Border.all(
+            color: Colors.blue[300]!,
+          ),
+          borderRadius: BorderRadius.circular(5),
+        ),
         showedItemTextStyle: kStyleDefault.copyWith(
           fontWeight: FontWeight.w500,
         ),
         showedItemsBackgroundColor: Colors.grey.withOpacity(0.1),
+        showShowedItemsScrollbar: false,
+
         searchItemTextStyle: kStyleDefault,
-        noResultsWidget: Text(
-          'No items found',
-          style: kStyleDefault.copyWith(
-            color: Colors.grey[400],
-            fontSize: 13,
-            fontWeight: FontWeight.w100,
+
+        noResultsWidget: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'No items found',
+            style: kStyleDefault.copyWith(
+              color: Colors.grey[400],
+              fontSize: 13,
+              fontWeight: FontWeight.w100,
+            ),
           ),
         ),
         onTapShowedItem: () {},
