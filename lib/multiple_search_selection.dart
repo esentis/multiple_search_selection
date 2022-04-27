@@ -16,6 +16,7 @@ class MultipleSearchSelection extends StatefulWidget {
   const MultipleSearchSelection({
     required this.items,
     required this.onPickedChange,
+    this.initialPickedItems,
     this.fuzzySearch = FuzzySearch.none,
     this.padding,
     this.onItemAdded,
@@ -139,6 +140,9 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// The list of items to search and select.
   final List<String> items;
+
+  /// The list of initial picked items.
+  final List<String>? initialPickedItems;
 
   /// The thumb color of the items' scrollbar.
   final Color? showedItemsScrollbarColor;
@@ -475,6 +479,8 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
       showedItems.sort();
       allItems.sort();
     }
+
+    pickedItems.addAll(widget.initialPickedItems??[]);
   }
 
   @override
