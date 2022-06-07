@@ -480,7 +480,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
       allItems.sort();
     }
 
-    pickedItems.addAll(widget.initialPickedItems??[]);
+    pickedItems.addAll(widget.initialPickedItems ?? []);
   }
 
   @override
@@ -513,7 +513,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                         : null,
                   ),
               child: RawScrollbar(
-                isAlwaysShown: widget.showPickedItemScrollbar,
+                thumbVisibility: widget.showPickedItemScrollbar,
                 thumbColor: widget.pickedItemScrollbarColor,
                 minOverscrollLength:
                     widget.pickedItemScrollbarMinOverscrollLength ?? 5,
@@ -882,7 +882,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                   widget.showedItemsScrollbarMinOverscrollLength ?? 5,
               radius:
                   widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
-              isAlwaysShown: widget.showShowedItemsScrollbar,
+              thumbVisibility: widget.showShowedItemsScrollbar,
               child: ScrollConfiguration(
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
