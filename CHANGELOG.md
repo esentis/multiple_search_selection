@@ -1,4 +1,8 @@
-# 1.0.4
+# 1.0.5
+
+- Replaces deprecated `isAlwaysShown` with `thumbVisibility` for `RawScrollBar`
+
+## 1.0.4
 
 - Adds initialy picked items parameter, `List<String>`. `initialPickedItems`
 - Edits library description
