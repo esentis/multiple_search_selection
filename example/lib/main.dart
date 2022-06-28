@@ -47,11 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: MultipleSearchSelection(
         items: countries, // List<String>
-        initialPickedItems: const ['Abuddin', 'Atlantis', 'Aurellia'],
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
-        selectAllBorderRadius: 5,
-        clearAllBorderRadius: 5,
+        itemsVisibility: ShowedItemsVisibility.alwaysOn,
+
         title: Text(
           'Countries',
           style: kStyleDefault.copyWith(
@@ -59,56 +58,11 @@ class _MyHomePageState extends State<MyHomePage> {
             fontWeight: FontWeight.bold,
           ),
         ),
+        showSelectAllButton: true,
         titlePadding: const EdgeInsets.symmetric(vertical: 10),
         searchItemTextContentPadding:
             const EdgeInsets.symmetric(horizontal: 10),
         maximumShowItemsHeight: 200,
-        hintText: 'Type here to search',
-        hintTextStyle: kStyleDefault.copyWith(
-          fontSize: 13,
-          color: Colors.grey[400],
-        ),
-        selectAllTextStyle: kStyleDefault,
-        selectAllBackgroundColor: Colors.white,
-        selectAllOnHoverBackgroundColor: Colors.blue[300],
-        selectAllOnHoverTextColor: Colors.white,
-        selectAllOnHoverFontWeight: FontWeight.bold,
-        clearAllTextStyle: kStyleDefault.copyWith(
-          color: Colors.red,
-        ),
-        clearAllOnHoverFontWeight: FontWeight.bold,
-        clearAllOnHoverBackgroundColor: Colors.white,
-        pickedItemTextStyle: kStyleDefault.copyWith(
-          fontSize: 13,
-        ),
-        pickedItemBackgroundColor: Colors.grey[300]!.withOpacity(0.5),
-        pickedItemBorderRadius: 6,
-        pickedItemTextColor: Colors.black,
-        pickedItemsBoxDecoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.blue[300]!,
-          ),
-          borderRadius: BorderRadius.circular(5),
-        ),
-        showedItemTextStyle: kStyleDefault.copyWith(
-          fontWeight: FontWeight.w500,
-        ),
-        showedItemsBackgroundColor: Colors.grey.withOpacity(0.1),
-        showShowedItemsScrollbar: false,
-
-        searchItemTextStyle: kStyleDefault,
-
-        noResultsWidget: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            'No items found',
-            style: kStyleDefault.copyWith(
-              color: Colors.grey[400],
-              fontSize: 13,
-              fontWeight: FontWeight.w100,
-            ),
-          ),
-        ),
         onTapShowedItem: () {},
         onPickedChange: (items) {},
         onItemAdded: (item) {
