@@ -1,4 +1,14 @@
-# 1.0.5
+# 1.1.0
+
+- Adds [itemsVisibility] enum which activates different display options on showed items.
+
+```dart
+ShowedItemsVisibility.alwaysOn // The items are always displayed
+ShowedItemsVisibility.onType // Items are displayed when user types on search field
+ShowedItemsVisibility.toggle // Items are displayed when tapped on show items toggle button
+```
+
+## 1.0.5
 
 - Replaces deprecated `isAlwaysShown` with `thumbVisibility` for `RawScrollBar`
 

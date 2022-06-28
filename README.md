@@ -1,5 +1,5 @@
 <p align="center">
-<img src='https://i.imgur.com/3dHOaoF.gif'>
+<img src='https://i.imgur.com/3dHOaoF.gif' width=550px>
 </p>
 <p align="center">
  <img src="https://img.shields.io/pub/v/multiple_search_selection?color=637d0d&style=for-the-badge" alt="Version" /> <img src="https://img.shields.io/github/languages/code-size/esentis/multiple_search_selection?color=637d0d&style=for-the-badge&label=size" alt="Version" />
@@ -11,9 +11,9 @@
 ```dart
 MultipleSearchSelection(
     items: countries, // List<String>
-    initialPickedItems: const ['Abuddin', 'Atlantis', 'Aurellia'],
     fuzzySearch: FuzzySearch.jaro,
     padding: const EdgeInsets.all(20),
+    itemsVisibility: ShowedItemsVisibility.alwaysOn,
     title: Text(
         'Countries',
         style: kStyleDefault.copyWith(
@@ -21,48 +21,11 @@ MultipleSearchSelection(
         fontWeight: FontWeight.bold,
         ),
     ),
+    showSelectAllButton: false,
     titlePadding: const EdgeInsets.symmetric(vertical: 10),
     searchItemTextContentPadding:
         const EdgeInsets.symmetric(horizontal: 10),
     maximumShowItemsHeight: 200,
-    hintText: 'Type here to search',
-    hintTextStyle: kStyleDefault.copyWith(
-        fontSize: 13,
-        color: Colors.grey[400],
-    ),
-    selectAllTextStyle: kStyleDefault,
-    selectAllBackgroundColor: Colors.white,
-    selectAllOnHoverBackgroundColor: Colors.blue[300],
-    selectAllOnHoverTextColor: Colors.white,
-    selectAllOnHoverFontWeight: FontWeight.bold,
-    clearAllTextStyle: kStyleDefault.copyWith(
-        color: Colors.red,
-    ),
-    clearAllOnHoverFontWeight: FontWeight.bold,
-    clearAllOnHoverBackgroundColor: Colors.white,
-    pickedItemTextStyle: kStyleDefault.copyWith(
-        fontSize: 13,
-    ),
-    pickedItemBackgroundColor: Colors.grey[300]!.withOpacity(0.5),
-    pickedItemBorderRadius: 6,
-    pickedItemTextColor: Colors.black,
-    showedItemTextStyle: kStyleDefault.copyWith(
-        fontWeight: FontWeight.w500,
-    ),
-    showedItemsBackgroundColor: Colors.grey.withOpacity(0.1),
-    showShowedItemsScrollbar: false,
-    searchItemTextStyle: kStyleDefault,
-    noResultsWidget: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-        'No items found',
-        style: kStyleDefault.copyWith(
-            color: Colors.grey[400],
-            fontSize: 13,
-            fontWeight: FontWeight.w100,
-        ),
-        ),
-    ),
     onTapShowedItem: () {},
     onPickedChange: (items) {},
     onItemAdded: (item) {
@@ -73,6 +36,12 @@ MultipleSearchSelection(
     },
 )
 ```
+
+### Showed items behavior
+
+| Always on                                                 | On type                                               | Toggle                                              |
+| --------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| ![Always on](https://i.imgur.com/UgJGDtq.gif "Always on") | ![On type](https://i.imgur.com/f15wDcz.gif "On type") | ![Toggle](https://i.imgur.com/tGKQVhl.gif "Toggle") |
 
 ## Issues / Features
 
