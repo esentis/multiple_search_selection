@@ -45,12 +45,45 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: MultipleSearchSelection(
-        items: countries, // List<String>
+      body: MultipleSearchSelection<Country>(
+        items: countries,
+        fieldToCheck: (c) {
+          return (c).name;
+        },
+        itemBuilder: (country) {
+          return Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 12,
+                ),
+                child: Text((country).name),
+              ),
+            ),
+          );
+        },
+        pickedItemBuilder: (country) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey[400]!),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text((country).name),
+            ),
+          );
+        },
+        sortShowedItems: true,
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
-
         title: Text(
           'Countries',
           style: kStyleDefault.copyWith(
