@@ -1,4 +1,16 @@
-# 1.1.0
+# 2.0.0 Breaking changes
+
+[items] & [initialItems] are now of type [T] for more flexibility when working with different types of [Object] in [List].
+
+New required parameters added :
+
+- [itemBuilder(T)] build and return the showed item widget
+- [pickedItemBuilder(T)] build and return the picked item widget
+- [fieldToCheck(T)] return the [String] field from the [T] of which you will search & sort against
+
+Removed all parameters connected to showed & picked items since we now have builder methods. Please check the example for the implementation.
+
+## 1.1.0
 
 - Adds [itemsVisibility] enum which activates different display options on showed items.
 
