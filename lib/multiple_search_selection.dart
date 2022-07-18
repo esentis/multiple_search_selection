@@ -647,7 +647,7 @@ class _MultipleSearchSelectionState<T>
                     if (widget.itemsVisibility ==
                         ShowedItemsVisibility.toggle) ...[
                       ActionButton(
-                        text: widget.selectAllText ?? 'Show items',
+                        text: widget.showItemsText ?? 'Show items',
                         backgroundColor:
                             widget.showItemsBackgroundColor ?? Colors.white,
                         animationDuration: widget.showItemsAnimationDuration ??
