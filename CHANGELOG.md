@@ -1,4 +1,9 @@
-# 2.0.0 Breaking changes
+# 2.0.1 Bug Fixes
+
+- Fixes bug with [showItemsText] button text showing [selectAllText] instead
+- Removes junk files reducing library size
+
+## 2.0.0 Breaking changes
 
 [items] & [initialItems] are now of type [T] for more flexibility when working with different types of [Object] in [List].
 

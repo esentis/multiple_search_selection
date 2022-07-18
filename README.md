@@ -12,7 +12,7 @@
 MultipleSearchSelection<Country>(
         items: countries,
         fieldToCheck: (c) {
-          return (c).name;
+          return c.name;
         },
         itemBuilder: (country) {
           return Padding(
@@ -27,7 +27,7 @@ MultipleSearchSelection<Country>(
                   vertical: 20.0,
                   horizontal: 12,
                 ),
-                child: Text((country).name),
+                child: Text(country.name),
               ),
             ),
           );
@@ -40,7 +40,7 @@ MultipleSearchSelection<Country>(
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Text((country).name),
+              child: Text(country.name),
             ),
           );
         },
