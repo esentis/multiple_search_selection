@@ -9,32 +9,66 @@
 #### A highly customizable multiple selection widget with fuzzy search functionality
 
 ```dart
-MultipleSearchSelection(
-    items: countries, // List<String>
-    fuzzySearch: FuzzySearch.jaro,
-    padding: const EdgeInsets.all(20),
-    itemsVisibility: ShowedItemsVisibility.alwaysOn,
-    title: Text(
-        'Countries',
-        style: kStyleDefault.copyWith(
-        fontSize: 22,
-        fontWeight: FontWeight.bold,
+MultipleSearchSelection<Country>(
+        items: countries,
+        fieldToCheck: (c) {
+          return (c).name;
+        },
+        itemBuilder: (country) {
+          return Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20.0,
+                  horizontal: 12,
+                ),
+                child: Text((country).name),
+              ),
+            ),
+          );
+        },
+        pickedItemBuilder: (country) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.grey[400]!),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text((country).name),
+            ),
+          );
+        },
+        sortShowedItems: true,
+        fuzzySearch: FuzzySearch.jaro,
+        padding: const EdgeInsets.all(20),
+        itemsVisibility: ShowedItemsVisibility.alwaysOn,
+        title: Text(
+          'Countries',
+          style: kStyleDefault.copyWith(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-    ),
-    showSelectAllButton: false,
-    titlePadding: const EdgeInsets.symmetric(vertical: 10),
-    searchItemTextContentPadding:
-        const EdgeInsets.symmetric(horizontal: 10),
-    maximumShowItemsHeight: 200,
-    onTapShowedItem: () {},
-    onPickedChange: (items) {},
-    onItemAdded: (item) {
-        print('$item added to picked items');
-    },
-    onItemRemoved: (item) {
-        print('$item removed from picked items');
-    },
-)
+        showSelectAllButton: true,
+        titlePadding: const EdgeInsets.symmetric(vertical: 10),
+        searchItemTextContentPadding:
+            const EdgeInsets.symmetric(horizontal: 10),
+        maximumShowItemsHeight: 200,
+        onTapShowedItem: () {},
+        onPickedChange: (items) {},
+        onItemAdded: (item) {
+          print('$item added to picked items');
+        },
+        onItemRemoved: (item) {
+          print('$item removed from picked items');
+        },
+      )
 ```
 
 ### Showed items behavior
