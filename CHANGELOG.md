@@ -1,4 +1,26 @@
-# 1.0.5
+# 2.0.0 Breaking changes
+
+[items] & [initialItems] are now of type [T] for more flexibility when working with different types of [Object] in [List].
+
+New required parameters added :
+
+- [itemBuilder(T)] build and return the showed item widget
+- [pickedItemBuilder(T)] build and return the picked item widget
+- [fieldToCheck(T)] return the [String] field from the [T] of which you will search & sort against
+
+Removed all parameters connected to showed & picked items since we now have builder methods. Please check the example for the implementation.
+
+## 1.1.0
+
+- Adds [itemsVisibility] enum which activates different display options on showed items.
+
+```dart
+ShowedItemsVisibility.alwaysOn // The items are always displayed
+ShowedItemsVisibility.onType // Items are displayed when user types on search field
+ShowedItemsVisibility.toggle // Items are displayed when tapped on show items toggle button
+```
+
+## 1.0.5
 
 - Replaces deprecated `isAlwaysShown` with `thumbVisibility` for `RawScrollBar`
 

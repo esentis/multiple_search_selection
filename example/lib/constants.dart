@@ -6,7 +6,7 @@ TextStyle kStyleDefault = const TextStyle(
   fontWeight: FontWeight.bold,
 );
 
-List<String> countries = [
+List<String> countryNames = [
   "United States",
   "Canada",
   "Afghanistan",
@@ -249,3 +249,21 @@ List<String> countries = [
   "Zambia",
   "Zimbabwe"
 ];
+
+List<Country> countries = List<Country>.generate(
+  countryNames.length,
+  (index) => Country(
+    name: countryNames[index],
+    iso: countryNames[index].substring(0, 2),
+  ),
+);
+
+class Country {
+  final String name;
+  final String iso;
+
+  const Country({
+    required this.name,
+    required this.iso,
+  });
+}

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/helpers/jaro.dart';
 import 'package:multiple_search_selection/helpers/levenshtein.dart';
 import 'package:multiple_search_selection/widgets/action_button.dart';
-import 'package:multiple_search_selection/widgets/picked_item_chip.dart';
 
 enum FuzzySearch {
   levenshtein,
@@ -12,10 +11,19 @@ enum FuzzySearch {
   none,
 }
 
-class MultipleSearchSelection extends StatefulWidget {
+enum ShowedItemsVisibility {
+  alwaysOn,
+  onType,
+  toggle,
+}
+
+class MultipleSearchSelection<T> extends StatefulWidget {
   const MultipleSearchSelection({
     required this.items,
     required this.onPickedChange,
+    required this.fieldToCheck,
+    required this.itemBuilder,
+    required this.pickedItemBuilder,
     this.initialPickedItems,
     this.fuzzySearch = FuzzySearch.none,
     this.padding,
@@ -29,11 +37,8 @@ class MultipleSearchSelection extends StatefulWidget {
     this.hintTextStyle,
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
-    this.showTooltipOnpickedItem = false,
     this.sortPickedItems = false,
     this.sortShowedItems = false,
-    this.tooltipDecoration,
-    this.tooltipContentPadding,
     this.showedItemTextStyle,
     this.selectAllText,
     this.selectAllOnHoverTextColor,
@@ -67,44 +72,12 @@ class MultipleSearchSelection extends StatefulWidget {
     this.clearAllTextColor,
     this.clearAllOnHoverTextColor,
     this.clearAllAnimationCurve,
-    this.pickedItemTextStyle,
-    this.pickedItemSpacing,
-    this.pickedItemBackgroundColor,
-    this.pickedItemBorderRadius,
-    this.pickedItemBoxDecoration,
-    this.pickedItemOnHoverBackgroundColor,
-    this.pickedItemFontSIze,
-    this.pickedItemOnHoverTextColor,
-    this.pickedItemRemoveIconColor,
-    this.pickedItemRemoveIconSize,
-    this.pickedItemTextColor,
-    this.pickedItemTooltipTextStyle,
-    this.pickedItemContentPadding,
-    this.pickedItemOnHoveredRemoveIconColor,
-    this.pickedItemScrollbarColor,
-    this.pickedItemScrollbarMinOverscrollLength,
-    this.pickedItemScrollbarRadius,
-    this.pickedItemScrollbarThickness,
-    this.pickedItemScrollbarMinThumbLength,
-    this.pickedItemsBoxDecoration,
-    this.pickedItemFontWeight,
-    this.pickedItemOnHoverFontWeight,
-    this.pickedItemsContainerMaxHeight,
-    this.pickedItemsContainerMinHeight,
-    this.pickedItemsBorderColor,
-    this.pickedItemRemoveIcon,
-    this.pickedItemsScrollController,
-    this.pickedItemsScrollPhysics,
-    this.pickedItemMouseCursor,
     this.showShowedItemsScrollbar = true,
     this.showPickedItemScrollbar = true,
     this.showedItemsScrollbarColor,
     this.showedItemsScrollbarMinOverscrollLength,
     this.showedItemsScrollbarMinThumbLength,
     this.showedItemsScrollbarRadius,
-    this.showedItemsScrollbarThickness,
-    this.showedItemContainerContentPadding,
-    this.showedItemContainerDecoration,
     this.showedItemContainerHeight,
     this.showedItemContainerPadding,
     this.showedItemsBackgroundColor,
@@ -117,7 +90,37 @@ class MultipleSearchSelection extends StatefulWidget {
     this.searchItemTextContentPadding,
     this.noResultsWidget,
     this.outerContainerBorderColor,
+    this.showItemsAnimationCurve,
+    this.showItemsBackgroundColor,
+    this.showItemsAnimationDuration,
+    this.showItemsBorderColor,
+    this.showItemsBorderRadius,
+    this.showItemsContentPadding,
+    this.showItemsFontSize,
+    this.showItemsFontWeight,
+    this.itemsVisibility = ShowedItemsVisibility.alwaysOn,
+    this.showItemsText,
+    this.showItemsTextStyle,
+    this.showItemsOnHoverBackgroundColor,
+    this.showItemsTextColor,
+    this.showItemsOnHoverTextColor,
+    this.showItemsOnHoverFontWeight,
+    this.showItemsOnHoverBorderColor,
+    this.showItemsOnHoverColor,
     Key? key,
+    this.pickedItemsBorderColor,
+    this.pickedItemSpacing,
+    this.pickedItemsContainerMaxHeight,
+    this.pickedItemsContainerMinHeight,
+    this.pickedItemScrollbarColor,
+    this.pickedItemScrollbarThickness,
+    this.pickedItemScrollbarMinOverscrollLength,
+    this.pickedItemScrollbarRadius,
+    this.pickedItemsScrollbarMinThumbLength,
+    this.pickedItemsBoxDecoration,
+    this.pickedItemMouseCursor,
+    this.pickedItemsScrollController,
+    this.pickedItemsScrollPhysics,
   }) : super(key: key);
 
   /// The title widget on top of picked items.
@@ -138,20 +141,17 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The maximum height constraints of the items' container.
   final double maximumShowItemsHeight;
 
-  /// The list of items to search and select.
-  final List<String> items;
+  /// The list of items (T) to search and select.
+  final List<T> items;
 
   /// The list of initial picked items.
-  final List<String>? initialPickedItems;
+  final List<T>? initialPickedItems;
 
   /// The thumb color of the items' scrollbar.
   final Color? showedItemsScrollbarColor;
 
   /// The background color of the container holding all the items.
   final Color? showedItemsBackgroundColor;
-
-  /// The thickness of the items' scrollbar thumb.
-  final double? showedItemsScrollbarThickness;
 
   /// The minimum length of the items' scrollbar thumb.
   final double? showedItemsScrollbarMinThumbLength;
@@ -168,12 +168,6 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The padding of the showed item container.
   final EdgeInsets? showedItemContainerPadding;
 
-  /// The content padding of the showed item container. Defaults to [EdgeInsets.only(left: 8.0)]
-  final EdgeInsets? showedItemContainerContentPadding;
-
-  /// The decoration of the showed item container.
-  final BoxDecoration? showedItemContainerDecoration;
-
   /// The mouse cursor when hovered over showed item container. Defaults to [SystemMouseCursors.click]
   final MouseCursor? showedItemMouseCursor;
 
@@ -186,23 +180,14 @@ class MultipleSearchSelection extends StatefulWidget {
   /// Hide or show clear all button.
   final bool showClearAllButton;
 
-  /// Hide or show tooltip when hovering picked item chip.
-  final bool showTooltipOnpickedItem;
-
-  /// The [BoxDecoration] of the picked item tooltip.
-  final BoxDecoration? tooltipDecoration;
-
-  /// The content padding of the picked item tooltip.
-  final EdgeInsets? tooltipContentPadding;
-
   /// A callback when user selects or deselects an item. Always returns the currently picked items.
-  final Function(List<String>) onPickedChange;
+  final Function(List<T>) onPickedChange;
 
   /// A callback when an item is removed, returns the item aswell.
-  final Function(String)? onItemRemoved;
+  final Function(T)? onItemRemoved;
 
   /// A callback when an item is added, returns the item aswell.
-  final Function(String)? onItemAdded;
+  final Function(T)? onItemAdded;
 
   /// [TextStyle] of the showed items.
   final TextStyle? showedItemTextStyle;
@@ -323,24 +308,8 @@ class MultipleSearchSelection extends StatefulWidget {
   /// The padding of the text in the clear all button.
   final EdgeInsets? clearAllContentPadding;
 
-  /// The color that appears when hovering of the clear all button.
+  /// The color that appears when hovering over the clear all button.
   final Color? clearAllOnHoverColor;
-
-  /// The textstyle of picked item tooltip.
-  ///
-  /// Keep in mind that, this is a child of [AnimatedDefaultTextStyle] and you can use
-  ///
-  /// conditions to animate your textstyle.
-  final TextStyle? pickedItemTooltipTextStyle;
-
-  /// The text style of the picked item chip.
-  final TextStyle? pickedItemTextStyle;
-
-  /// The background color of the picked item chip, on idle state.
-  final Color? pickedItemBackgroundColor;
-
-  /// The background color of the picked item chip, when hovered.
-  final Color? pickedItemOnHoverBackgroundColor;
 
   /// The spacing of picked item chip. Defaults to 5.
   final double? pickedItemSpacing;
@@ -350,33 +319,6 @@ class MultipleSearchSelection extends StatefulWidget {
 
   /// The minimum height of which the picked items container can extend. Defaults to 50 pixels.
   final double? pickedItemsContainerMinHeight;
-
-  /// The border radius of the picked item chip. This is overriden if [pickedItemBoxDecoration] is provided.
-  final double? pickedItemBorderRadius;
-
-  /// The color of the picked item text, on idle state. This is overriden if [pickedItemTextStyle] is provided.
-  final Color? pickedItemTextColor;
-
-  /// The color of the picked item text, when hovered. This is overriden if [pickedItemTextStyle] is provided.
-  final Color? pickedItemOnHoverTextColor;
-
-  /// The font size of the text tha appears on picked item chip. This is overriden if [pickedItemTextStyle] is provided.
-  final double? pickedItemFontSIze;
-
-  /// The remove icon color of the picked item chip, on idle state.
-  final Color? pickedItemRemoveIconColor;
-
-  /// The remove icon color of the picked item chip, when hovered.  This is overriden if [pickedItemBoxDecoration] is provided.
-  final Color? pickedItemOnHoveredRemoveIconColor;
-
-  /// The remove icon size of the picked item chip.
-  final double? pickedItemRemoveIconSize;
-
-  /// The picked item remove icon. Defaults to [Icons.close].
-  final Widget? pickedItemRemoveIcon;
-
-  /// The content padding of the picked items' chip.
-  final EdgeInsets? pickedItemContentPadding;
 
   /// The thumb color of the picked items' scrollbar.
   final Color? pickedItemScrollbarColor;
@@ -391,19 +333,10 @@ class MultipleSearchSelection extends StatefulWidget {
   final Radius? pickedItemScrollbarRadius;
 
   /// The minimum length of the picked items' scrollbar thumb.
-  final double? pickedItemScrollbarMinThumbLength;
+  final double? pickedItemsScrollbarMinThumbLength;
 
   /// The [BoxDecoration] of the picked items container.
   final BoxDecoration? pickedItemsBoxDecoration;
-
-  /// The picked item's font weight, on idle state. Defaults to [FontWeight.w100].
-  final FontWeight? pickedItemFontWeight;
-
-  /// The picked item's font weight, on hover. Defaults to [FontWeight.bold].
-  final FontWeight? pickedItemOnHoverFontWeight;
-
-  /// The picked item's [BoxDecoration].
-  final BoxDecoration? pickedItemBoxDecoration;
 
   /// The mouse cursor when hovered over picked item.
   final MouseCursor? pickedItemMouseCursor;
@@ -438,6 +371,19 @@ class MultipleSearchSelection extends StatefulWidget {
   /// Whether the showed items are sorted alphabetically. Defaults to [false].
   final bool sortShowedItems;
 
+  /// How the showed items are displayed.
+  ///
+  /// There are currently three types :
+  ///
+  /// ```dart
+  /// ShowedItemsVisibility.alwaysOn // The items are always displayed
+  /// ShowedItemsVisibility.onType // Items are displayed when user types on search field
+  /// ShowedItemsVisibility.toggle // Items are displayed when tapped on toggle button
+  /// ```
+  ///
+  /// Defaults to [ShowedItemsVisibility.alwaysOn].
+  final ShowedItemsVisibility itemsVisibility;
+
   /// Fuzzy search functionality. Defaults to [FuzzySearch.none].
   ///
   /// Currently available fuzzy algorithms :
@@ -453,18 +399,92 @@ class MultipleSearchSelection extends StatefulWidget {
   /// ### Shows results with minimum 2 edits.
   final FuzzySearch fuzzySearch;
 
+  /// The text that appears on show items toggle button.
+  ///
+  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
+  final String? showItemsText;
+
+  /// The text style of the show items toggle button.
+  ///
+  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
+  ///
+  /// Keep in mind that, this is a child of [AnimatedDefaultTextStyle] and you can use
+  ///
+  /// conditions to animate your textstyle.
+  final TextStyle? showItemsTextStyle;
+
+  /// The background color of the show items toggle button on idle state.
+  ///
+  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
+  final Color? showItemsBackgroundColor;
+
+  /// The animation [Curve] of the show items toggle button.
+  ///
+  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
+  ///
+  /// Defaults to [Curves.easeInOut].
+  final Curve? showItemsAnimationCurve;
+
+  /// The background color of the show items toggle button when hovered.
+  ///
+  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
+  final Color? showItemsOnHoverBackgroundColor;
+
+  /// The animation duration of color changes of the show items toggle button.
+  final Duration? showItemsAnimationDuration;
+
+  /// The show items toggle button font size. This is overriden if [showItemsTextStyle] is provided.
+  final double? showItemsFontSize;
+
+  /// The show items toggle button text color on idle state. This is overriden if [showItemsTextStyle] is provided.
+  final Color? showItemsTextColor;
+
+  /// The show items toggle button text color when hovered. This is overriden if [showItemsTextStyle] is provided.
+  final Color? showItemsOnHoverTextColor;
+
+  /// The font weight of the show items toggle button, on idle state. This is overriden if [showItemsTextStyle] is provided.
+  final FontWeight? showItemsFontWeight;
+
+  /// The font weight of the show items toggle button, when hovered. This is overriden if [showItemsTextStyle] is provided.
+  final FontWeight? showItemsOnHoverFontWeight;
+
+  /// The border radius of the show items toggle button.
+  final double? showItemsBorderRadius;
+
+  /// The border color of the show items toggle button on idle state.
+  final Color? showItemsBorderColor;
+
+  /// The border color of the show items toggle button when hovered.
+  final Color? showItemsOnHoverBorderColor;
+
+  /// The padding of the text in the show items toggle button.
+  final EdgeInsets? showItemsContentPadding;
+
+  /// The color that appears when hovering over the show items toggle button.
+  final Color? showItemsOnHoverColor;
+
+  /// This is the builder of picked items.
+  final Widget Function(T) pickedItemBuilder;
+
+  /// This is the [String] field to check when searching through the List<T>
+  final String Function(T) fieldToCheck;
+
+  /// This is the builder of showed items.
+  final Widget Function(T) itemBuilder;
+
   @override
-  _MultipleSearchSelectionState createState() =>
-      _MultipleSearchSelectionState();
+  _MultipleSearchSelectionState<T> createState() =>
+      _MultipleSearchSelectionState<T>();
 }
 
-class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
-  late List<String> showedItems;
-  late List<String> allItems;
+class _MultipleSearchSelectionState<T>
+    extends State<MultipleSearchSelection<T>> {
+  late List<T> showedItems;
+  late List<T> allItems;
 
   bool expanded = false;
 
-  List<String> pickedItems = [];
+  List<T> pickedItems = [];
   final ScrollController _pickedItemsController = ScrollController();
   final ScrollController _showedItemsScrollController = ScrollController();
   final TextEditingController _textEditingController = TextEditingController();
@@ -476,11 +496,69 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
     showedItems = [...widget.items];
     allItems = [...widget.items];
     if (widget.sortShowedItems) {
-      showedItems.sort();
-      allItems.sort();
+      showedItems.sort(
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
+      );
+      allItems.sort(
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
+      );
     }
 
+    expanded = widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
+
     pickedItems.addAll(widget.initialPickedItems ?? []);
+  }
+
+  void _onRemoveItem(T item) {
+    pickedItems.remove(item);
+    allItems.add(item);
+    showedItems = allItems
+        .where(
+          (item) => widget.fieldToCheck.call(item).contains(
+                _textEditingController.text,
+              ),
+        )
+        .toList();
+    if (showedItems.isNotEmpty) {
+      if (widget.sortShowedItems) {
+        showedItems.sort(
+          (a, b) => widget.fieldToCheck(a).compareTo(
+                widget.fieldToCheck(b),
+              ),
+        );
+      }
+    }
+    if (widget.sortShowedItems) {
+      allItems.sort(
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
+      );
+    }
+
+    widget.onPickedChange(pickedItems);
+    widget.onItemRemoved?.call(item);
+    setState(() {});
+    widget.onItemRemoved?.call(item);
+  }
+
+  void _onAddItem(T item) {
+    widget.onTapShowedItem?.call();
+    final T pickedItem = item;
+    pickedItems.add(pickedItem);
+    if (widget.sortPickedItems) {
+      pickedItems.sort();
+    }
+    allItems.remove(pickedItem);
+    showedItems.remove(pickedItem);
+    widget.onPickedChange(
+      pickedItems,
+    );
+    widget.onItemAdded?.call(pickedItem);
   }
 
   @override
@@ -517,7 +595,7 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                 thumbColor: widget.pickedItemScrollbarColor,
                 minOverscrollLength:
                     widget.pickedItemScrollbarMinOverscrollLength ?? 5,
-                minThumbLength: widget.pickedItemScrollbarMinThumbLength ?? 30,
+                minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
                 thickness: widget.pickedItemScrollbarThickness ?? 10,
                 radius: widget.pickedItemScrollbarRadius ??
                     const Radius.circular(5),
@@ -537,135 +615,16 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                         runSpacing: widget.pickedItemSpacing ?? 5,
                         children: [
                           ...pickedItems.map(
-                            (e) => widget.showTooltipOnpickedItem
-                                ? Tooltip(
-                                    message: e,
-                                    preferBelow: true,
-                                    textStyle:
-                                        widget.pickedItemTooltipTextStyle,
-                                    decoration: widget.tooltipDecoration,
-                                    padding: widget.tooltipContentPadding,
-                                    child: PickedItemChip(
-                                      removeIcon: widget.pickedItemRemoveIcon,
-                                      mouseCursor: widget.pickedItemMouseCursor,
-                                      decoration:
-                                          widget.pickedItemBoxDecoration,
-                                      borderRadius:
-                                          widget.pickedItemBorderRadius ?? 4,
-                                      textStyle: widget.pickedItemTextStyle,
-                                      fontWeight: widget.pickedItemFontWeight ??
-                                          FontWeight.w100,
-                                      onHoverFontWeight:
-                                          widget.pickedItemOnHoverFontWeight ??
-                                              FontWeight.bold,
-                                      backgroundColor: widget
-                                              .pickedItemBackgroundColor ??
-                                          Colors.grey[500]!.withOpacity(0.3),
-                                      contentPadding:
-                                          widget.pickedItemContentPadding ??
-                                              const EdgeInsets.all(8),
-                                      textColor: widget.pickedItemTextColor ??
-                                          Colors.black,
-                                      removedIconColor:
-                                          widget.pickedItemRemoveIconColor ??
-                                              Colors.black,
-                                      hoveredRemoveIconColor: widget
-                                              .pickedItemOnHoveredRemoveIconColor ??
-                                          Colors.white,
-                                      iconSize:
-                                          widget.pickedItemRemoveIconSize ?? 15,
-                                      currentItem: e,
-                                      hoveredBackgroundColor: widget
-                                              .pickedItemOnHoverBackgroundColor ??
-                                          Colors.red,
-                                      fontSize: widget.pickedItemFontSIze ?? 12,
-                                      hoveredTextColor:
-                                          widget.pickedItemOnHoverTextColor ??
-                                              Colors.white,
-                                      onRemove: () {
-                                        pickedItems.remove(e);
-                                        allItems.add(e);
-                                        showedItems = allItems
-                                            .where(
-                                              (p) => p.toLowerCase().contains(
-                                                    _textEditingController.text,
-                                                  ),
-                                            )
-                                            .toList();
-                                        if (showedItems.isNotEmpty) {
-                                          if (widget.sortShowedItems) {
-                                            showedItems.sort();
-                                          }
-                                        }
-                                        if (widget.sortShowedItems) {
-                                          allItems.sort();
-                                        }
-
-                                        widget.onPickedChange(pickedItems);
-                                        widget.onItemRemoved?.call(e);
-                                        setState(() {});
-                                      },
-                                    ),
-                                  )
-                                : PickedItemChip(
-                                    textStyle: widget.pickedItemTextStyle,
-                                    removeIcon: widget.pickedItemRemoveIcon,
-                                    decoration: widget.pickedItemBoxDecoration,
-                                    fontWeight: widget.pickedItemFontWeight ??
-                                        FontWeight.w100,
-                                    borderRadius:
-                                        widget.pickedItemBorderRadius ?? 4,
-                                    onHoverFontWeight:
-                                        widget.pickedItemOnHoverFontWeight ??
-                                            FontWeight.bold,
-                                    contentPadding:
-                                        widget.pickedItemContentPadding ??
-                                            const EdgeInsets.all(8),
-                                    backgroundColor:
-                                        widget.pickedItemBackgroundColor ??
-                                            Colors.grey[500]!.withOpacity(0.3),
-                                    textColor: widget.pickedItemTextColor ??
-                                        Colors.black,
-                                    removedIconColor:
-                                        widget.pickedItemRemoveIconColor ??
-                                            Colors.black,
-                                    hoveredRemoveIconColor: widget
-                                            .pickedItemOnHoveredRemoveIconColor ??
-                                        Colors.white,
-                                    iconSize:
-                                        widget.pickedItemRemoveIconSize ?? 15,
-                                    currentItem: e,
-                                    hoveredBackgroundColor: widget
-                                            .pickedItemOnHoverBackgroundColor ??
-                                        Colors.red,
-                                    fontSize: widget.pickedItemFontSIze ?? 12,
-                                    hoveredTextColor:
-                                        widget.pickedItemOnHoverTextColor ??
-                                            Colors.white,
-                                    onRemove: () {
-                                      pickedItems.remove(e);
-                                      allItems.add(e);
-                                      showedItems = allItems
-                                          .where(
-                                            (p) => p.toLowerCase().contains(
-                                                  _textEditingController.text,
-                                                ),
-                                          )
-                                          .toList();
-                                      if (showedItems.isNotEmpty) {
-                                        if (widget.sortShowedItems) {
-                                          showedItems.sort();
-                                        }
-                                      }
-                                      if (widget.sortShowedItems) {
-                                        allItems.sort();
-                                      }
-
-                                      widget.onPickedChange(pickedItems);
-                                      widget.onItemRemoved?.call(e);
-                                      setState(() {});
-                                    },
-                                  ),
+                            (e) => MouseRegion(
+                              cursor: widget.pickedItemMouseCursor ??
+                                  SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _onRemoveItem(e);
+                                },
+                                child: widget.pickedItemBuilder.call(e),
+                              ),
+                            ),
                           )
                         ],
                       ),
@@ -674,66 +633,335 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                 ),
               ),
             ),
-          if (widget.showClearAllButton || widget.showClearAllButton) ...[
+          if (widget.showClearAllButton ||
+              widget.showClearAllButton ||
+              widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
             const SizedBox(
               height: 10,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (widget.showSelectAllButton)
-                  ActionButton(
-                    text: widget.selectAllText ?? 'Select all',
-                    textStyle: widget.selectAllTextStyle,
-                    backgroundColor:
-                        widget.selectAllBackgroundColor ?? Colors.white,
-                    actionButtonAnimationCurve: widget.selectAllAnimationCurve,
-                    onHoverBackgroundColor:
-                        widget.selectAllOnHoverBackgroundColor ??
-                            Colors.blue[300]!,
-                    animationDuration: widget.selectAllAnimationDuration ??
-                        const Duration(milliseconds: 200),
-                    fontSize: widget.selectAllFontSize ?? 13,
-                    borderRadius: widget.selectAllBorderRadius ?? 0,
-                    onHoverBorderColor:
-                        widget.selectAllOnHoverBorderColor ?? Colors.white,
-                    borderColor:
-                        widget.selectAllBorderColor ?? Colors.blue[300]!,
-                    contentPadding: widget.selectAllContentPadding ??
-                        const EdgeInsets.all(8),
-                    textColor: widget.selectAllTextColor ?? Colors.black,
-                    fontWeight: widget.selectAllFontWeight ?? FontWeight.w500,
-                    onHoverFontWeight:
-                        widget.selectAllOnHoverFontWeight ?? FontWeight.w100,
-                    onHoverTextColor:
-                        widget.selectAllOnHoverTextColor ?? Colors.white,
-                    onTap: () {
-                      pickedItems.addAll(showedItems);
-                      if (widget.sortPickedItems) {
-                        pickedItems.sort();
-                      }
-                      allItems.removeWhere((e) => showedItems.contains(e));
+                Row(
+                  children: [
+                    if (widget.itemsVisibility ==
+                        ShowedItemsVisibility.toggle) ...[
+                      ActionButton(
+                        text: widget.selectAllText ?? 'Show items',
+                        backgroundColor:
+                            widget.showItemsBackgroundColor ?? Colors.white,
+                        animationDuration: widget.showItemsAnimationDuration ??
+                            const Duration(milliseconds: 200),
+                        fontSize: widget.showItemsFontSize ?? 13,
+                        textStyle: widget.showItemsTextStyle ??
+                            widget.showItemsTextStyle,
+                        borderRadius: widget.showItemsBorderRadius ?? 0,
+                        actionButtonAnimationCurve:
+                            widget.showItemsAnimationCurve,
+                        borderColor:
+                            widget.showItemsBorderColor ?? Colors.blue[300]!,
+                        contentPadding: widget.showItemsContentPadding ??
+                            const EdgeInsets.all(8),
+                        textColor:
+                            widget.showItemsTextColor ?? Colors.blue[300]!,
+                        fontWeight:
+                            widget.showItemsFontWeight ?? FontWeight.w500,
+                        onHoverBorderColor:
+                            widget.showItemsOnHoverBorderColor ?? Colors.white,
+                        onHoverBackgroundColor:
+                            widget.showItemsBackgroundColor ??
+                                Colors.blue[300]!,
+                        onHoverFontWeight: widget.showItemsOnHoverFontWeight ??
+                            FontWeight.w100,
+                        onHoverTextColor:
+                            widget.showItemsOnHoverTextColor ?? Colors.white,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => StatefulBuilder(
+                              builder: (context, stateSetter) {
+                                return Dialog(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          border: Border(
+                                            top: BorderSide(
+                                              color: widget
+                                                      .outerContainerBorderColor ??
+                                                  Colors.grey.withOpacity(0.5),
+                                            ),
+                                            left: BorderSide(
+                                              color: widget
+                                                      .outerContainerBorderColor ??
+                                                  Colors.grey.withOpacity(0.5),
+                                            ),
+                                            right: BorderSide(
+                                              color: widget
+                                                      .outerContainerBorderColor ??
+                                                  Colors.grey.withOpacity(0.5),
+                                            ),
+                                            bottom: BorderSide(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                            ),
+                                          ),
+                                        ),
+                                        child: TextField(
+                                          focusNode: _textFieldFocus,
+                                          controller: _textEditingController,
+                                          style: widget.searchItemTextStyle,
+                                          decoration: widget
+                                                  .searchItemTextInputDecoration ??
+                                              InputDecoration(
+                                                contentPadding: widget
+                                                        .searchItemTextContentPadding ??
+                                                    const EdgeInsets.only(
+                                                      left: 6,
+                                                    ),
+                                                hintText: widget.hintText ??
+                                                    'Type here to search',
+                                                hintStyle:
+                                                    widget.hintTextStyle ??
+                                                        const TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                border: OutlineInputBorder(
+                                                  borderSide: BorderSide.none,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                          onChanged: (value) {
+                                            if (widget.fuzzySearch ==
+                                                FuzzySearch.jaro) {
+                                              showedItems = allItems.where(
+                                                (item) {
+                                                  return widget.fieldToCheck
+                                                          .call(item)
+                                                          .toLowerCase()
+                                                          .contains(value) ||
+                                                      (getJaro(
+                                                            widget.fieldToCheck
+                                                                .call(item),
+                                                            value,
+                                                          ) >=
+                                                          0.8);
+                                                },
+                                              ).toList();
+                                            } else if (widget.fuzzySearch ==
+                                                FuzzySearch.levenshtein) {
+                                              showedItems = allItems.where(
+                                                (item) {
+                                                  return widget.fieldToCheck
+                                                          .call(item)
+                                                          .toLowerCase()
+                                                          .contains(value) ||
+                                                      (getLevenshtein(
+                                                            widget.fieldToCheck
+                                                                .call(item),
+                                                            value,
+                                                          ) <=
+                                                          2);
+                                                },
+                                              ).toList();
+                                            } else {
+                                              showedItems = allItems
+                                                  .where(
+                                                    (item) => widget
+                                                        .fieldToCheck
+                                                        .call(item)
+                                                        .toLowerCase()
+                                                        .contains(value),
+                                                  )
+                                                  .toList();
+                                            }
+                                            setState(() {});
+                                            stateSetter(() {});
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        constraints: BoxConstraints(
+                                          maxHeight:
+                                              widget.maximumShowItemsHeight,
+                                        ),
+                                        decoration: widget
+                                                .showedItemsBoxDecoration ??
+                                            BoxDecoration(
+                                              color: widget
+                                                      .showedItemsBackgroundColor ??
+                                                  Colors.grey.withOpacity(0.1),
+                                              border: Border(
+                                                bottom: BorderSide(
+                                                  color: widget
+                                                          .outerContainerBorderColor ??
+                                                      Colors.grey
+                                                          .withOpacity(0.5),
+                                                ),
+                                                left: BorderSide(
+                                                  color: widget
+                                                          .outerContainerBorderColor ??
+                                                      Colors.grey
+                                                          .withOpacity(0.5),
+                                                ),
+                                                right: BorderSide(
+                                                  color: widget
+                                                          .outerContainerBorderColor ??
+                                                      Colors.grey
+                                                          .withOpacity(0.5),
+                                                ),
+                                              ),
+                                            ),
+                                        child: RawScrollbar(
+                                          controller: widget
+                                                  .showedItemsScrollController ??
+                                              _showedItemsScrollController,
+                                          thumbColor:
+                                              widget.showedItemsScrollbarColor,
+                                          thickness: widget
+                                                  .showedItemsScrollbarMinThumbLength ??
+                                              10,
+                                          minThumbLength: widget
+                                                  .showedItemsScrollbarMinThumbLength ??
+                                              30,
+                                          minOverscrollLength: widget
+                                                  .showedItemsScrollbarMinOverscrollLength ??
+                                              5,
+                                          radius: widget
+                                                  .showedItemsScrollbarRadius ??
+                                              const Radius.circular(5),
+                                          thumbVisibility:
+                                              widget.showShowedItemsScrollbar,
+                                          child: ScrollConfiguration(
+                                            behavior:
+                                                ScrollConfiguration.of(context)
+                                                    .copyWith(
+                                              scrollbars: false,
+                                            ),
+                                            child: ListView(
+                                              padding: EdgeInsets.zero,
+                                              primary: false,
+                                              shrinkWrap: true,
+                                              controller: widget
+                                                      .showedItemsScrollController ??
+                                                  _showedItemsScrollController,
+                                              children: showedItems.isEmpty
+                                                  ? [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(6.0),
+                                                        child: widget
+                                                                .noResultsWidget ??
+                                                            const Text(
+                                                              'No results',
+                                                            ),
+                                                      )
+                                                    ]
+                                                  : showedItems.map((T item) {
+                                                      return MouseRegion(
+                                                        cursor:
+                                                            SystemMouseCursors
+                                                                .click,
+                                                        child: GestureDetector(
+                                                          onTap: () {
+                                                            _onAddItem(item);
+                                                            setState(() {});
+                                                          },
+                                                          child: widget
+                                                              .itemBuilder(
+                                                            item,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }).toList(),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                    ],
+                    if (widget.showSelectAllButton)
+                      ActionButton(
+                        text: widget.selectAllText ?? 'Select all',
+                        textStyle: widget.selectAllTextStyle,
+                        backgroundColor:
+                            widget.selectAllBackgroundColor ?? Colors.white,
+                        actionButtonAnimationCurve:
+                            widget.selectAllAnimationCurve,
+                        onHoverBackgroundColor:
+                            widget.selectAllOnHoverBackgroundColor ??
+                                Colors.blue[300]!,
+                        animationDuration: widget.selectAllAnimationDuration ??
+                            const Duration(milliseconds: 200),
+                        fontSize: widget.selectAllFontSize ?? 13,
+                        borderRadius: widget.selectAllBorderRadius ?? 0,
+                        onHoverBorderColor:
+                            widget.selectAllOnHoverBorderColor ?? Colors.white,
+                        borderColor:
+                            widget.selectAllBorderColor ?? Colors.blue[300]!,
+                        contentPadding: widget.selectAllContentPadding ??
+                            const EdgeInsets.all(8),
+                        textColor: widget.selectAllTextColor ?? Colors.black,
+                        fontWeight:
+                            widget.selectAllFontWeight ?? FontWeight.w500,
+                        onHoverFontWeight: widget.selectAllOnHoverFontWeight ??
+                            FontWeight.w100,
+                        onHoverTextColor:
+                            widget.selectAllOnHoverTextColor ?? Colors.white,
+                        onTap: () {
+                          pickedItems.addAll(showedItems);
+                          if (widget.sortPickedItems) {
+                            pickedItems.sort(
+                              (a, b) => widget.fieldToCheck(a).compareTo(
+                                    widget.fieldToCheck(b),
+                                  ),
+                            );
+                          }
+                          allItems.removeWhere((e) => showedItems.contains(e));
 
-                      showedItems = allItems
-                          .where(
-                            (p) => p
-                                .toLowerCase()
-                                .contains(_textEditingController.text),
-                          )
-                          .toList();
-                      if (showedItems.isNotEmpty) {
-                        if (widget.sortShowedItems) {
-                          showedItems.sort();
-                        }
-                      }
+                          showedItems = allItems
+                              .where(
+                                (item) => widget.fieldToCheck
+                                    .call(item)
+                                    .toLowerCase()
+                                    .contains(_textEditingController.text),
+                              )
+                              .toList();
+                          if (showedItems.isNotEmpty) {
+                            if (widget.sortShowedItems) {
+                              showedItems.sort(
+                                (a, b) => widget.fieldToCheck(a).compareTo(
+                                      widget.fieldToCheck(b),
+                                    ),
+                              );
+                            }
+                          }
 
-                      widget.onPickedChange(pickedItems);
-                      setState(() {});
-                    },
-                  ),
+                          widget.onPickedChange(pickedItems);
+                          setState(() {});
+                        },
+                      ),
+                  ],
+                ),
                 if (pickedItems.isNotEmpty && widget.showClearAllButton)
                   ActionButton(
-                    text: widget.selectAllText ?? 'Clear',
+                    text: widget.clearAllText ?? 'Clear',
                     backgroundColor:
                         widget.clearAllBackgroundColor ?? Colors.white,
                     animationDuration: widget.clearAllAnimationDuration ??
@@ -760,19 +988,28 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
                       allItems.addAll(pickedItems);
                       showedItems = allItems
                           .where(
-                            (p) => p
+                            (item) => widget
+                                .fieldToCheck(item)
                                 .toLowerCase()
                                 .contains(_textEditingController.text),
                           )
                           .toList();
                       if (showedItems.isNotEmpty) {
                         if (widget.sortShowedItems) {
-                          showedItems.sort();
+                          showedItems.sort(
+                            (a, b) => widget.fieldToCheck(a).compareTo(
+                                  widget.fieldToCheck(b),
+                                ),
+                          );
                         }
                       }
                       pickedItems.removeRange(0, pickedItems.length);
                       if (widget.sortShowedItems) {
-                        allItems.sort();
+                        allItems.sort(
+                          (a, b) => widget.fieldToCheck(a).compareTo(
+                                widget.fieldToCheck(b),
+                              ),
+                        );
                       }
                       widget.onPickedChange(pickedItems);
                       setState(() {});
@@ -784,199 +1021,161 @@ class _MultipleSearchSelectionState extends State<MultipleSearchSelection> {
           const SizedBox(
             height: 10,
           ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(
-                  color: widget.outerContainerBorderColor ??
-                      Colors.grey.withOpacity(0.5),
-                ),
-                left: BorderSide(
-                  color: widget.outerContainerBorderColor ??
-                      Colors.grey.withOpacity(0.5),
-                ),
-                right: BorderSide(
-                  color: widget.outerContainerBorderColor ??
-                      Colors.grey.withOpacity(0.5),
-                ),
-                bottom: BorderSide(
-                  color: Colors.grey.withOpacity(0.5),
+          if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: widget.outerContainerBorderColor ??
+                        Colors.grey.withOpacity(0.5),
+                  ),
+                  left: BorderSide(
+                    color: widget.outerContainerBorderColor ??
+                        Colors.grey.withOpacity(0.5),
+                  ),
+                  right: BorderSide(
+                    color: widget.outerContainerBorderColor ??
+                        Colors.grey.withOpacity(0.5),
+                  ),
+                  bottom: BorderSide(
+                    color: Colors.grey.withOpacity(0.5),
+                  ),
                 ),
               ),
-            ),
-            child: TextField(
-              focusNode: _textFieldFocus,
-              controller: _textEditingController,
-              style: widget.searchItemTextStyle,
-              decoration: widget.searchItemTextInputDecoration ??
-                  InputDecoration(
-                    contentPadding: widget.searchItemTextContentPadding ??
-                        const EdgeInsets.only(left: 6),
-                    hintText: widget.hintText,
-                    hintStyle: widget.hintTextStyle ??
-                        const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-              onChanged: (value) {
-                if (widget.fuzzySearch == FuzzySearch.jaro) {
-                  showedItems = allItems.where(
-                    (p) {
-                      return p.toLowerCase().contains(value) ||
-                          (getJaro(p, value) >= 0.8);
-                    },
-                  ).toList();
-                } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-                  showedItems = allItems.where(
-                    (p) {
-                      return p.toLowerCase().contains(value) ||
-                          (getLevenshtein(p, value) <= 2);
-                    },
-                  ).toList();
-                } else {
-                  showedItems = allItems
-                      .where((p) => p.toLowerCase().contains(value))
-                      .toList();
-                }
-                expanded = true;
-                setState(() {});
-              },
-            ),
-          ),
-          Container(
-            constraints: BoxConstraints(
-              maxHeight: widget.maximumShowItemsHeight,
-            ),
-            decoration: widget.showedItemsBoxDecoration ??
-                BoxDecoration(
-                  color: widget.showedItemsBackgroundColor ??
-                      Colors.grey.withOpacity(0.1),
-                  border: Border(
-                    bottom: BorderSide(
-                      color: widget.outerContainerBorderColor ??
-                          Colors.grey.withOpacity(0.5),
-                    ),
-                    left: BorderSide(
-                      color: widget.outerContainerBorderColor ??
-                          Colors.grey.withOpacity(0.5),
-                    ),
-                    right: BorderSide(
-                      color: widget.outerContainerBorderColor ??
-                          Colors.grey.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-            child: RawScrollbar(
-              controller: widget.showedItemsScrollController ??
-                  _showedItemsScrollController,
-              thumbColor: widget.showedItemsScrollbarColor,
-              thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
-              minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
-              minOverscrollLength:
-                  widget.showedItemsScrollbarMinOverscrollLength ?? 5,
-              radius:
-                  widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
-              thumbVisibility: widget.showShowedItemsScrollbar,
-              child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  controller: widget.showedItemsScrollController ??
-                      _showedItemsScrollController,
-                  physics: widget.showedItemsScrollPhysics,
-                  itemBuilder: (context, index) {
-                    if (showedItems.isEmpty) {
-                      return widget.noResultsWidget ??
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 12.0,
-                              horizontal: 12,
-                            ),
-                            child: Text(
-                              'No results found',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                          );
-                    }
-                    return GestureDetector(
-                      onTap: () {
-                        widget.onTapShowedItem?.call();
-                        final String pickedItem = showedItems[index];
-                        pickedItems.add(pickedItem);
-                        if (widget.sortPickedItems) {
-                          pickedItems.sort();
-                        }
-                        allItems.remove(pickedItem);
-                        showedItems.remove(pickedItem);
-                        widget.onPickedChange(pickedItems);
-                        widget.onItemAdded?.call(pickedItem);
-                        setState(() {});
-                      },
-                      child: MouseRegion(
-                        cursor: widget.showedItemMouseCursor ??
-                            SystemMouseCursors.click,
-                        child: Padding(
-                          padding: widget.showedItemContainerPadding ??
-                              EdgeInsets.only(
-                                right:
-                                    !widget.showShowedItemsScrollbar ? 0 : 15.0,
-                                top: 5,
-                                bottom: 2,
-                              ),
-                          child: Container(
-                            height: widget.showedItemContainerHeight ?? 50,
-                            decoration: widget.showedItemContainerDecoration ??
-                                BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Colors.white,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 22,
-                                      spreadRadius: 1,
-                                      offset: const Offset(1.1, 1),
-                                      blurStyle: BlurStyle.inner,
-                                      color: Colors.grey.withOpacity(0.3),
-                                    )
-                                  ],
-                                ),
-                            child: Padding(
-                              padding:
-                                  widget.showedItemContainerContentPadding ??
-                                      const EdgeInsets.only(left: 8.0),
-                              child: Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  showedItems[index],
-                                  style: widget.showedItemTextStyle ??
-                                      const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w100,
-                                        color: Colors.black,
-                                      ),
-                                ),
-                              ),
-                            ),
+              child: TextField(
+                focusNode: _textFieldFocus,
+                controller: _textEditingController,
+                style: widget.searchItemTextStyle,
+                decoration: widget.searchItemTextInputDecoration ??
+                    InputDecoration(
+                      contentPadding: widget.searchItemTextContentPadding ??
+                          const EdgeInsets.only(left: 6),
+                      hintText: widget.hintText ?? 'Type here to search',
+                      hintStyle: widget.hintTextStyle ??
+                          const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                    );
-                  },
-                  itemCount: showedItems.isEmpty ? 1 : showedItems.length,
-                ),
+                    ),
+                onChanged: (value) {
+                  if (widget.fuzzySearch == FuzzySearch.jaro) {
+                    showedItems = allItems.where(
+                      (item) {
+                        return widget
+                                .fieldToCheck(item)
+                                .toLowerCase()
+                                .contains(value) ||
+                            (getJaro(widget.fieldToCheck(item), value) >= 0.8);
+                      },
+                    ).toList();
+                  } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
+                    showedItems = allItems.where(
+                      (item) {
+                        return widget
+                                .fieldToCheck(item)
+                                .toLowerCase()
+                                .contains(value) ||
+                            (getLevenshtein(widget.fieldToCheck(item), value) <=
+                                2);
+                      },
+                    ).toList();
+                  } else {
+                    showedItems = allItems
+                        .where(
+                          (item) => widget
+                              .fieldToCheck(item)
+                              .toLowerCase()
+                              .contains(value),
+                        )
+                        .toList();
+                  }
+                  if (widget.itemsVisibility !=
+                          ShowedItemsVisibility.alwaysOn &&
+                      widget.itemsVisibility != ShowedItemsVisibility.toggle) {
+                    expanded = widget.itemsVisibility ==
+                            ShowedItemsVisibility.onType &&
+                        _textEditingController.text.isNotEmpty;
+                  }
+                  setState(() {});
+                },
               ),
             ),
-          )
+          if (expanded &&
+              widget.itemsVisibility != ShowedItemsVisibility.toggle)
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: widget.maximumShowItemsHeight,
+              ),
+              decoration: widget.showedItemsBoxDecoration ??
+                  BoxDecoration(
+                    color: widget.showedItemsBackgroundColor ??
+                        Colors.grey.withOpacity(0.1),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: widget.outerContainerBorderColor ??
+                            Colors.grey.withOpacity(0.5),
+                      ),
+                      left: BorderSide(
+                        color: widget.outerContainerBorderColor ??
+                            Colors.grey.withOpacity(0.5),
+                      ),
+                      right: BorderSide(
+                        color: widget.outerContainerBorderColor ??
+                            Colors.grey.withOpacity(0.5),
+                      ),
+                    ),
+                  ),
+              child: RawScrollbar(
+                controller: widget.showedItemsScrollController ??
+                    _showedItemsScrollController,
+                thumbColor: widget.showedItemsScrollbarColor,
+                thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
+                minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
+                minOverscrollLength:
+                    widget.showedItemsScrollbarMinOverscrollLength ?? 5,
+                radius: widget.showedItemsScrollbarRadius ??
+                    const Radius.circular(5),
+                thumbVisibility: widget.showShowedItemsScrollbar,
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context)
+                      .copyWith(scrollbars: false),
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    primary: false,
+                    shrinkWrap: true,
+                    controller: widget.showedItemsScrollController ??
+                        _showedItemsScrollController,
+                    children: showedItems.isEmpty
+                        ? [
+                            Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: widget.noResultsWidget ??
+                                  const Text('No results'),
+                            )
+                          ]
+                        : showedItems.map((T item) {
+                            return MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _onAddItem(item);
+                                  setState(() {});
+                                },
+                                child: widget.itemBuilder(
+                                  item,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                  ),
+                ),
+              ),
+            )
         ],
       ),
     );
