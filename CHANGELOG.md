@@ -1,4 +1,8 @@
-# 2.0.1 Bug Fixes
+# 2.0.2 Bug Fixes
+
+- Fixes sort picked items bug
+
+## 2.0.1 Bug Fixes
 
 - Fixes bug with [showItemsText] button text showing [selectAllText] instead
 - Removes junk files reducing library size
