@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: MultipleSearchSelection<Country>(
-        items: countries,
+        items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;
         },
@@ -81,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
         sortShowedItems: true,
+        sortPickedItems: true,
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,

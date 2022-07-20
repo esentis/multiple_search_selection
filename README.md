@@ -10,7 +10,7 @@
 
 ```dart
 MultipleSearchSelection<Country>(
-        items: countries,
+        items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;
         },
