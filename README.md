@@ -10,7 +10,7 @@
 
 ```dart
 MultipleSearchSelection<Country>(
-        items: countries,
+        items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;
         },
@@ -44,7 +44,12 @@ MultipleSearchSelection<Country>(
             ),
           );
         },
+        onTapShowedItem: () {},
+        onPickedChange: (items) {},
+        onItemAdded: (item) {},
+        onItemRemoved: (item) {},
         sortShowedItems: true,
+        sortPickedItems: true,
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
@@ -60,14 +65,6 @@ MultipleSearchSelection<Country>(
         searchItemTextContentPadding:
             const EdgeInsets.symmetric(horizontal: 10),
         maximumShowItemsHeight: 200,
-        onTapShowedItem: () {},
-        onPickedChange: (items) {},
-        onItemAdded: (item) {
-          print('$item added to picked items');
-        },
-        onItemRemoved: (item) {
-          print('$item removed from picked items');
-        },
       )
 ```
 

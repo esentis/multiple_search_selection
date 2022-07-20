@@ -46,7 +46,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: MultipleSearchSelection<Country>(
-        items: countries,
+        title: Text(
+          'Countries',
+          style: kStyleDefault.copyWith(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        titlePadding: const EdgeInsets.symmetric(vertical: 10),
+        items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;
         },
@@ -80,30 +88,19 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
+        onTapShowedItem: () {},
+        onPickedChange: (items) {},
+        onItemAdded: (item) {},
+        onItemRemoved: (item) {},
         sortShowedItems: true,
+        sortPickedItems: true,
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
-        title: Text(
-          'Countries',
-          style: kStyleDefault.copyWith(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         showSelectAllButton: true,
-        titlePadding: const EdgeInsets.symmetric(vertical: 10),
         searchItemTextContentPadding:
             const EdgeInsets.symmetric(horizontal: 10),
         maximumShowItemsHeight: 200,
-        onTapShowedItem: () {},
-        onPickedChange: (items) {},
-        onItemAdded: (item) {
-          print('$item added to picked items');
-        },
-        onItemRemoved: (item) {
-          print('$item removed from picked items');
-        },
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

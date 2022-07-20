@@ -107,7 +107,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showItemsOnHoverFontWeight,
     this.showItemsOnHoverBorderColor,
     this.showItemsOnHoverColor,
-    Key? key,
     this.pickedItemsBorderColor,
     this.pickedItemSpacing,
     this.pickedItemsContainerMaxHeight,
@@ -121,6 +120,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.pickedItemMouseCursor,
     this.pickedItemsScrollController,
     this.pickedItemsScrollPhysics,
+    Key? key,
   }) : super(key: key);
 
   /// The title widget on top of picked items.
@@ -551,7 +551,11 @@ class _MultipleSearchSelectionState<T>
     final T pickedItem = item;
     pickedItems.add(pickedItem);
     if (widget.sortPickedItems) {
-      pickedItems.sort();
+      pickedItems.sort(
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
+      );
     }
     allItems.remove(pickedItem);
     showedItems.remove(pickedItem);
