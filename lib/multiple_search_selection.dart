@@ -466,7 +466,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// This is the builder of picked items.
   final Widget Function(T) pickedItemBuilder;
 
-  /// This is the [String] field to check when searching through the List<T>
+  /// This is the [String] field to check against when searching and sorting the List<T>.
   final String Function(T) fieldToCheck;
 
   /// This is the builder of showed items.
@@ -638,7 +638,6 @@ class _MultipleSearchSelectionState<T>
               ),
             ),
           if (widget.showClearAllButton ||
-              widget.showClearAllButton ||
               widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
             const SizedBox(
               height: 10,
@@ -1098,9 +1097,8 @@ class _MultipleSearchSelectionState<T>
                         )
                         .toList();
                   }
-                  if (widget.itemsVisibility !=
-                          ShowedItemsVisibility.alwaysOn &&
-                      widget.itemsVisibility != ShowedItemsVisibility.toggle) {
+                  if (expanded =
+                      widget.itemsVisibility == ShowedItemsVisibility.onType) {
                     expanded = widget.itemsVisibility ==
                             ShowedItemsVisibility.onType &&
                         _textEditingController.text.isNotEmpty;
