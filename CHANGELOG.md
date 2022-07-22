@@ -1,4 +1,11 @@
-# 2.0.2 Bug Fixes
+# 2.1.0 Breaking changes & performance improvements
+
+- Adds [showItemsButton] widget and removes all parameters associated with it previously.
+- Adds [selectAllButton] widget and removes all parameters associated with it previously.
+- Adds [clearAllButton] widget and removes all parameters associated with it previously.
+- Removes opinionated default widgets to plain [Text] reducing code size
+
+## 2.0.2 Bug Fixes
 
 - Fixes sort picked items bug
 
