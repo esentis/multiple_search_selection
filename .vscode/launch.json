@@ -8,8 +8,7 @@
       "name": "Multiple Search Selection Example",
       "cwd": "example",
       "request": "launch",
-      "type": "dart",
-      "deviceId": "chrome"
+      "type": "dart"
     }
   ]
 }
