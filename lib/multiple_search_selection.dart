@@ -3,7 +3,6 @@ library multiple_search_selection;
 import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/helpers/jaro.dart';
 import 'package:multiple_search_selection/helpers/levenshtein.dart';
-import 'package:multiple_search_selection/widgets/action_button.dart';
 
 enum FuzzySearch {
   levenshtein,
@@ -19,6 +18,7 @@ enum ShowedItemsVisibility {
 
 class MultipleSearchSelection<T> extends StatefulWidget {
   const MultipleSearchSelection({
+    Key? key,
     required this.items,
     required this.onPickedChange,
     required this.fieldToCheck,
@@ -33,45 +33,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.title,
     this.titlePadding,
     this.maximumShowItemsHeight = 150,
-    this.hintText,
-    this.hintTextStyle,
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
     this.sortPickedItems = false,
     this.sortShowedItems = false,
-    this.showedItemTextStyle,
-    this.selectAllText,
-    this.selectAllOnHoverTextColor,
-    this.selectAllFontWeight,
-    this.selectAllOnHoverFontWeight,
-    this.selectAllTextStyle,
-    this.selectAllTextColor,
-    this.selectAllBorderRadius,
-    this.selectAllContentPadding,
-    this.selectAllHoverColor,
-    this.selectAllAnimationDuration,
-    this.selectAllBackgroundColor,
-    this.selectAllBorderColor,
-    this.selectAllFontSize,
-    this.selectAllOnHoverBackgroundColor,
-    this.selectAllOnHoverBorderColor,
-    this.selectAllAnimationCurve,
-    this.clearAllText,
-    this.clearAllTextStyle,
-    this.clearAllBorderRadius,
-    this.clearAllContentPadding,
-    this.clearAllAnimationDuration,
-    this.clearAllBackgroundColor,
-    this.clearAllBorderColor,
-    this.clearAllFontSize,
-    this.clearAllFontWeight,
-    this.clearAllOnHoverColor,
-    this.clearAllOnHoverBackgroundColor,
-    this.clearAllOnHoverBorderColor,
-    this.clearAllOnHoverFontWeight,
-    this.clearAllTextColor,
-    this.clearAllOnHoverTextColor,
-    this.clearAllAnimationCurve,
     this.showShowedItemsScrollbar = true,
     this.showPickedItemScrollbar = true,
     this.showedItemsScrollbarColor,
@@ -85,28 +50,11 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showedItemsScrollController,
     this.showedItemsScrollPhysics,
     this.showedItemsBoxDecoration,
-    this.searchItemTextInputDecoration,
-    this.searchItemTextStyle,
+    this.searchFieldInputDecoration,
     this.searchItemTextContentPadding,
     this.noResultsWidget,
     this.outerContainerBorderColor,
-    this.showItemsAnimationCurve,
-    this.showItemsBackgroundColor,
-    this.showItemsAnimationDuration,
-    this.showItemsBorderColor,
-    this.showItemsBorderRadius,
-    this.showItemsContentPadding,
-    this.showItemsFontSize,
-    this.showItemsFontWeight,
     this.itemsVisibility = ShowedItemsVisibility.alwaysOn,
-    this.showItemsText,
-    this.showItemsTextStyle,
-    this.showItemsOnHoverBackgroundColor,
-    this.showItemsTextColor,
-    this.showItemsOnHoverTextColor,
-    this.showItemsOnHoverFontWeight,
-    this.showItemsOnHoverBorderColor,
-    this.showItemsOnHoverColor,
     this.pickedItemsBorderColor,
     this.pickedItemSpacing,
     this.pickedItemsContainerMaxHeight,
@@ -117,10 +65,15 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.pickedItemScrollbarRadius,
     this.pickedItemsScrollbarMinThumbLength,
     this.pickedItemsBoxDecoration,
-    this.pickedItemMouseCursor,
     this.pickedItemsScrollController,
     this.pickedItemsScrollPhysics,
-    Key? key,
+    this.showItemsButton,
+    this.selectAllButton,
+    this.clearAllButton,
+    this.searchItemTextStyle,
+    this.onTapClearAll,
+    this.onTapSelectAll,
+    this.onTapShowItems,
   }) : super(key: key);
 
   /// The title widget on top of picked items.
@@ -189,127 +142,14 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// A callback when an item is added, returns the item aswell.
   final Function(T)? onItemAdded;
 
-  /// [TextStyle] of the showed items.
-  final TextStyle? showedItemTextStyle;
-
   /// The input decoration of the search text field.
-  final InputDecoration? searchItemTextInputDecoration;
-
-  /// The hint text of the search field. This is overriden if [searchItemTextInputDecoration] is provided.
-  final String? hintText;
-
-  /// What is shown when there are no more results to select.
-  final Widget? noResultsWidget;
-
-  /// The hint text style of the search field. This is overriden if [searchItemTextInputDecoration] is provided.
-  final TextStyle? hintTextStyle;
+  final InputDecoration? searchFieldInputDecoration;
 
   /// The text style of the search text field.
   final TextStyle? searchItemTextStyle;
 
-  /// The text that appears on select all button.
-  final String? selectAllText;
-
-  /// The text style of the select all button.
-  ///
-  /// Keep in mind that, this is a child of [AnimatedDefaultTextStyle] and you can use
-  ///
-  /// conditions to animate your textstyle.
-  final TextStyle? selectAllTextStyle;
-
-  /// The background color of the select all button on idle state.
-  final Color? selectAllBackgroundColor;
-
-  /// The animation [Curve] of the select all button style. Defaults to [Curves.easeInOut].
-  final Curve? selectAllAnimationCurve;
-
-  /// The background color of the select all button when hovered.
-  final Color? selectAllOnHoverBackgroundColor;
-
-  /// The animation duration of color changes of the select all button.
-  final Duration? selectAllAnimationDuration;
-
-  /// The select all text font size. This is overriden if [selectAllTextStyle] is provided.
-  final double? selectAllFontSize;
-
-  /// The select all text color on idle state. This is overriden if [selectAllTextStyle] is provided.
-  final Color? selectAllTextColor;
-
-  /// The select all text color when hovered. This is overriden if [selectAllTextStyle] is provided.
-  final Color? selectAllOnHoverTextColor;
-
-  /// The font weight of the text on select all button, on idle state. This is overriden if [selectAllTextStyle] is provided.
-  final FontWeight? selectAllFontWeight;
-
-  /// The font weight of the text on select all button, when hovered. This is overriden if [selectAllTextStyle] is provided.
-  final FontWeight? selectAllOnHoverFontWeight;
-
-  /// The border radius of the select all button.
-  final double? selectAllBorderRadius;
-
-  /// The border color of the select all button on idle state.
-  final Color? selectAllBorderColor;
-
-  /// The border color of the select all button when hovered.
-  final Color? selectAllOnHoverBorderColor;
-
-  /// The padding of the text in the select all button.
-  final EdgeInsets? selectAllContentPadding;
-
-  /// The color that appears when hovering of the select all button.
-  final Color? selectAllHoverColor;
-
-  /// The text that appears on clear all button.
-  final String? clearAllText;
-
-  /// The text style of the clear all button.
-  ///
-  /// Keep in mind that, this is a child of [AnimatedDefaultTextStyle] and you can use
-  ///
-  /// conditions to animate your textstyle.
-  final TextStyle? clearAllTextStyle;
-
-  /// The background color of the clear all button on idle state.
-  final Color? clearAllBackgroundColor;
-
-  /// The animation [Curve] of the clear all button style. Defaults to [Curves.easeInOut].
-  final Curve? clearAllAnimationCurve;
-
-  /// The background color of the clear all button when hovered.
-  final Color? clearAllOnHoverBackgroundColor;
-
-  /// The animation duration of color changes of the clear all button.
-  final Duration? clearAllAnimationDuration;
-
-  /// The clear all text font size. This is overriden if [clearAllTextStyle] is provided.
-  final double? clearAllFontSize;
-
-  /// The clear all text color on idle state. This is overriden if [clearAllTextStyle] is provided.
-  final Color? clearAllTextColor;
-
-  /// The clear all text color when hovered. This is overriden if [clearAllTextStyle] is provided.
-  final Color? clearAllOnHoverTextColor;
-
-  /// The font weight of the text on clear all button, on idle state. This is overriden if [clearAllTextStyle] is provided.
-  final FontWeight? clearAllFontWeight;
-
-  /// The font weight of the text on clear all button, when hovered. This is overriden if [clearAllTextStyle] is provided.
-  final FontWeight? clearAllOnHoverFontWeight;
-
-  /// The border radius of the clear all button.
-  final double? clearAllBorderRadius;
-
-  /// The border color of the clear all button on idle state.
-  final Color? clearAllBorderColor;
-
-  /// The border color of the clear all button when hovered.
-  final Color? clearAllOnHoverBorderColor;
-
-  /// The padding of the text in the clear all button.
-  final EdgeInsets? clearAllContentPadding;
-
-  /// The color that appears when hovering over the clear all button.
-  final Color? clearAllOnHoverColor;
+  /// What is shown when there are no more results to select.
+  final Widget? noResultsWidget;
 
   /// The spacing of picked item chip. Defaults to 5.
   final double? pickedItemSpacing;
@@ -338,13 +178,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// The [BoxDecoration] of the picked items container.
   final BoxDecoration? pickedItemsBoxDecoration;
 
-  /// The mouse cursor when hovered over picked item.
-  final MouseCursor? pickedItemMouseCursor;
-
   /// Hide or show picked items' scrollbar, defaults to [true].
   final bool showPickedItemScrollbar;
 
-  /// The content padding of the search item textfield. This is overriden if [searchItemTextInputDecoration] is provided.
+  /// The content padding of the search item textfield. This is overriden if [searchFieldInputDecoration] is provided.
   final EdgeInsets? searchItemTextContentPadding;
 
   /// A callback when a showed item is tapped.
@@ -399,78 +236,69 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// ### Shows results with minimum 2 edits.
   final FuzzySearch fuzzySearch;
 
-  /// The text that appears on show items toggle button.
-  ///
-  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
-  final String? showItemsText;
-
-  /// The text style of the show items toggle button.
-  ///
-  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
-  ///
-  /// Keep in mind that, this is a child of [AnimatedDefaultTextStyle] and you can use
-  ///
-  /// conditions to animate your textstyle.
-  final TextStyle? showItemsTextStyle;
-
-  /// The background color of the show items toggle button on idle state.
-  ///
-  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
-  final Color? showItemsBackgroundColor;
-
-  /// The animation [Curve] of the show items toggle button.
-  ///
-  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
-  ///
-  /// Defaults to [Curves.easeInOut].
-  final Curve? showItemsAnimationCurve;
-
-  /// The background color of the show items toggle button when hovered.
-  ///
-  /// Only when [itemsVisibility] == [ShowedItemsVisibility.toggle].
-  final Color? showItemsOnHoverBackgroundColor;
-
-  /// The animation duration of color changes of the show items toggle button.
-  final Duration? showItemsAnimationDuration;
-
-  /// The show items toggle button font size. This is overriden if [showItemsTextStyle] is provided.
-  final double? showItemsFontSize;
-
-  /// The show items toggle button text color on idle state. This is overriden if [showItemsTextStyle] is provided.
-  final Color? showItemsTextColor;
-
-  /// The show items toggle button text color when hovered. This is overriden if [showItemsTextStyle] is provided.
-  final Color? showItemsOnHoverTextColor;
-
-  /// The font weight of the show items toggle button, on idle state. This is overriden if [showItemsTextStyle] is provided.
-  final FontWeight? showItemsFontWeight;
-
-  /// The font weight of the show items toggle button, when hovered. This is overriden if [showItemsTextStyle] is provided.
-  final FontWeight? showItemsOnHoverFontWeight;
-
-  /// The border radius of the show items toggle button.
-  final double? showItemsBorderRadius;
-
-  /// The border color of the show items toggle button on idle state.
-  final Color? showItemsBorderColor;
-
-  /// The border color of the show items toggle button when hovered.
-  final Color? showItemsOnHoverBorderColor;
-
-  /// The padding of the text in the show items toggle button.
-  final EdgeInsets? showItemsContentPadding;
-
-  /// The color that appears when hovering over the show items toggle button.
-  final Color? showItemsOnHoverColor;
-
   /// This is the builder of picked items.
   final Widget Function(T) pickedItemBuilder;
 
-  /// This is the [String] field to check against when searching and sorting the List<T>.
+  /// This is the field to check when searching & sorting the List<T>.
+  ///
+  /// ### Example
+  ///
+  /// If we work with `List<Country>` where Country is
+  /// ```dart
+  /// class Country {
+  ///   String name;
+  ///   Srtring iso;
+  /// }
+  /// ```
+  ///
+  /// If you want to search by name when then you can use
+  ///
+  /// ```dart
+  /// fieldToCheck: (country) {
+  ///   return c.name;
+  ///}
+  /// ```
+  ///
+  /// If we work with `List<String>` then
+  /// ```dart
+  /// fieldToCheck: (country) {
+  ///   return country;
+  ///}
+  /// ```
   final String Function(T) fieldToCheck;
 
   /// This is the builder of showed items.
   final Widget Function(T) itemBuilder;
+
+  /// The toggle items button when [itemsVisibility] == [ShowedItemsVisibility.toggle]. Ontap logic is already defiend and you can't override it with
+  ///
+  /// a widget that has onTap, e.g [TextButton]. If you want to do something when you tap the button
+  ///
+  /// you can use the [onTapShowItems] callback.
+  final Widget? showItemsButton;
+
+  /// A callback when the select all button is pressed.
+  final VoidCallback? onTapShowItems;
+
+  /// The select all button widget. Ontap logic is already defiend and you can't override it with
+  ///
+  /// a widget that has onTap, e.g [TextButton]. If you want to do something when you tap the button
+  ///
+  /// you can use the [onTapSelectAll] callback.
+  final Widget? selectAllButton;
+
+  /// A callback when the select all button is pressed.
+  final VoidCallback? onTapSelectAll;
+
+  /// The clear all selected items button widget. Ontap logic is already defiend and you can't override it with
+  ///
+  /// a widget that has onTap, e.g [TextButton]. If you want to do something when you tap the button
+  ///
+  /// you can use the [onTapClearAll] callback.
+  final Widget? clearAllButton;
+
+  /// A callback when the clear all button is pressed.
+  final VoidCallback? onTapClearAll;
 
   @override
   _MultipleSearchSelectionState<T> createState() =>
@@ -619,13 +447,12 @@ class _MultipleSearchSelectionState<T>
                         runSpacing: widget.pickedItemSpacing ?? 5,
                         children: [
                           ...pickedItems.map(
-                            (e) => MouseRegion(
-                              cursor: widget.pickedItemMouseCursor ??
-                                  SystemMouseCursors.click,
-                              child: GestureDetector(
-                                onTap: () {
-                                  _onRemoveItem(e);
-                                },
+                            (e) => GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                _onRemoveItem(e);
+                              },
+                              child: IgnorePointer(
                                 child: widget.pickedItemBuilder.call(e),
                               ),
                             ),
@@ -649,36 +476,10 @@ class _MultipleSearchSelectionState<T>
                   children: [
                     if (widget.itemsVisibility ==
                         ShowedItemsVisibility.toggle) ...[
-                      ActionButton(
-                        text: widget.showItemsText ?? 'Show items',
-                        backgroundColor:
-                            widget.showItemsBackgroundColor ?? Colors.white,
-                        animationDuration: widget.showItemsAnimationDuration ??
-                            const Duration(milliseconds: 200),
-                        fontSize: widget.showItemsFontSize ?? 13,
-                        textStyle: widget.showItemsTextStyle ??
-                            widget.showItemsTextStyle,
-                        borderRadius: widget.showItemsBorderRadius ?? 0,
-                        actionButtonAnimationCurve:
-                            widget.showItemsAnimationCurve,
-                        borderColor:
-                            widget.showItemsBorderColor ?? Colors.blue[300]!,
-                        contentPadding: widget.showItemsContentPadding ??
-                            const EdgeInsets.all(8),
-                        textColor:
-                            widget.showItemsTextColor ?? Colors.blue[300]!,
-                        fontWeight:
-                            widget.showItemsFontWeight ?? FontWeight.w500,
-                        onHoverBorderColor:
-                            widget.showItemsOnHoverBorderColor ?? Colors.white,
-                        onHoverBackgroundColor:
-                            widget.showItemsBackgroundColor ??
-                                Colors.blue[300]!,
-                        onHoverFontWeight: widget.showItemsOnHoverFontWeight ??
-                            FontWeight.w100,
-                        onHoverTextColor:
-                            widget.showItemsOnHoverTextColor ?? Colors.white,
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () {
+                          widget.onTapShowItems?.call();
                           showDialog(
                             context: context,
                             builder: (context) => StatefulBuilder(
@@ -717,22 +518,18 @@ class _MultipleSearchSelectionState<T>
                                           controller: _textEditingController,
                                           style: widget.searchItemTextStyle,
                                           decoration: widget
-                                                  .searchItemTextInputDecoration ??
+                                                  .searchFieldInputDecoration ??
                                               InputDecoration(
                                                 contentPadding: widget
                                                         .searchItemTextContentPadding ??
                                                     const EdgeInsets.only(
                                                       left: 6,
                                                     ),
-                                                hintText: widget.hintText ??
-                                                    'Type here to search',
-                                                hintStyle:
-                                                    widget.hintTextStyle ??
-                                                        const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
+                                                hintText: 'Type here to search',
+                                                hintStyle: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                                 border: OutlineInputBorder(
                                                   borderSide: BorderSide.none,
                                                   borderRadius:
@@ -867,15 +664,16 @@ class _MultipleSearchSelectionState<T>
                                                       )
                                                     ]
                                                   : showedItems.map((T item) {
-                                                      return MouseRegion(
-                                                        cursor:
-                                                            SystemMouseCursors
-                                                                .click,
-                                                        child: GestureDetector(
-                                                          onTap: () {
-                                                            _onAddItem(item);
-                                                            setState(() {});
-                                                          },
+                                                      return GestureDetector(
+                                                        behavior:
+                                                            HitTestBehavior
+                                                                .opaque,
+                                                        onTap: () {
+                                                          _onAddItem(item);
+                                                          stateSetter(() {});
+                                                          setState(() {});
+                                                        },
+                                                        child: IgnorePointer(
                                                           child: widget
                                                               .itemBuilder(
                                                             item,
@@ -892,41 +690,23 @@ class _MultipleSearchSelectionState<T>
                                 );
                               },
                             ),
-                          );
+                          ).whenComplete(() {
+                            _textEditingController.clear();
+                            showedItems = allItems;
+                          });
                         },
+                        child: IgnorePointer(
+                          child: widget.showItemsButton ??
+                              const Text('Show items'),
+                        ),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                     ],
                     if (widget.showSelectAllButton)
-                      ActionButton(
-                        text: widget.selectAllText ?? 'Select all',
-                        textStyle: widget.selectAllTextStyle,
-                        backgroundColor:
-                            widget.selectAllBackgroundColor ?? Colors.white,
-                        actionButtonAnimationCurve:
-                            widget.selectAllAnimationCurve,
-                        onHoverBackgroundColor:
-                            widget.selectAllOnHoverBackgroundColor ??
-                                Colors.blue[300]!,
-                        animationDuration: widget.selectAllAnimationDuration ??
-                            const Duration(milliseconds: 200),
-                        fontSize: widget.selectAllFontSize ?? 13,
-                        borderRadius: widget.selectAllBorderRadius ?? 0,
-                        onHoverBorderColor:
-                            widget.selectAllOnHoverBorderColor ?? Colors.white,
-                        borderColor:
-                            widget.selectAllBorderColor ?? Colors.blue[300]!,
-                        contentPadding: widget.selectAllContentPadding ??
-                            const EdgeInsets.all(8),
-                        textColor: widget.selectAllTextColor ?? Colors.black,
-                        fontWeight:
-                            widget.selectAllFontWeight ?? FontWeight.w500,
-                        onHoverFontWeight: widget.selectAllOnHoverFontWeight ??
-                            FontWeight.w100,
-                        onHoverTextColor:
-                            widget.selectAllOnHoverTextColor ?? Colors.white,
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () {
                           pickedItems.addAll(showedItems);
                           if (widget.sortPickedItems) {
@@ -957,36 +737,19 @@ class _MultipleSearchSelectionState<T>
                           }
 
                           widget.onPickedChange(pickedItems);
+                          widget.onTapSelectAll?.call();
                           setState(() {});
                         },
+                        child: IgnorePointer(
+                          child: widget.selectAllButton ??
+                              const Text('Select all'),
+                        ),
                       ),
                   ],
                 ),
                 if (pickedItems.isNotEmpty && widget.showClearAllButton)
-                  ActionButton(
-                    text: widget.clearAllText ?? 'Clear',
-                    backgroundColor:
-                        widget.clearAllBackgroundColor ?? Colors.white,
-                    animationDuration: widget.clearAllAnimationDuration ??
-                        const Duration(milliseconds: 200),
-                    fontSize: widget.clearAllFontSize ?? 13,
-                    textStyle:
-                        widget.clearAllTextStyle ?? widget.clearAllTextStyle,
-                    borderRadius: widget.clearAllBorderRadius ?? 0,
-                    actionButtonAnimationCurve: widget.clearAllAnimationCurve,
-                    borderColor: widget.clearAllBorderColor ?? Colors.red,
-                    contentPadding: widget.clearAllContentPadding ??
-                        const EdgeInsets.all(8),
-                    textColor: widget.clearAllTextColor ?? Colors.red,
-                    fontWeight: widget.clearAllFontWeight ?? FontWeight.w500,
-                    onHoverBorderColor:
-                        widget.clearAllOnHoverBorderColor ?? Colors.white,
-                    onHoverBackgroundColor:
-                        widget.clearAllBackgroundColor ?? Colors.red[300]!,
-                    onHoverFontWeight:
-                        widget.clearAllOnHoverFontWeight ?? FontWeight.w100,
-                    onHoverTextColor:
-                        widget.clearAllOnHoverTextColor ?? Colors.white,
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () {
                       allItems.addAll(pickedItems);
                       showedItems = allItems
@@ -1015,9 +778,13 @@ class _MultipleSearchSelectionState<T>
                         );
                       }
                       widget.onPickedChange(pickedItems);
+                      widget.onTapClearAll?.call();
                       setState(() {});
                     },
-                  ),
+                    child: IgnorePointer(
+                      child: widget.clearAllButton ?? const Text('Clear all'),
+                    ),
+                  )
               ],
             )
           ],
@@ -1050,16 +817,15 @@ class _MultipleSearchSelectionState<T>
                 focusNode: _textFieldFocus,
                 controller: _textEditingController,
                 style: widget.searchItemTextStyle,
-                decoration: widget.searchItemTextInputDecoration ??
+                decoration: widget.searchFieldInputDecoration ??
                     InputDecoration(
                       contentPadding: widget.searchItemTextContentPadding ??
                           const EdgeInsets.only(left: 6),
-                      hintText: widget.hintText ?? 'Type here to search',
-                      hintStyle: widget.hintTextStyle ??
-                          const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      hintText: 'Type here to search',
+                      hintStyle: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                       border: OutlineInputBorder(
                         borderSide: BorderSide.none,
                         borderRadius: BorderRadius.circular(20),
@@ -1097,7 +863,7 @@ class _MultipleSearchSelectionState<T>
                         )
                         .toList();
                   }
-                  if (expanded =
+                  if (expanded &&
                       widget.itemsVisibility == ShowedItemsVisibility.onType) {
                     expanded = widget.itemsVisibility ==
                             ShowedItemsVisibility.onType &&
@@ -1161,13 +927,13 @@ class _MultipleSearchSelectionState<T>
                             )
                           ]
                         : showedItems.map((T item) {
-                            return MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: GestureDetector(
-                                onTap: () {
-                                  _onAddItem(item);
-                                  setState(() {});
-                                },
+                            return GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () {
+                                _onAddItem(item);
+                                setState(() {});
+                              },
+                              child: IgnorePointer(
                                 child: widget.itemBuilder(
                                   item,
                                 ),
