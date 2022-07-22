@@ -94,6 +94,32 @@ class _MyHomePageState extends State<MyHomePage> {
         onItemRemoved: (item) {},
         sortShowedItems: true,
         sortPickedItems: true,
+        onTapSelectAll: () => print('select all tapped'),
+        selectAllButton: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.blue),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Select All',
+              style: kStyleDefault,
+            ),
+          ),
+        ),
+        onTapClearAll: () => print('clear all tapped'),
+        clearAllButton: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.red),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Clear All',
+              style: kStyleDefault,
+            ),
+          ),
+        ),
         fuzzySearch: FuzzySearch.jaro,
         padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
