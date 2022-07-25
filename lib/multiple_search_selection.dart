@@ -26,12 +26,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required this.pickedItemBuilder,
     this.initialPickedItems,
     this.fuzzySearch = FuzzySearch.none,
-    this.padding,
     this.onItemAdded,
     this.onItemRemoved,
     this.onTapShowedItem,
     this.title,
-    this.titlePadding,
     this.maximumShowItemsHeight = 150,
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
@@ -78,12 +76,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// The title widget on top of picked items.
   final Widget? title;
-
-  /// The padding of the whole widget.
-  final EdgeInsets? padding;
-
-  /// The padding of the title Widget. Defaults to [EdgeInsets.zero].
-  final EdgeInsets? titlePadding;
 
   /// The border color of the picked items container.
   final Color? pickedItemsBorderColor;
@@ -395,557 +387,547 @@ class _MultipleSearchSelectionState<T>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: widget.padding ?? EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (widget.title != null) ...[
-            Padding(
-              padding: widget.titlePadding ?? EdgeInsets.zero,
-              child: widget.title,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.title != null) ...[
+          widget.title!,
+        ],
+        if (pickedItems.isNotEmpty)
+          // picked item chips
+          Container(
+            width: MediaQuery.of(context).size.width,
+            constraints: BoxConstraints(
+              maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
+              minHeight: widget.pickedItemsContainerMinHeight ?? 50,
             ),
-          ],
-          if (pickedItems.isNotEmpty)
-            // picked item chips
-            Container(
-              width: MediaQuery.of(context).size.width,
-              constraints: BoxConstraints(
-                maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
-                minHeight: widget.pickedItemsContainerMinHeight ?? 50,
-              ),
-              decoration: widget.pickedItemsBoxDecoration ??
-                  BoxDecoration(
-                    border: pickedItems.isNotEmpty
-                        ? Border.all(
-                            color: Colors.grey.withOpacity(0.5),
-                          )
-                        : null,
-                  ),
-              child: RawScrollbar(
-                thumbVisibility: widget.showPickedItemScrollbar,
-                thumbColor: widget.pickedItemScrollbarColor,
-                minOverscrollLength:
-                    widget.pickedItemScrollbarMinOverscrollLength ?? 5,
-                minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
-                thickness: widget.pickedItemScrollbarThickness ?? 10,
-                radius: widget.pickedItemScrollbarRadius ??
-                    const Radius.circular(5),
-                controller: widget.pickedItemsScrollController ??
-                    _pickedItemsController,
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context)
-                      .copyWith(scrollbars: false),
-                  child: SingleChildScrollView(
-                    controller: widget.pickedItemsScrollController ??
-                        _pickedItemsController,
-                    physics: widget.pickedItemsScrollPhysics,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Wrap(
-                        spacing: widget.pickedItemSpacing ?? 5,
-                        runSpacing: widget.pickedItemSpacing ?? 5,
-                        children: [
-                          ...pickedItems.map(
-                            (e) => GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                _onRemoveItem(e);
-                              },
-                              child: IgnorePointer(
-                                child: widget.pickedItemBuilder.call(e),
-                              ),
+            decoration: widget.pickedItemsBoxDecoration ??
+                BoxDecoration(
+                  border: pickedItems.isNotEmpty
+                      ? Border.all(
+                          color: Colors.grey.withOpacity(0.5),
+                        )
+                      : null,
+                ),
+            child: RawScrollbar(
+              thumbVisibility: widget.showPickedItemScrollbar,
+              thumbColor: widget.pickedItemScrollbarColor,
+              minOverscrollLength:
+                  widget.pickedItemScrollbarMinOverscrollLength ?? 5,
+              minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
+              thickness: widget.pickedItemScrollbarThickness ?? 10,
+              radius:
+                  widget.pickedItemScrollbarRadius ?? const Radius.circular(5),
+              controller:
+                  widget.pickedItemsScrollController ?? _pickedItemsController,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  controller: widget.pickedItemsScrollController ??
+                      _pickedItemsController,
+                  physics: widget.pickedItemsScrollPhysics,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Wrap(
+                      spacing: widget.pickedItemSpacing ?? 5,
+                      runSpacing: widget.pickedItemSpacing ?? 5,
+                      children: [
+                        ...pickedItems.map(
+                          (e) => GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              _onRemoveItem(e);
+                            },
+                            child: IgnorePointer(
+                              child: widget.pickedItemBuilder.call(e),
                             ),
-                          )
-                        ],
-                      ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
               ),
             ),
-          if (widget.showClearAllButton ||
-              widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    if (widget.itemsVisibility ==
-                        ShowedItemsVisibility.toggle) ...[
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          widget.onTapShowItems?.call();
-                          showDialog(
-                            context: context,
-                            builder: (context) => StatefulBuilder(
-                              builder: (context, stateSetter) {
-                                return Dialog(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      DecoratedBox(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border(
-                                            top: BorderSide(
-                                              color: widget
-                                                      .outerContainerBorderColor ??
-                                                  Colors.grey.withOpacity(0.5),
-                                            ),
-                                            left: BorderSide(
-                                              color: widget
-                                                      .outerContainerBorderColor ??
-                                                  Colors.grey.withOpacity(0.5),
-                                            ),
-                                            right: BorderSide(
-                                              color: widget
-                                                      .outerContainerBorderColor ??
-                                                  Colors.grey.withOpacity(0.5),
-                                            ),
-                                            bottom: BorderSide(
-                                              color:
-                                                  Colors.grey.withOpacity(0.5),
-                                            ),
+          ),
+        if (widget.showClearAllButton ||
+            widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  if (widget.itemsVisibility ==
+                      ShowedItemsVisibility.toggle) ...[
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        widget.onTapShowItems?.call();
+                        showDialog(
+                          context: context,
+                          builder: (context) => StatefulBuilder(
+                            builder: (context, stateSetter) {
+                              return Dialog(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border(
+                                          top: BorderSide(
+                                            color: widget
+                                                    .outerContainerBorderColor ??
+                                                Colors.grey.withOpacity(0.5),
                                           ),
-                                        ),
-                                        child: TextField(
-                                          focusNode: _textFieldFocus,
-                                          controller: _textEditingController,
-                                          style: widget.searchItemTextStyle,
-                                          decoration: widget
-                                                  .searchFieldInputDecoration ??
-                                              InputDecoration(
-                                                contentPadding: widget
-                                                        .searchItemTextContentPadding ??
-                                                    const EdgeInsets.only(
-                                                      left: 6,
-                                                    ),
-                                                hintText: 'Type here to search',
-                                                hintStyle: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                border: OutlineInputBorder(
-                                                  borderSide: BorderSide.none,
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                              ),
-                                          onChanged: (value) {
-                                            if (widget.fuzzySearch ==
-                                                FuzzySearch.jaro) {
-                                              showedItems = allItems.where(
-                                                (item) {
-                                                  return widget.fieldToCheck
-                                                          .call(item)
-                                                          .toLowerCase()
-                                                          .contains(value) ||
-                                                      (getJaro(
-                                                            widget.fieldToCheck
-                                                                .call(item),
-                                                            value,
-                                                          ) >=
-                                                          0.8);
-                                                },
-                                              ).toList();
-                                            } else if (widget.fuzzySearch ==
-                                                FuzzySearch.levenshtein) {
-                                              showedItems = allItems.where(
-                                                (item) {
-                                                  return widget.fieldToCheck
-                                                          .call(item)
-                                                          .toLowerCase()
-                                                          .contains(value) ||
-                                                      (getLevenshtein(
-                                                            widget.fieldToCheck
-                                                                .call(item),
-                                                            value,
-                                                          ) <=
-                                                          2);
-                                                },
-                                              ).toList();
-                                            } else {
-                                              showedItems = allItems
-                                                  .where(
-                                                    (item) => widget
-                                                        .fieldToCheck
-                                                        .call(item)
-                                                        .toLowerCase()
-                                                        .contains(value),
-                                                  )
-                                                  .toList();
-                                            }
-                                            setState(() {});
-                                            stateSetter(() {});
-                                          },
+                                          left: BorderSide(
+                                            color: widget
+                                                    .outerContainerBorderColor ??
+                                                Colors.grey.withOpacity(0.5),
+                                          ),
+                                          right: BorderSide(
+                                            color: widget
+                                                    .outerContainerBorderColor ??
+                                                Colors.grey.withOpacity(0.5),
+                                          ),
+                                          bottom: BorderSide(
+                                            color: Colors.grey.withOpacity(0.5),
+                                          ),
                                         ),
                                       ),
-                                      Container(
-                                        constraints: BoxConstraints(
-                                          maxHeight:
-                                              widget.maximumShowItemsHeight,
-                                        ),
+                                      child: TextField(
+                                        focusNode: _textFieldFocus,
+                                        controller: _textEditingController,
+                                        style: widget.searchItemTextStyle,
                                         decoration: widget
-                                                .showedItemsBoxDecoration ??
-                                            BoxDecoration(
-                                              color: widget
-                                                      .showedItemsBackgroundColor ??
-                                                  Colors.grey.withOpacity(0.1),
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color: widget
-                                                          .outerContainerBorderColor ??
-                                                      Colors.grey
-                                                          .withOpacity(0.5),
-                                                ),
-                                                left: BorderSide(
-                                                  color: widget
-                                                          .outerContainerBorderColor ??
-                                                      Colors.grey
-                                                          .withOpacity(0.5),
-                                                ),
-                                                right: BorderSide(
-                                                  color: widget
-                                                          .outerContainerBorderColor ??
-                                                      Colors.grey
-                                                          .withOpacity(0.5),
-                                                ),
+                                                .searchFieldInputDecoration ??
+                                            InputDecoration(
+                                              contentPadding: widget
+                                                      .searchItemTextContentPadding ??
+                                                  const EdgeInsets.only(
+                                                    left: 6,
+                                                  ),
+                                              hintText: 'Type here to search',
+                                              hintStyle: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              border: OutlineInputBorder(
+                                                borderSide: BorderSide.none,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
                                               ),
                                             ),
-                                        child: RawScrollbar(
-                                          controller: widget
-                                                  .showedItemsScrollController ??
-                                              _showedItemsScrollController,
-                                          thumbColor:
-                                              widget.showedItemsScrollbarColor,
-                                          thickness: widget
-                                                  .showedItemsScrollbarMinThumbLength ??
-                                              10,
-                                          minThumbLength: widget
-                                                  .showedItemsScrollbarMinThumbLength ??
-                                              30,
-                                          minOverscrollLength: widget
-                                                  .showedItemsScrollbarMinOverscrollLength ??
-                                              5,
-                                          radius: widget
-                                                  .showedItemsScrollbarRadius ??
-                                              const Radius.circular(5),
-                                          thumbVisibility:
-                                              widget.showShowedItemsScrollbar,
-                                          child: ScrollConfiguration(
-                                            behavior:
-                                                ScrollConfiguration.of(context)
-                                                    .copyWith(
-                                              scrollbars: false,
-                                            ),
-                                            child: ListView(
-                                              padding: EdgeInsets.zero,
-                                              primary: false,
-                                              shrinkWrap: true,
-                                              controller: widget
-                                                      .showedItemsScrollController ??
-                                                  _showedItemsScrollController,
-                                              children: showedItems.isEmpty
-                                                  ? [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(6.0),
-                                                        child: widget
-                                                                .noResultsWidget ??
-                                                            const Text(
-                                                              'No results',
-                                                            ),
-                                                      )
-                                                    ]
-                                                  : showedItems.map((T item) {
-                                                      return GestureDetector(
-                                                        behavior:
-                                                            HitTestBehavior
-                                                                .opaque,
-                                                        onTap: () {
-                                                          _onAddItem(item);
-                                                          stateSetter(() {});
-                                                          setState(() {});
-                                                        },
-                                                        child: IgnorePointer(
-                                                          child: widget
-                                                              .itemBuilder(
-                                                            item,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }).toList(),
+                                        onChanged: (value) {
+                                          if (widget.fuzzySearch ==
+                                              FuzzySearch.jaro) {
+                                            showedItems = allItems.where(
+                                              (item) {
+                                                return widget.fieldToCheck
+                                                        .call(item)
+                                                        .toLowerCase()
+                                                        .contains(value) ||
+                                                    (getJaro(
+                                                          widget.fieldToCheck
+                                                              .call(item),
+                                                          value,
+                                                        ) >=
+                                                        0.8);
+                                              },
+                                            ).toList();
+                                          } else if (widget.fuzzySearch ==
+                                              FuzzySearch.levenshtein) {
+                                            showedItems = allItems.where(
+                                              (item) {
+                                                return widget.fieldToCheck
+                                                        .call(item)
+                                                        .toLowerCase()
+                                                        .contains(value) ||
+                                                    (getLevenshtein(
+                                                          widget.fieldToCheck
+                                                              .call(item),
+                                                          value,
+                                                        ) <=
+                                                        2);
+                                              },
+                                            ).toList();
+                                          } else {
+                                            showedItems = allItems
+                                                .where(
+                                                  (item) => widget.fieldToCheck
+                                                      .call(item)
+                                                      .toLowerCase()
+                                                      .contains(value),
+                                                )
+                                                .toList();
+                                          }
+                                          setState(() {});
+                                          stateSetter(() {});
+                                        },
+                                      ),
+                                    ),
+                                    Container(
+                                      constraints: BoxConstraints(
+                                        maxHeight:
+                                            widget.maximumShowItemsHeight,
+                                      ),
+                                      decoration: widget
+                                              .showedItemsBoxDecoration ??
+                                          BoxDecoration(
+                                            color: widget
+                                                    .showedItemsBackgroundColor ??
+                                                Colors.grey.withOpacity(0.1),
+                                            border: Border(
+                                              bottom: BorderSide(
+                                                color: widget
+                                                        .outerContainerBorderColor ??
+                                                    Colors.grey
+                                                        .withOpacity(0.5),
+                                              ),
+                                              left: BorderSide(
+                                                color: widget
+                                                        .outerContainerBorderColor ??
+                                                    Colors.grey
+                                                        .withOpacity(0.5),
+                                              ),
+                                              right: BorderSide(
+                                                color: widget
+                                                        .outerContainerBorderColor ??
+                                                    Colors.grey
+                                                        .withOpacity(0.5),
+                                              ),
                                             ),
                                           ),
+                                      child: RawScrollbar(
+                                        controller: widget
+                                                .showedItemsScrollController ??
+                                            _showedItemsScrollController,
+                                        thumbColor:
+                                            widget.showedItemsScrollbarColor,
+                                        thickness: widget
+                                                .showedItemsScrollbarMinThumbLength ??
+                                            10,
+                                        minThumbLength: widget
+                                                .showedItemsScrollbarMinThumbLength ??
+                                            30,
+                                        minOverscrollLength: widget
+                                                .showedItemsScrollbarMinOverscrollLength ??
+                                            5,
+                                        radius:
+                                            widget.showedItemsScrollbarRadius ??
+                                                const Radius.circular(5),
+                                        thumbVisibility:
+                                            widget.showShowedItemsScrollbar,
+                                        child: ScrollConfiguration(
+                                          behavior:
+                                              ScrollConfiguration.of(context)
+                                                  .copyWith(
+                                            scrollbars: false,
+                                          ),
+                                          child: ListView(
+                                            padding: EdgeInsets.zero,
+                                            primary: false,
+                                            shrinkWrap: true,
+                                            controller: widget
+                                                    .showedItemsScrollController ??
+                                                _showedItemsScrollController,
+                                            children: showedItems.isEmpty
+                                                ? [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              6.0),
+                                                      child: widget
+                                                              .noResultsWidget ??
+                                                          const Text(
+                                                            'No results',
+                                                          ),
+                                                    )
+                                                  ]
+                                                : showedItems.map((T item) {
+                                                    return GestureDetector(
+                                                      behavior: HitTestBehavior
+                                                          .opaque,
+                                                      onTap: () {
+                                                        _onAddItem(item);
+                                                        stateSetter(() {});
+                                                        setState(() {});
+                                                      },
+                                                      child: IgnorePointer(
+                                                        child:
+                                                            widget.itemBuilder(
+                                                          item,
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                          ),
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                          ).whenComplete(() {
-                            _textEditingController.clear();
-                            showedItems = allItems;
-                          });
-                        },
-                        child: IgnorePointer(
-                          child: widget.showItemsButton ??
-                              const Text('Show items'),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                    ],
-                    if (widget.showSelectAllButton)
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () {
-                          pickedItems.addAll(showedItems);
-                          if (widget.sortPickedItems) {
-                            pickedItems.sort(
-                              (a, b) => widget.fieldToCheck(a).compareTo(
-                                    widget.fieldToCheck(b),
-                                  ),
-                            );
-                          }
-                          allItems.removeWhere((e) => showedItems.contains(e));
-
-                          showedItems = allItems
-                              .where(
-                                (item) => widget.fieldToCheck
-                                    .call(item)
-                                    .toLowerCase()
-                                    .contains(_textEditingController.text),
-                              )
-                              .toList();
-                          if (showedItems.isNotEmpty) {
-                            if (widget.sortShowedItems) {
-                              showedItems.sort(
-                                (a, b) => widget.fieldToCheck(a).compareTo(
-                                      widget.fieldToCheck(b),
-                                    ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               );
-                            }
-                          }
-
-                          widget.onPickedChange(pickedItems);
-                          widget.onTapSelectAll?.call();
-                          setState(() {});
-                        },
-                        child: IgnorePointer(
-                          child: widget.selectAllButton ??
-                              const Text('Select all'),
-                        ),
+                            },
+                          ),
+                        ).whenComplete(() {
+                          _textEditingController.clear();
+                          showedItems = allItems;
+                        });
+                      },
+                      child: IgnorePointer(
+                        child:
+                            widget.showItemsButton ?? const Text('Show items'),
                       ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
                   ],
-                ),
-                if (pickedItems.isNotEmpty && widget.showClearAllButton)
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      allItems.addAll(pickedItems);
-                      showedItems = allItems
-                          .where(
-                            (item) => widget
-                                .fieldToCheck(item)
-                                .toLowerCase()
-                                .contains(_textEditingController.text),
-                          )
-                          .toList();
-                      if (showedItems.isNotEmpty) {
-                        if (widget.sortShowedItems) {
-                          showedItems.sort(
+                  if (widget.showSelectAllButton)
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        pickedItems.addAll(showedItems);
+                        if (widget.sortPickedItems) {
+                          pickedItems.sort(
                             (a, b) => widget.fieldToCheck(a).compareTo(
                                   widget.fieldToCheck(b),
                                 ),
                           );
                         }
-                      }
-                      pickedItems.removeRange(0, pickedItems.length);
-                      if (widget.sortShowedItems) {
-                        allItems.sort(
-                          (a, b) => widget.fieldToCheck(a).compareTo(
-                                widget.fieldToCheck(b),
-                              ),
-                        );
-                      }
-                      widget.onPickedChange(pickedItems);
-                      widget.onTapClearAll?.call();
-                      setState(() {});
-                    },
-                    child: IgnorePointer(
-                      child: widget.clearAllButton ?? const Text('Clear all'),
+                        allItems.removeWhere((e) => showedItems.contains(e));
+
+                        showedItems = allItems
+                            .where(
+                              (item) => widget.fieldToCheck
+                                  .call(item)
+                                  .toLowerCase()
+                                  .contains(_textEditingController.text),
+                            )
+                            .toList();
+                        if (showedItems.isNotEmpty) {
+                          if (widget.sortShowedItems) {
+                            showedItems.sort(
+                              (a, b) => widget.fieldToCheck(a).compareTo(
+                                    widget.fieldToCheck(b),
+                                  ),
+                            );
+                          }
+                        }
+
+                        widget.onPickedChange(pickedItems);
+                        widget.onTapSelectAll?.call();
+                        setState(() {});
+                      },
+                      child: IgnorePointer(
+                        child:
+                            widget.selectAllButton ?? const Text('Select all'),
+                      ),
                     ),
-                  )
-              ],
-            )
-          ],
-          const SizedBox(
-            height: 10,
-          ),
-          if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5),
-                  ),
-                  left: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5),
-                  ),
-                  right: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5),
-                  ),
-                  bottom: BorderSide(
-                    color: Colors.grey.withOpacity(0.5),
-                  ),
-                ),
+                ],
               ),
-              child: TextField(
-                focusNode: _textFieldFocus,
-                controller: _textEditingController,
-                style: widget.searchItemTextStyle,
-                decoration: widget.searchFieldInputDecoration ??
-                    InputDecoration(
-                      contentPadding: widget.searchItemTextContentPadding ??
-                          const EdgeInsets.only(left: 6),
-                      hintText: 'Type here to search',
-                      hintStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                onChanged: (value) {
-                  if (widget.fuzzySearch == FuzzySearch.jaro) {
-                    showedItems = allItems.where(
-                      (item) {
-                        return widget
-                                .fieldToCheck(item)
-                                .toLowerCase()
-                                .contains(value) ||
-                            (getJaro(widget.fieldToCheck(item), value) >= 0.8);
-                      },
-                    ).toList();
-                  } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-                    showedItems = allItems.where(
-                      (item) {
-                        return widget
-                                .fieldToCheck(item)
-                                .toLowerCase()
-                                .contains(value) ||
-                            (getLevenshtein(widget.fieldToCheck(item), value) <=
-                                2);
-                      },
-                    ).toList();
-                  } else {
+              if (pickedItems.isNotEmpty && widget.showClearAllButton)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    allItems.addAll(pickedItems);
                     showedItems = allItems
                         .where(
                           (item) => widget
                               .fieldToCheck(item)
                               .toLowerCase()
-                              .contains(value),
+                              .contains(_textEditingController.text),
                         )
                         .toList();
-                  }
-                  if (expanded &&
-                      widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                    expanded = widget.itemsVisibility ==
-                            ShowedItemsVisibility.onType &&
-                        _textEditingController.text.isNotEmpty;
-                  }
-                  setState(() {});
-                },
-              ),
-            ),
-          if (expanded &&
-              widget.itemsVisibility != ShowedItemsVisibility.toggle)
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: widget.maximumShowItemsHeight,
-              ),
-              decoration: widget.showedItemsBoxDecoration ??
-                  BoxDecoration(
-                    color: widget.showedItemsBackgroundColor ??
-                        Colors.grey.withOpacity(0.1),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: widget.outerContainerBorderColor ??
-                            Colors.grey.withOpacity(0.5),
-                      ),
-                      left: BorderSide(
-                        color: widget.outerContainerBorderColor ??
-                            Colors.grey.withOpacity(0.5),
-                      ),
-                      right: BorderSide(
-                        color: widget.outerContainerBorderColor ??
-                            Colors.grey.withOpacity(0.5),
-                      ),
-                    ),
-                  ),
-              child: RawScrollbar(
-                controller: widget.showedItemsScrollController ??
-                    _showedItemsScrollController,
-                thumbColor: widget.showedItemsScrollbarColor,
-                thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
-                minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
-                minOverscrollLength:
-                    widget.showedItemsScrollbarMinOverscrollLength ?? 5,
-                radius: widget.showedItemsScrollbarRadius ??
-                    const Radius.circular(5),
-                thumbVisibility: widget.showShowedItemsScrollbar,
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context)
-                      .copyWith(scrollbars: false),
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    primary: false,
-                    shrinkWrap: true,
-                    controller: widget.showedItemsScrollController ??
-                        _showedItemsScrollController,
-                    children: showedItems.isEmpty
-                        ? [
-                            Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: widget.noResultsWidget ??
-                                  const Text('No results'),
-                            )
-                          ]
-                        : showedItems.map((T item) {
-                            return GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                _onAddItem(item);
-                                setState(() {});
-                              },
-                              child: IgnorePointer(
-                                child: widget.itemBuilder(
-                                  item,
-                                ),
+                    if (showedItems.isNotEmpty) {
+                      if (widget.sortShowedItems) {
+                        showedItems.sort(
+                          (a, b) => widget.fieldToCheck(a).compareTo(
+                                widget.fieldToCheck(b),
                               ),
-                            );
-                          }).toList(),
+                        );
+                      }
+                    }
+                    pickedItems.removeRange(0, pickedItems.length);
+                    if (widget.sortShowedItems) {
+                      allItems.sort(
+                        (a, b) => widget.fieldToCheck(a).compareTo(
+                              widget.fieldToCheck(b),
+                            ),
+                      );
+                    }
+                    widget.onPickedChange(pickedItems);
+                    widget.onTapClearAll?.call();
+                    setState(() {});
+                  },
+                  child: IgnorePointer(
+                    child: widget.clearAllButton ?? const Text('Clear all'),
                   ),
+                )
+            ],
+          )
+        ],
+        const SizedBox(
+          height: 10,
+        ),
+        if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
+                left: BorderSide(
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
+                right: BorderSide(
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
+                bottom: BorderSide(
+                  color: Colors.grey.withOpacity(0.5),
                 ),
               ),
-            )
-        ],
-      ),
+            ),
+            child: TextField(
+              focusNode: _textFieldFocus,
+              controller: _textEditingController,
+              style: widget.searchItemTextStyle,
+              decoration: widget.searchFieldInputDecoration ??
+                  InputDecoration(
+                    contentPadding: widget.searchItemTextContentPadding ??
+                        const EdgeInsets.only(left: 6),
+                    hintText: 'Type here to search',
+                    hintStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+              onChanged: (value) {
+                if (widget.fuzzySearch == FuzzySearch.jaro) {
+                  showedItems = allItems.where(
+                    (item) {
+                      return widget
+                              .fieldToCheck(item)
+                              .toLowerCase()
+                              .contains(value) ||
+                          (getJaro(widget.fieldToCheck(item), value) >= 0.8);
+                    },
+                  ).toList();
+                } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
+                  showedItems = allItems.where(
+                    (item) {
+                      return widget
+                              .fieldToCheck(item)
+                              .toLowerCase()
+                              .contains(value) ||
+                          (getLevenshtein(widget.fieldToCheck(item), value) <=
+                              2);
+                    },
+                  ).toList();
+                } else {
+                  showedItems = allItems
+                      .where(
+                        (item) => widget
+                            .fieldToCheck(item)
+                            .toLowerCase()
+                            .contains(value),
+                      )
+                      .toList();
+                }
+                if (expanded &&
+                    widget.itemsVisibility == ShowedItemsVisibility.onType) {
+                  expanded =
+                      widget.itemsVisibility == ShowedItemsVisibility.onType &&
+                          _textEditingController.text.isNotEmpty;
+                }
+                setState(() {});
+              },
+            ),
+          ),
+        if (expanded && widget.itemsVisibility != ShowedItemsVisibility.toggle)
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: widget.maximumShowItemsHeight,
+            ),
+            decoration: widget.showedItemsBoxDecoration ??
+                BoxDecoration(
+                  color: widget.showedItemsBackgroundColor ??
+                      Colors.grey.withOpacity(0.1),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                    left: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                    right: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+            child: RawScrollbar(
+              controller: widget.showedItemsScrollController ??
+                  _showedItemsScrollController,
+              thumbColor: widget.showedItemsScrollbarColor,
+              thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
+              minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
+              minOverscrollLength:
+                  widget.showedItemsScrollbarMinOverscrollLength ?? 5,
+              radius:
+                  widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
+              thumbVisibility: widget.showShowedItemsScrollbar,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  primary: false,
+                  shrinkWrap: true,
+                  controller: widget.showedItemsScrollController ??
+                      _showedItemsScrollController,
+                  children: showedItems.isEmpty
+                      ? [
+                          Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: widget.noResultsWidget ??
+                                const Text('No results'),
+                          )
+                        ]
+                      : showedItems.map((T item) {
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              _onAddItem(item);
+                              setState(() {});
+                            },
+                            child: IgnorePointer(
+                              child: widget.itemBuilder(
+                                item,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                ),
+              ),
+            ),
+          )
+      ],
     );
   }
 }
