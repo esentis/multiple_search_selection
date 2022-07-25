@@ -12,7 +12,7 @@
 MultipleSearchSelection<Country>(
         items: countries, // List<Country>
         fieldToCheck: (c) {
-          return c.name;
+          return c.name; // String
         },
         itemBuilder: (country) {
           return Padding(
@@ -51,7 +51,6 @@ MultipleSearchSelection<Country>(
         sortShowedItems: true,
         sortPickedItems: true,
         fuzzySearch: FuzzySearch.jaro,
-        padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
         title: Text(
           'Countries',
@@ -61,7 +60,6 @@ MultipleSearchSelection<Country>(
           ),
         ),
         showSelectAllButton: true,
-        titlePadding: const EdgeInsets.symmetric(vertical: 10),
         searchItemTextContentPadding:
             const EdgeInsets.symmetric(horizontal: 10),
         maximumShowItemsHeight: 200,
