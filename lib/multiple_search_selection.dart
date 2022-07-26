@@ -44,12 +44,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showedItemContainerHeight,
     this.showedItemContainerPadding,
     this.showedItemsBackgroundColor,
-    this.showedItemMouseCursor,
     this.showedItemsScrollController,
     this.showedItemsScrollPhysics,
     this.showedItemsBoxDecoration,
     this.searchFieldInputDecoration,
-    this.searchItemTextContentPadding,
     this.noResultsWidget,
     this.outerContainerBorderColor,
     this.itemsVisibility = ShowedItemsVisibility.alwaysOn,
@@ -57,14 +55,14 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.pickedItemSpacing,
     this.pickedItemsContainerMaxHeight,
     this.pickedItemsContainerMinHeight,
-    this.pickedItemScrollbarColor,
-    this.pickedItemScrollbarThickness,
-    this.pickedItemScrollbarMinOverscrollLength,
-    this.pickedItemScrollbarRadius,
+    this.pickedItemsScrollbarColor,
+    this.pickedItemsScrollbarThickness,
+    this.pickedItemsScrollbarMinOverscrollLength,
+    this.pickedItemsScrollbarRadius,
     this.pickedItemsScrollbarMinThumbLength,
-    this.pickedItemsBoxDecoration,
     this.pickedItemsScrollController,
     this.pickedItemsScrollPhysics,
+    this.pickedItemsBoxDecoration,
     this.showItemsButton,
     this.selectAllButton,
     this.clearAllButton,
@@ -113,9 +111,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// The padding of the showed item container.
   final EdgeInsets? showedItemContainerPadding;
 
-  /// The mouse cursor when hovered over showed item container. Defaults to [SystemMouseCursors.click]
-  final MouseCursor? showedItemMouseCursor;
-
   /// Hide or show items' scrollbar, defaults to [true]
   final bool showShowedItemsScrollbar;
 
@@ -153,16 +148,16 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final double? pickedItemsContainerMinHeight;
 
   /// The thumb color of the picked items' scrollbar.
-  final Color? pickedItemScrollbarColor;
+  final Color? pickedItemsScrollbarColor;
 
   /// The thickness of the picked items' scrollbar thumb.
-  final double? pickedItemScrollbarThickness;
+  final double? pickedItemsScrollbarThickness;
 
   /// The minimum length of the overscroll for picked items.
-  final double? pickedItemScrollbarMinOverscrollLength;
+  final double? pickedItemsScrollbarMinOverscrollLength;
 
   /// The radius of the picked items' scrollbar.
-  final Radius? pickedItemScrollbarRadius;
+  final Radius? pickedItemsScrollbarRadius;
 
   /// The minimum length of the picked items' scrollbar thumb.
   final double? pickedItemsScrollbarMinThumbLength;
@@ -172,9 +167,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// Hide or show picked items' scrollbar, defaults to [true].
   final bool showPickedItemScrollbar;
-
-  /// The content padding of the search item textfield. This is overriden if [searchFieldInputDecoration] is provided.
-  final EdgeInsets? searchItemTextContentPadding;
 
   /// A callback when a showed item is tapped.
   final VoidCallback? onTapShowedItem;
@@ -411,13 +403,13 @@ class _MultipleSearchSelectionState<T>
                 ),
             child: RawScrollbar(
               thumbVisibility: widget.showPickedItemScrollbar,
-              thumbColor: widget.pickedItemScrollbarColor,
+              thumbColor: widget.pickedItemsScrollbarColor,
               minOverscrollLength:
-                  widget.pickedItemScrollbarMinOverscrollLength ?? 5,
+                  widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
               minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
-              thickness: widget.pickedItemScrollbarThickness ?? 10,
+              thickness: widget.pickedItemsScrollbarThickness ?? 10,
               radius:
-                  widget.pickedItemScrollbarRadius ?? const Radius.circular(5),
+                  widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
               controller:
                   widget.pickedItemsScrollController ?? _pickedItemsController,
               child: ScrollConfiguration(
@@ -506,11 +498,10 @@ class _MultipleSearchSelectionState<T>
                                         decoration: widget
                                                 .searchFieldInputDecoration ??
                                             InputDecoration(
-                                              contentPadding: widget
-                                                      .searchItemTextContentPadding ??
+                                              contentPadding:
                                                   const EdgeInsets.only(
-                                                    left: 6,
-                                                  ),
+                                                left: 6,
+                                              ),
                                               hintText: 'Type here to search',
                                               hintStyle: const TextStyle(
                                                 fontSize: 14,
@@ -803,8 +794,7 @@ class _MultipleSearchSelectionState<T>
               style: widget.searchItemTextStyle,
               decoration: widget.searchFieldInputDecoration ??
                   InputDecoration(
-                    contentPadding: widget.searchItemTextContentPadding ??
-                        const EdgeInsets.only(left: 6),
+                    contentPadding: const EdgeInsets.only(left: 6),
                     hintText: 'Type here to search',
                     hintStyle: const TextStyle(
                       fontSize: 14,
