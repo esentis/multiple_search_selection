@@ -1,4 +1,4 @@
-# 2.2.0 🔥 Removed fields
+# 2.2.0 🔥 Breaking changes
 
 Fields removed:
 
