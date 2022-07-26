@@ -131,8 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
         fuzzySearch: FuzzySearch.jaro,
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
         showSelectAllButton: true,
-        searchItemTextContentPadding:
-            const EdgeInsets.symmetric(horizontal: 10),
         maximumShowItemsHeight: 200,
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
