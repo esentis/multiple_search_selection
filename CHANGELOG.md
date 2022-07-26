@@ -4,6 +4,8 @@ Fields removed:
 
 - [padding] : Refactor -> You can wrap the whole widget in a [Padding] widget.
 - [titlePadding] : Refactor -> You can wrap the title with a [Padding] widget.
+- [showedItemMouseCursor] : Refactor -> You can build your own showed item [Widget] with [itemBuilder] and use your own style.
+- [searchItemTextContentPadding] : Refactor -> You can use [searchFieldInputDecoration] to style your search textfield.
 
 ## 2.1.0 🔥 ⚡️ Breaking changes & performance improvements
 
