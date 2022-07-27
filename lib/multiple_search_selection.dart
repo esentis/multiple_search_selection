@@ -17,13 +17,230 @@ enum ShowedItemsVisibility {
 }
 
 class MultipleSearchSelection<T> extends StatefulWidget {
-  const MultipleSearchSelection({
-    Key? key,
-    required this.items,
+  factory MultipleSearchSelection({
+    required List<T> items,
+    required double maximumShowItemsHeight,
+    required Function(List<T>) onPickedChange,
+    Function(T)? onItemRemoved,
+    Function(T)? onItemAdded,
+    required ShowedItemsVisibility itemsVisibility,
+    required FuzzySearch fuzzySearch,
+    required Widget Function(T) pickedItemBuilder,
+    required String Function(T) fieldToCheck,
+    required Widget Function(T) itemBuilder,
+    List<T>? initialPickedItems,
+    Widget? title,
+    Color? pickedItemsBorderColor,
+    Color? outerContainerBorderColor,
+    Color? showedItemsScrollbarColor,
+    Color? showedItemsBackgroundColor,
+    double? showedItemsScrollbarMinThumbLength,
+    double? showedItemsScrollbarMinOverscrollLength,
+    Radius? showedItemsScrollbarRadius,
+    double? showedItemContainerHeight,
+    EdgeInsets? showedItemContainerPadding,
+    bool? showShowedItemsScrollbar,
+    bool? showSelectAllButton,
+    bool? showClearAllButton,
+    InputDecoration? searchFieldInputDecoration,
+    TextStyle? searchItemTextStyle,
+    Widget? noResultsWidget,
+    double? pickedItemSpacing,
+    double? pickedItemsContainerMaxHeight,
+    double? pickedItemsContainerMinHeight,
+    Color? pickedItemsScrollbarColor,
+    double? pickedItemsScrollbarThickness,
+    double? pickedItemsScrollbarMinOverscrollLength,
+    Radius? pickedItemsScrollbarRadius,
+    double? pickedItemsScrollbarMinThumbLength,
+    BoxDecoration? pickedItemsBoxDecoration,
+    bool? showPickedItemScrollbar,
+    VoidCallback? onTapShowedItem,
+    ScrollController? pickedItemsScrollController,
+    ScrollController? showedItemsScrollController,
+    ScrollPhysics? pickedItemsScrollPhysics,
+    ScrollPhysics? showedItemsScrollPhysics,
+    BoxDecoration? showedItemsBoxDecoration,
+    bool? sortPickedItems,
+    bool? sortShowedItems,
+    Widget? showItemsButton,
+    VoidCallback? onTapShowItems,
+    Widget? selectAllButton,
+    VoidCallback? onTapSelectAll,
+    Widget? clearAllButton,
+    VoidCallback? onTapClearAll,
+  }) =>
+      MultipleSearchSelection._(
+        items: items,
+        title: title,
+        fieldToCheck: fieldToCheck,
+        itemBuilder: itemBuilder,
+        onPickedChange: onPickedChange,
+        pickedItemBuilder: pickedItemBuilder,
+        clearAllButton: clearAllButton,
+        fuzzySearch: fuzzySearch,
+        initialPickedItems: initialPickedItems,
+        itemsVisibility: itemsVisibility,
+        maximumShowItemsHeight: maximumShowItemsHeight,
+        noResultsWidget: noResultsWidget,
+        onItemAdded: onItemAdded,
+        onItemRemoved: onItemRemoved,
+        onTapClearAll: onTapClearAll,
+        onTapSelectAll: onTapSelectAll,
+        onTapShowItems: onTapShowItems,
+        onTapShowedItem: onTapShowedItem,
+        outerContainerBorderColor: outerContainerBorderColor,
+        pickedItemSpacing: pickedItemSpacing,
+        pickedItemsBorderColor: pickedItemsBorderColor,
+        pickedItemsBoxDecoration: pickedItemsBoxDecoration,
+        pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
+        pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
+        pickedItemsScrollController: pickedItemsScrollController,
+        pickedItemsScrollPhysics: pickedItemsScrollPhysics,
+        pickedItemsScrollbarColor: pickedItemsScrollbarColor,
+        pickedItemsScrollbarMinOverscrollLength:
+            pickedItemsScrollbarMinOverscrollLength,
+        pickedItemsScrollbarMinThumbLength: pickedItemsScrollbarMinThumbLength,
+        pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
+        pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
+        searchFieldInputDecoration: searchFieldInputDecoration,
+        searchItemTextStyle: searchItemTextStyle,
+        selectAllButton: selectAllButton,
+        showClearAllButton: showClearAllButton,
+        showItemsButton: showItemsButton,
+        showPickedItemScrollbar: showPickedItemScrollbar,
+        showSelectAllButton: showSelectAllButton,
+        showShowedItemsScrollbar: showShowedItemsScrollbar,
+        showedItemContainerHeight: showedItemContainerHeight,
+        showedItemContainerPadding: showedItemContainerPadding,
+        showedItemsBackgroundColor: showedItemsBackgroundColor,
+        showedItemsBoxDecoration: showedItemsBoxDecoration,
+        showedItemsScrollController: showedItemsScrollController,
+        showedItemsScrollPhysics: showedItemsScrollPhysics,
+        showedItemsScrollbarColor: showedItemsScrollbarColor,
+        showedItemsScrollbarMinOverscrollLength:
+            showedItemsScrollbarMinOverscrollLength,
+        showedItemsScrollbarMinThumbLength: showedItemsScrollbarMinThumbLength,
+        showedItemsScrollbarRadius: showedItemsScrollbarRadius,
+        sortPickedItems: sortPickedItems,
+        sortShowedItems: sortShowedItems,
+      );
+
+  factory MultipleSearchSelection.future({
+    required double maximumShowItemsHeight,
+    required Function(List<T>) onPickedChange,
+    Function(T)? onItemRemoved,
+    Function(T)? onItemAdded,
+    required ShowedItemsVisibility itemsVisibility,
+    required FuzzySearch fuzzySearch,
+    required Widget Function(T) pickedItemBuilder,
+    required String Function(T) fieldToCheck,
+    required Widget Function(T) itemBuilder,
+    List<T>? initialPickedItems,
+    Widget? title,
+    Color? pickedItemsBorderColor,
+    Color? outerContainerBorderColor,
+    Color? showedItemsScrollbarColor,
+    Color? showedItemsBackgroundColor,
+    double? showedItemsScrollbarMinThumbLength,
+    double? showedItemsScrollbarMinOverscrollLength,
+    Radius? showedItemsScrollbarRadius,
+    double? showedItemContainerHeight,
+    EdgeInsets? showedItemContainerPadding,
+    bool? showShowedItemsScrollbar,
+    bool? showSelectAllButton,
+    bool? showClearAllButton,
+    InputDecoration? searchFieldInputDecoration,
+    TextStyle? searchItemTextStyle,
+    Widget? noResultsWidget,
+    double? pickedItemSpacing,
+    double? pickedItemsContainerMaxHeight,
+    double? pickedItemsContainerMinHeight,
+    Color? pickedItemsScrollbarColor,
+    double? pickedItemsScrollbarThickness,
+    double? pickedItemsScrollbarMinOverscrollLength,
+    Radius? pickedItemsScrollbarRadius,
+    double? pickedItemsScrollbarMinThumbLength,
+    BoxDecoration? pickedItemsBoxDecoration,
+    bool? showPickedItemScrollbar,
+    VoidCallback? onTapShowedItem,
+    ScrollController? pickedItemsScrollController,
+    ScrollController? showedItemsScrollController,
+    ScrollPhysics? pickedItemsScrollPhysics,
+    ScrollPhysics? showedItemsScrollPhysics,
+    BoxDecoration? showedItemsBoxDecoration,
+    bool? sortPickedItems,
+    bool? sortShowedItems,
+    Widget? showItemsButton,
+    VoidCallback? onTapShowItems,
+    Widget? selectAllButton,
+    VoidCallback? onTapSelectAll,
+    Widget? clearAllButton,
+    VoidCallback? onTapClearAll,
+  }) {
+    return MultipleSearchSelection._(
+      title: title,
+      fieldToCheck: fieldToCheck,
+      itemBuilder: itemBuilder,
+      onPickedChange: onPickedChange,
+      pickedItemBuilder: pickedItemBuilder,
+      clearAllButton: clearAllButton,
+      fuzzySearch: fuzzySearch,
+      initialPickedItems: initialPickedItems,
+      itemsVisibility: itemsVisibility,
+      maximumShowItemsHeight: maximumShowItemsHeight,
+      noResultsWidget: noResultsWidget,
+      onItemAdded: onItemAdded,
+      onItemRemoved: onItemRemoved,
+      onTapClearAll: onTapClearAll,
+      onTapSelectAll: onTapSelectAll,
+      onTapShowItems: onTapShowItems,
+      onTapShowedItem: onTapShowedItem,
+      outerContainerBorderColor: outerContainerBorderColor,
+      pickedItemSpacing: pickedItemSpacing,
+      pickedItemsBorderColor: pickedItemsBorderColor,
+      pickedItemsBoxDecoration: pickedItemsBoxDecoration,
+      pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
+      pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
+      pickedItemsScrollController: pickedItemsScrollController,
+      pickedItemsScrollPhysics: pickedItemsScrollPhysics,
+      pickedItemsScrollbarColor: pickedItemsScrollbarColor,
+      pickedItemsScrollbarMinOverscrollLength:
+          pickedItemsScrollbarMinOverscrollLength,
+      pickedItemsScrollbarMinThumbLength: pickedItemsScrollbarMinThumbLength,
+      pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
+      pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
+      searchFieldInputDecoration: searchFieldInputDecoration,
+      searchItemTextStyle: searchItemTextStyle,
+      selectAllButton: selectAllButton,
+      showClearAllButton: showClearAllButton,
+      showItemsButton: showItemsButton,
+      showPickedItemScrollbar: showPickedItemScrollbar,
+      showSelectAllButton: showSelectAllButton,
+      showShowedItemsScrollbar: showShowedItemsScrollbar,
+      showedItemContainerHeight: showedItemContainerHeight,
+      showedItemContainerPadding: showedItemContainerPadding,
+      showedItemsBackgroundColor: showedItemsBackgroundColor,
+      showedItemsBoxDecoration: showedItemsBoxDecoration,
+      showedItemsScrollController: showedItemsScrollController,
+      showedItemsScrollPhysics: showedItemsScrollPhysics,
+      showedItemsScrollbarColor: showedItemsScrollbarColor,
+      showedItemsScrollbarMinOverscrollLength:
+          showedItemsScrollbarMinOverscrollLength,
+      showedItemsScrollbarMinThumbLength: showedItemsScrollbarMinThumbLength,
+      showedItemsScrollbarRadius: showedItemsScrollbarRadius,
+      sortPickedItems: sortPickedItems,
+      sortShowedItems: sortShowedItems,
+    );
+  }
+
+  const MultipleSearchSelection._({
     required this.onPickedChange,
     required this.fieldToCheck,
     required this.itemBuilder,
     required this.pickedItemBuilder,
+    this.items,
+    this.future,
     this.initialPickedItems,
     this.fuzzySearch = FuzzySearch.none,
     this.onItemAdded,
@@ -33,8 +250,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.maximumShowItemsHeight = 150,
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
-    this.sortPickedItems = false,
-    this.sortShowedItems = false,
+    this.sortPickedItems,
+    this.sortShowedItems,
     this.showShowedItemsScrollbar = true,
     this.showPickedItemScrollbar = true,
     this.showedItemsScrollbarColor,
@@ -70,7 +287,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.onTapClearAll,
     this.onTapSelectAll,
     this.onTapShowItems,
-  }) : super(key: key);
+  });
+
+  final Future<List<T>>? future;
 
   /// The title widget on top of picked items.
   final Widget? title;
@@ -85,7 +304,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final double maximumShowItemsHeight;
 
   /// The list of items (T) to search and select.
-  final List<T> items;
+  final List<T>? items;
 
   /// The list of initial picked items.
   final List<T>? initialPickedItems;
@@ -112,13 +331,13 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final EdgeInsets? showedItemContainerPadding;
 
   /// Hide or show items' scrollbar, defaults to [true]
-  final bool showShowedItemsScrollbar;
+  final bool? showShowedItemsScrollbar;
 
-  /// Hide or show select all button.
-  final bool showSelectAllButton;
+  /// Hide or show select all button, defaults to [true]
+  final bool? showSelectAllButton;
 
-  /// Hide or show clear all button.
-  final bool showClearAllButton;
+  /// Hide or show clear all button, defaults to [true]
+  final bool? showClearAllButton;
 
   /// A callback when user selects or deselects an item. Always returns the currently picked items.
   final Function(List<T>) onPickedChange;
@@ -166,7 +385,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final BoxDecoration? pickedItemsBoxDecoration;
 
   /// Hide or show picked items' scrollbar, defaults to [true].
-  final bool showPickedItemScrollbar;
+  final bool? showPickedItemScrollbar;
 
   /// A callback when a showed item is tapped.
   final VoidCallback? onTapShowedItem;
@@ -187,10 +406,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final BoxDecoration? showedItemsBoxDecoration;
 
   /// Whether the picked items are sorted alphabetically. Defaults to [false].
-  final bool sortPickedItems;
+  final bool? sortPickedItems;
 
   /// Whether the showed items are sorted alphabetically. Defaults to [false].
-  final bool sortShowedItems;
+  final bool? sortShowedItems;
 
   /// How the showed items are displayed.
   ///
@@ -302,12 +521,21 @@ class _MultipleSearchSelectionState<T>
   final TextEditingController _textEditingController = TextEditingController();
 
   final FocusNode _textFieldFocus = FocusNode();
-  @override
-  void initState() {
-    super.initState();
-    showedItems = [...widget.items];
-    allItems = [...widget.items];
-    if (widget.sortShowedItems) {
+
+  bool _loading = false;
+
+// TODO: Create & handle future builder
+  Future<void> _prepareItems() async {
+    if (widget.future != null) {
+      final List<T> futureList = await widget.future!;
+      showedItems = [...futureList];
+      allItems = [...futureList];
+    } else {
+      showedItems = [...widget.items ?? []];
+      allItems = [...widget.items ?? []];
+    }
+
+    if (widget.sortShowedItems ?? false) {
       showedItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -319,6 +547,13 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _prepareItems();
 
     expanded = widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
 
@@ -336,7 +571,7 @@ class _MultipleSearchSelectionState<T>
         )
         .toList();
     if (showedItems.isNotEmpty) {
-      if (widget.sortShowedItems) {
+      if (widget.sortShowedItems ?? false) {
         showedItems.sort(
           (a, b) => widget.fieldToCheck(a).compareTo(
                 widget.fieldToCheck(b),
@@ -344,7 +579,7 @@ class _MultipleSearchSelectionState<T>
         );
       }
     }
-    if (widget.sortShowedItems) {
+    if (widget.sortShowedItems ?? false) {
       allItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -362,7 +597,7 @@ class _MultipleSearchSelectionState<T>
     widget.onTapShowedItem?.call();
     final T pickedItem = item;
     pickedItems.add(pickedItem);
-    if (widget.sortPickedItems) {
+    if (widget.sortPickedItems ?? false) {
       pickedItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -443,7 +678,7 @@ class _MultipleSearchSelectionState<T>
               ),
             ),
           ),
-        if (widget.showClearAllButton ||
+        if ((widget.showClearAllButton ?? true) ||
             widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
           const SizedBox(
             height: 10,
@@ -631,7 +866,8 @@ class _MultipleSearchSelectionState<T>
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.all(
-                                                              6.0),
+                                                        6.0,
+                                                      ),
                                                       child: widget
                                                               .noResultsWidget ??
                                                           const Text(
@@ -679,12 +915,12 @@ class _MultipleSearchSelectionState<T>
                       width: 10,
                     ),
                   ],
-                  if (widget.showSelectAllButton)
+                  if (widget.showSelectAllButton ?? true)
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
                         pickedItems.addAll(showedItems);
-                        if (widget.sortPickedItems) {
+                        if (widget.sortPickedItems ?? false) {
                           pickedItems.sort(
                             (a, b) => widget.fieldToCheck(a).compareTo(
                                   widget.fieldToCheck(b),
@@ -702,7 +938,7 @@ class _MultipleSearchSelectionState<T>
                             )
                             .toList();
                         if (showedItems.isNotEmpty) {
-                          if (widget.sortShowedItems) {
+                          if (widget.sortShowedItems ?? false) {
                             showedItems.sort(
                               (a, b) => widget.fieldToCheck(a).compareTo(
                                     widget.fieldToCheck(b),
@@ -722,7 +958,7 @@ class _MultipleSearchSelectionState<T>
                     ),
                 ],
               ),
-              if (pickedItems.isNotEmpty && widget.showClearAllButton)
+              if (pickedItems.isNotEmpty && (widget.showClearAllButton ?? true))
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
@@ -736,7 +972,7 @@ class _MultipleSearchSelectionState<T>
                         )
                         .toList();
                     if (showedItems.isNotEmpty) {
-                      if (widget.sortShowedItems) {
+                      if (widget.sortShowedItems ?? false) {
                         showedItems.sort(
                           (a, b) => widget.fieldToCheck(a).compareTo(
                                 widget.fieldToCheck(b),
@@ -745,7 +981,7 @@ class _MultipleSearchSelectionState<T>
                       }
                     }
                     pickedItems.removeRange(0, pickedItems.length);
-                    if (widget.sortShowedItems) {
+                    if (widget.sortShowedItems ?? false) {
                       allItems.sort(
                         (a, b) => widget.fieldToCheck(a).compareTo(
                               widget.fieldToCheck(b),
