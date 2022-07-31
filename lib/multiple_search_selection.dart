@@ -122,8 +122,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
             showedItemsScrollbarMinOverscrollLength,
         showedItemsScrollbarMinThumbLength: showedItemsScrollbarMinThumbLength,
         showedItemsScrollbarRadius: showedItemsScrollbarRadius,
-        sortPickedItems: sortPickedItems,
-        sortShowedItems: sortShowedItems,
+        sortPickedItems: sortPickedItems ?? false,
+        sortShowedItems: sortShowedItems ?? false,
       );
 
   const MultipleSearchSelection._({
@@ -142,8 +142,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.maximumShowItemsHeight = 150,
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
-    this.sortPickedItems,
-    this.sortShowedItems,
+    this.sortPickedItems = false,
+    this.sortShowedItems = false,
     this.showShowedItemsScrollbar = true,
     this.showPickedItemScrollbar = true,
     this.showedItemsScrollbarColor,
@@ -298,10 +298,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final BoxDecoration? showedItemsBoxDecoration;
 
   /// Whether the picked items are sorted alphabetically. Defaults to [false].
-  final bool? sortPickedItems;
+  final bool sortPickedItems;
 
   /// Whether the showed items are sorted alphabetically. Defaults to [false].
-  final bool? sortShowedItems;
+  final bool sortShowedItems;
 
   /// How the showed items are displayed.
   ///
@@ -427,7 +427,7 @@ class _MultipleSearchSelectionState<T>
       allItems = [...widget.items ?? []];
     }
 
-    if (widget.sortShowedItems ?? false) {
+    if (widget.sortShowedItems) {
       showedItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -463,7 +463,7 @@ class _MultipleSearchSelectionState<T>
         )
         .toList();
     if (showedItems.isNotEmpty) {
-      if (widget.sortShowedItems ?? false) {
+      if (widget.sortShowedItems) {
         showedItems.sort(
           (a, b) => widget.fieldToCheck(a).compareTo(
                 widget.fieldToCheck(b),
@@ -471,7 +471,7 @@ class _MultipleSearchSelectionState<T>
         );
       }
     }
-    if (widget.sortShowedItems ?? false) {
+    if (widget.sortShowedItems) {
       allItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -489,7 +489,7 @@ class _MultipleSearchSelectionState<T>
     widget.onTapShowedItem?.call();
     final T pickedItem = item;
     pickedItems.add(pickedItem);
-    if (widget.sortPickedItems ?? false) {
+    if (widget.sortPickedItems) {
       pickedItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -812,7 +812,7 @@ class _MultipleSearchSelectionState<T>
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
                         pickedItems.addAll(showedItems);
-                        if (widget.sortPickedItems ?? false) {
+                        if (widget.sortPickedItems) {
                           pickedItems.sort(
                             (a, b) => widget.fieldToCheck(a).compareTo(
                                   widget.fieldToCheck(b),
@@ -830,7 +830,7 @@ class _MultipleSearchSelectionState<T>
                             )
                             .toList();
                         if (showedItems.isNotEmpty) {
-                          if (widget.sortShowedItems ?? false) {
+                          if (widget.sortShowedItems) {
                             showedItems.sort(
                               (a, b) => widget.fieldToCheck(a).compareTo(
                                     widget.fieldToCheck(b),
@@ -864,7 +864,7 @@ class _MultipleSearchSelectionState<T>
                         )
                         .toList();
                     if (showedItems.isNotEmpty) {
-                      if (widget.sortShowedItems ?? false) {
+                      if (widget.sortShowedItems) {
                         showedItems.sort(
                           (a, b) => widget.fieldToCheck(a).compareTo(
                                 widget.fieldToCheck(b),
@@ -873,7 +873,7 @@ class _MultipleSearchSelectionState<T>
                       }
                     }
                     pickedItems.removeRange(0, pickedItems.length);
-                    if (widget.sortShowedItems ?? false) {
+                    if (widget.sortShowedItems) {
                       allItems.sort(
                         (a, b) => widget.fieldToCheck(a).compareTo(
                               widget.fieldToCheck(b),
