@@ -414,8 +414,6 @@ class _MultipleSearchSelectionState<T>
 
   final FocusNode _textFieldFocus = FocusNode();
 
-  bool _loading = false;
-
 // TODO: Create & handle future builder
   Future<void> _prepareItems() async {
     if (widget.future != null) {
