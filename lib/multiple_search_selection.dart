@@ -375,7 +375,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// A callback when the select all button is pressed.
   final VoidCallback? onTapShowItems;
 
-  /// The select all button widget. Ontap logic is already defiend and you can't override it with
+  /// The select all button widget. Ontap logic is already defined and you can't override it with
   ///
   /// a widget that has onTap, e.g [TextButton]. If you want to do something when you tap the button
   ///
@@ -385,7 +385,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// A callback when the select all button is pressed.
   final VoidCallback? onTapSelectAll;
 
-  /// The clear all selected items button widget. Ontap logic is already defiend and you can't override it with
+  /// The clear all selected items button widget. Ontap logic is already defined and you can't override it with
   ///
   /// a widget that has onTap, e.g [TextButton]. If you want to do something when you tap the button
   ///
