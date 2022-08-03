@@ -338,7 +338,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   ///
   /// ### Example
   ///
-  /// If we work with `List<Country>` where Country is
+  /// If we work with `List<Country>`, where Country is
   /// ```dart
   /// class Country {
   ///   String name;
@@ -346,7 +346,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// }
   /// ```
   ///
-  /// If you want to search by name when then you can use
+  /// and you want to search by name then you can do
   ///
   /// ```dart
   /// fieldToCheck: (country) {
