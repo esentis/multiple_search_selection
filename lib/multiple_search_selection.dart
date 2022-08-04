@@ -414,7 +414,6 @@ class _MultipleSearchSelectionState<T>
 
   final FocusNode _textFieldFocus = FocusNode();
 
-// TODO: Create & handle future builder
   Future<void> _prepareItems() async {
     if (widget.future != null) {
       final List<T> futureList = await widget.future!;
