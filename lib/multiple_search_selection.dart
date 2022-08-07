@@ -183,7 +183,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   final Future<List<T>>? future;
 
-  /// The title widget on top of picked items.
+  /// The title widget on top of the picked items.
   final Widget? title;
 
   /// The border color of the picked items container.
@@ -222,13 +222,13 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// The padding of the showed item container.
   final EdgeInsets? showedItemContainerPadding;
 
-  /// Hide or show items' scrollbar, defaults to [true]
+  /// Hide or show items' scrollbar, defaults to [true].
   final bool? showShowedItemsScrollbar;
 
-  /// Hide or show select all button, defaults to [true]
+  /// Hide or show select all button, defaults to [true].
   final bool? showSelectAllButton;
 
-  /// Hide or show clear all button, defaults to [true]
+  /// Hide or show clear all button, defaults to [true].
   final bool? showClearAllButton;
 
   /// A callback when user selects or deselects an item. Always returns the currently picked items.
