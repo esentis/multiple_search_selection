@@ -43,7 +43,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? showSelectAllButton,
     bool? showClearAllButton,
     InputDecoration? searchFieldInputDecoration,
-    TextStyle? searchItemTextStyle,
+    TextStyle? searchFieldTextStyle,
     Widget? noResultsWidget,
     double? pickedItemSpacing,
     double? pickedItemsContainerMaxHeight,
@@ -104,7 +104,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
         pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
         searchFieldInputDecoration: searchFieldInputDecoration,
-        searchItemTextStyle: searchItemTextStyle,
+        searchFieldTextStyle: searchFieldTextStyle,
         selectAllButton: selectAllButton,
         showClearAllButton: showClearAllButton,
         showItemsButton: showItemsButton,
@@ -175,7 +175,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showItemsButton,
     this.selectAllButton,
     this.clearAllButton,
-    this.searchItemTextStyle,
+    this.searchFieldTextStyle,
     this.onTapClearAll,
     this.onTapSelectAll,
     this.onTapShowItems,
@@ -244,12 +244,12 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final InputDecoration? searchFieldInputDecoration;
 
   /// The text style of the search text field.
-  final TextStyle? searchItemTextStyle;
+  final TextStyle? searchFieldTextStyle;
 
   /// What is shown when there are no more results to select.
   final Widget? noResultsWidget;
 
-  /// The spacing of picked item chip. Defaults to 5.
+  /// The spacing of the picked item. Defaults to 5.
   final double? pickedItemSpacing;
 
   /// The maximum height of which the picked items container can extend. Defaults to 150 pixels.
@@ -618,7 +618,7 @@ class _MultipleSearchSelectionState<T>
                                       child: TextField(
                                         focusNode: _textFieldFocus,
                                         controller: _textEditingController,
-                                        style: widget.searchItemTextStyle,
+                                        style: widget.searchFieldTextStyle,
                                         decoration: widget
                                                 .searchFieldInputDecoration ??
                                             InputDecoration(
@@ -916,7 +916,7 @@ class _MultipleSearchSelectionState<T>
             child: TextField(
               focusNode: _textFieldFocus,
               controller: _textEditingController,
-              style: widget.searchItemTextStyle,
+              style: widget.searchFieldTextStyle,
               decoration: widget.searchFieldInputDecoration ??
                   InputDecoration(
                     contentPadding: const EdgeInsets.only(left: 6),
