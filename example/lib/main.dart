@@ -46,14 +46,16 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: MultipleSearchSelection<Country>(
-        title: Text(
-          'Countries',
-          style: kStyleDefault.copyWith(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+        title: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Text(
+            'Countries',
+            style: kStyleDefault.copyWith(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-        titlePadding: const EdgeInsets.symmetric(vertical: 10),
         items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;
@@ -95,37 +97,40 @@ class _MyHomePageState extends State<MyHomePage> {
         sortShowedItems: true,
         sortPickedItems: true,
         onTapSelectAll: () => print('select all tapped'),
-        selectAllButton: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.blue),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Select All',
-              style: kStyleDefault,
+        selectAllButton: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blue),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Select All',
+                style: kStyleDefault,
+              ),
             ),
           ),
         ),
         onTapClearAll: () => print('clear all tapped'),
-        clearAllButton: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.red),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Clear All',
-              style: kStyleDefault,
+        clearAllButton: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Clear All',
+                style: kStyleDefault,
+              ),
             ),
           ),
         ),
         fuzzySearch: FuzzySearch.jaro,
-        padding: const EdgeInsets.all(20),
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
         showSelectAllButton: true,
-        searchItemTextContentPadding:
-            const EdgeInsets.symmetric(horizontal: 10),
         maximumShowItemsHeight: 200,
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
