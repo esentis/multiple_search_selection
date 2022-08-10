@@ -7,6 +7,10 @@ Fields removed:
 - [showedItemMouseCursor] : Refactor -> You can build your own showed item [Widget] with [itemBuilder] and use your own style.
 - [searchItemTextContentPadding] : Refactor -> You can use [searchFieldInputDecoration] to style your search textfield.
 
+Fields renamed:
+
+- [searchItemTextStyle] -> [searchFieldTextStyle]
+
 ## 2.1.0 🔥 ⚡️ Breaking changes & performance improvements
 
 - Adds [showItemsButton] widget and removes all parameters associated with it previously.
