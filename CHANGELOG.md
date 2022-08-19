@@ -1,4 +1,8 @@
-# 2.2.0 🔥 Breaking changes
+# 2.2.1 🐛 Bug fixes
+
+- Fixes `itemsVisibility: ShowedItemsVisibility.onType` not showing anything.
+
+## 2.2.0 🔥 Breaking changes
 
 Fields removed:
 
@@ -11,7 +15,7 @@ Fields renamed:
 
 - [searchItemTextStyle] -> [searchFieldTextStyle]
 
-## 2.1.0 🔥 ⚡️ Breaking changes & performance improvements
+### 2.1.0 🔥 ⚡️ Breaking changes & performance improvements
 
 - Adds [showItemsButton] widget and removes all parameters associated with it previously.
 - Adds [selectAllButton] widget and removes all parameters associated with it previously.
