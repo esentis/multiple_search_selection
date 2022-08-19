@@ -836,216 +836,212 @@ class _MultipleSearchSelectionState<T>
                           }
                         }
 
-                          widget.onPickedChange(pickedItems);
-                          widget.onTapSelectAll?.call();
-                          setState(() {});
-                        },
-                        child: IgnorePointer(
-                          child: widget.selectAllButton ??
-                              const Text('Select all'),
-                        ),
+                        widget.onPickedChange(pickedItems);
+                        widget.onTapSelectAll?.call();
+                        setState(() {});
+                      },
+                      child: IgnorePointer(
+                        child:
+                            widget.selectAllButton ?? const Text('Select all'),
                       ),
-                  ],
-                ),
-                if (pickedItems.isNotEmpty && widget.showClearAllButton)
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      allItems.addAll(pickedItems);
-                      showedItems = allItems
-                          .where(
-                            (item) => widget
-                                .fieldToCheck(item)
-                                .toLowerCase()
-                                .contains(_textEditingController.text),
-                          )
-                          .toList();
-                      if (showedItems.isNotEmpty) {
-                        if (widget.sortShowedItems) {
-                          showedItems.sort(
-                            (a, b) => widget.fieldToCheck(a).compareTo(
-                                  widget.fieldToCheck(b),
-                                ),
-                          );
-                        }
-                      }
-                      pickedItems.removeRange(0, pickedItems.length);
-                      if (widget.sortShowedItems) {
-                        allItems.sort(
-                          (a, b) => widget.fieldToCheck(a).compareTo(
-                                widget.fieldToCheck(b),
-                              ),
-                        );
-                      }
-                      widget.onPickedChange(pickedItems);
-                      widget.onTapClearAll?.call();
-                      setState(() {});
-                    },
-                    child: IgnorePointer(
-                      child: widget.clearAllButton ?? const Text('Clear all'),
                     ),
-                  )
-              ],
-            )
-          ],
-          const SizedBox(
-            height: 10,
-          ),
-          if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
-            DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5),
-                  ),
-                  left: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5),
-                  ),
-                  right: BorderSide(
-                    color: widget.outerContainerBorderColor ??
-                        Colors.grey.withOpacity(0.5),
-                  ),
-                  bottom: BorderSide(
-                    color: Colors.grey.withOpacity(0.5),
-                  ),
-                ),
+                ],
               ),
-              child: TextField(
-                focusNode: _textFieldFocus,
-                controller: _textEditingController,
-                style: widget.searchItemTextStyle,
-                decoration: widget.searchFieldInputDecoration ??
-                    InputDecoration(
-                      contentPadding: widget.searchItemTextContentPadding ??
-                          const EdgeInsets.only(left: 6),
-                      hintText: 'Type here to search',
-                      hintStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                onChanged: (value) {
-                  if (widget.fuzzySearch == FuzzySearch.jaro) {
-                    showedItems = allItems.where(
-                      (item) {
-                        return widget
-                                .fieldToCheck(item)
-                                .toLowerCase()
-                                .contains(value) ||
-                            (getJaro(widget.fieldToCheck(item), value) >= 0.8);
-                      },
-                    ).toList();
-                  } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-                    showedItems = allItems.where(
-                      (item) {
-                        return widget
-                                .fieldToCheck(item)
-                                .toLowerCase()
-                                .contains(value) ||
-                            (getLevenshtein(widget.fieldToCheck(item), value) <=
-                                2);
-                      },
-                    ).toList();
-                  } else {
+              if (pickedItems.isNotEmpty && (widget.showClearAllButton ?? true))
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    allItems.addAll(pickedItems);
                     showedItems = allItems
                         .where(
                           (item) => widget
                               .fieldToCheck(item)
                               .toLowerCase()
-                              .contains(value),
+                              .contains(_textEditingController.text),
                         )
                         .toList();
-                  }
-                  if (expanded &&
-                      widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                    expanded = widget.itemsVisibility ==
-                            ShowedItemsVisibility.onType &&
-                        _textEditingController.text.isNotEmpty;
-                  }
-                  setState(() {});
-                },
-              ),
-            ),
-          if (expanded &&
-              widget.itemsVisibility != ShowedItemsVisibility.toggle)
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: widget.maximumShowItemsHeight,
-              ),
-              decoration: widget.showedItemsBoxDecoration ??
-                  BoxDecoration(
-                    color: widget.showedItemsBackgroundColor ??
-                        Colors.grey.withOpacity(0.1),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: widget.outerContainerBorderColor ??
-                            Colors.grey.withOpacity(0.5),
-                      ),
-                      left: BorderSide(
-                        color: widget.outerContainerBorderColor ??
-                            Colors.grey.withOpacity(0.5),
-                      ),
-                      right: BorderSide(
-                        color: widget.outerContainerBorderColor ??
-                            Colors.grey.withOpacity(0.5),
-                      ),
-                    ),
-                  ),
-              child: RawScrollbar(
-                controller: widget.showedItemsScrollController ??
-                    _showedItemsScrollController,
-                thumbColor: widget.showedItemsScrollbarColor,
-                thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
-                minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
-                minOverscrollLength:
-                    widget.showedItemsScrollbarMinOverscrollLength ?? 5,
-                radius: widget.showedItemsScrollbarRadius ??
-                    const Radius.circular(5),
-                thumbVisibility: widget.showShowedItemsScrollbar,
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context)
-                      .copyWith(scrollbars: false),
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    primary: false,
-                    shrinkWrap: true,
-                    controller: widget.showedItemsScrollController ??
-                        _showedItemsScrollController,
-                    children: showedItems.isEmpty
-                        ? [
-                            Padding(
-                              padding: const EdgeInsets.all(6.0),
-                              child: widget.noResultsWidget ??
-                                  const Text('No results'),
-                            )
-                          ]
-                        : showedItems.map((T item) {
-                            return GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                _onAddItem(item);
-                                setState(() {});
-                              },
-                              child: IgnorePointer(
-                                child: widget.itemBuilder(
-                                  item,
-                                ),
+                    if (showedItems.isNotEmpty) {
+                      if (widget.sortShowedItems) {
+                        showedItems.sort(
+                          (a, b) => widget.fieldToCheck(a).compareTo(
+                                widget.fieldToCheck(b),
                               ),
-                            );
-                          }).toList(),
+                        );
+                      }
+                    }
+                    pickedItems.removeRange(0, pickedItems.length);
+                    if (widget.sortShowedItems) {
+                      allItems.sort(
+                        (a, b) => widget.fieldToCheck(a).compareTo(
+                              widget.fieldToCheck(b),
+                            ),
+                      );
+                    }
+                    widget.onPickedChange(pickedItems);
+                    widget.onTapClearAll?.call();
+                    setState(() {});
+                  },
+                  child: IgnorePointer(
+                    child: widget.clearAllButton ?? const Text('Clear all'),
                   ),
+                )
+            ],
+          )
+        ],
+        const SizedBox(
+          height: 10,
+        ),
+        if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
+                left: BorderSide(
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
+                right: BorderSide(
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
+                ),
+                bottom: BorderSide(
+                  color: Colors.grey.withOpacity(0.5),
                 ),
               ),
-            )
-        ],
-      ),
+            ),
+            child: TextField(
+              focusNode: _textFieldFocus,
+              controller: _textEditingController,
+              style: widget.searchFieldTextStyle,
+              decoration: widget.searchFieldInputDecoration ??
+                  InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 6),
+                    hintText: 'Type here to search',
+                    hintStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+              onChanged: (value) {
+                if (widget.fuzzySearch == FuzzySearch.jaro) {
+                  showedItems = allItems.where(
+                    (item) {
+                      return widget
+                              .fieldToCheck(item)
+                              .toLowerCase()
+                              .contains(value) ||
+                          (getJaro(widget.fieldToCheck(item), value) >= 0.8);
+                    },
+                  ).toList();
+                } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
+                  showedItems = allItems.where(
+                    (item) {
+                      return widget
+                              .fieldToCheck(item)
+                              .toLowerCase()
+                              .contains(value) ||
+                          (getLevenshtein(widget.fieldToCheck(item), value) <=
+                              2);
+                    },
+                  ).toList();
+                } else {
+                  showedItems = allItems
+                      .where(
+                        (item) => widget
+                            .fieldToCheck(item)
+                            .toLowerCase()
+                            .contains(value),
+                      )
+                      .toList();
+                }
+                if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
+                  expanded =
+                      widget.itemsVisibility == ShowedItemsVisibility.onType &&
+                          _textEditingController.text.isNotEmpty;
+                }
+                setState(() {});
+              },
+            ),
+          ),
+        if (expanded && widget.itemsVisibility != ShowedItemsVisibility.toggle)
+          Container(
+            constraints: BoxConstraints(
+              maxHeight: widget.maximumShowItemsHeight,
+            ),
+            decoration: widget.showedItemsBoxDecoration ??
+                BoxDecoration(
+                  color: widget.showedItemsBackgroundColor ??
+                      Colors.grey.withOpacity(0.1),
+                  border: Border(
+                    bottom: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                    left: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                    right: BorderSide(
+                      color: widget.outerContainerBorderColor ??
+                          Colors.grey.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+            child: RawScrollbar(
+              controller: widget.showedItemsScrollController ??
+                  _showedItemsScrollController,
+              thumbColor: widget.showedItemsScrollbarColor,
+              thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
+              minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
+              minOverscrollLength:
+                  widget.showedItemsScrollbarMinOverscrollLength ?? 5,
+              radius:
+                  widget.showedItemsScrollbarRadius ?? const Radius.circular(5),
+              thumbVisibility: widget.showShowedItemsScrollbar,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  primary: false,
+                  shrinkWrap: true,
+                  controller: widget.showedItemsScrollController ??
+                      _showedItemsScrollController,
+                  children: showedItems.isEmpty
+                      ? [
+                          Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: widget.noResultsWidget ??
+                                const Text('No results'),
+                          )
+                        ]
+                      : showedItems.map((T item) {
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              _onAddItem(item);
+                              setState(() {});
+                            },
+                            child: IgnorePointer(
+                              child: widget.itemBuilder(
+                                item,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                ),
+              ),
+            ),
+          )
+      ],
     );
   }
 }
