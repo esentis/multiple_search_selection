@@ -962,8 +962,7 @@ class _MultipleSearchSelectionState<T>
                       )
                       .toList();
                 }
-                if (expanded &&
-                    widget.itemsVisibility == ShowedItemsVisibility.onType) {
+                if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
                   expanded =
                       widget.itemsVisibility == ShowedItemsVisibility.onType &&
                           _textEditingController.text.isNotEmpty;
