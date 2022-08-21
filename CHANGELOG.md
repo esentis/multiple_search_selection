@@ -1,8 +1,17 @@
-# 2.2.1 🐛 Bug fixes
+## 2.2.2 ♻️ Code refactoring
+
+Fields made optional:
+
+- [maximumShowItemsHeight]. It defaults to 150.
+- [onPickedChange]. Your call if you need it.
+- [itemsVisibility]. It defaults to always on.
+- [fuzzySearch]. It defaults to none.
+
+## 2.2.1 🐛 Bug fixes
 
 - Fixes `itemsVisibility: ShowedItemsVisibility.onType` not showing anything.
 
-## 2.2.0 🔥 Breaking changes
+### 2.2.0 🔥 Breaking changes
 
 Fields removed:
 
