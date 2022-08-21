@@ -19,15 +19,15 @@ enum ShowedItemsVisibility {
 class MultipleSearchSelection<T> extends StatefulWidget {
   factory MultipleSearchSelection({
     required List<T> items,
-    required double maximumShowItemsHeight,
-    required Function(List<T>) onPickedChange,
-    Function(T)? onItemRemoved,
-    Function(T)? onItemAdded,
-    required ShowedItemsVisibility itemsVisibility,
-    required FuzzySearch fuzzySearch,
     required Widget Function(T) pickedItemBuilder,
     required String Function(T) fieldToCheck,
     required Widget Function(T) itemBuilder,
+    Function(T)? onItemRemoved,
+    Function(T)? onItemAdded,
+    Function(List<T>)? onPickedChange,
+    FuzzySearch? fuzzySearch,
+    double? maximumShowItemsHeight,
+    ShowedItemsVisibility? itemsVisibility,
     List<T>? initialPickedItems,
     Widget? title,
     Color? pickedItemsBorderColor,
@@ -78,10 +78,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         onPickedChange: onPickedChange,
         pickedItemBuilder: pickedItemBuilder,
         clearAllButton: clearAllButton,
-        fuzzySearch: fuzzySearch,
+        fuzzySearch: fuzzySearch ?? FuzzySearch.none,
         initialPickedItems: initialPickedItems,
-        itemsVisibility: itemsVisibility,
-        maximumShowItemsHeight: maximumShowItemsHeight,
+        itemsVisibility: itemsVisibility ?? ShowedItemsVisibility.alwaysOn,
+        maximumShowItemsHeight: maximumShowItemsHeight ?? 150,
         noResultsWidget: noResultsWidget,
         onItemAdded: onItemAdded,
         onItemRemoved: onItemRemoved,
@@ -127,10 +127,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       );
 
   const MultipleSearchSelection._({
-    required this.onPickedChange,
     required this.fieldToCheck,
     required this.itemBuilder,
     required this.pickedItemBuilder,
+    this.onPickedChange,
     this.items,
     this.future,
     this.initialPickedItems,
@@ -232,7 +232,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final bool? showClearAllButton;
 
   /// A callback when user selects or deselects an item. Always returns the currently picked items.
-  final Function(List<T>) onPickedChange;
+  final Function(List<T>)? onPickedChange;
 
   /// A callback when an item is removed, returns the item aswell.
   final Function(T)? onItemRemoved;
@@ -314,7 +314,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// ```
   ///
   /// Defaults to [ShowedItemsVisibility.alwaysOn].
-  final ShowedItemsVisibility itemsVisibility;
+  final ShowedItemsVisibility? itemsVisibility;
 
   /// Fuzzy search functionality. Defaults to [FuzzySearch.none].
   ///
@@ -329,7 +329,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// FuzzySearch.levenshtein // The number of edits required to convert one string to other.
   /// ```
   /// ### Shows results with minimum 2 edits.
-  final FuzzySearch fuzzySearch;
+  final FuzzySearch? fuzzySearch;
 
   /// This is the builder of picked items.
   final Widget Function(T) pickedItemBuilder;
@@ -476,7 +476,7 @@ class _MultipleSearchSelectionState<T>
       );
     }
 
-    widget.onPickedChange(pickedItems);
+    widget.onPickedChange?.call(pickedItems);
     widget.onItemRemoved?.call(item);
     setState(() {});
     widget.onItemRemoved?.call(item);
@@ -495,7 +495,7 @@ class _MultipleSearchSelectionState<T>
     }
     allItems.remove(pickedItem);
     showedItems.remove(pickedItem);
-    widget.onPickedChange(
+    widget.onPickedChange?.call(
       pickedItems,
     );
     widget.onItemAdded?.call(pickedItem);
@@ -616,6 +616,7 @@ class _MultipleSearchSelectionState<T>
                                         ),
                                       ),
                                       child: TextField(
+                                        key: const Key('toggle-searchfield'),
                                         focusNode: _textFieldFocus,
                                         controller: _textEditingController,
                                         style: widget.searchFieldTextStyle,
@@ -836,7 +837,7 @@ class _MultipleSearchSelectionState<T>
                           }
                         }
 
-                        widget.onPickedChange(pickedItems);
+                        widget.onPickedChange?.call(pickedItems);
                         widget.onTapSelectAll?.call();
                         setState(() {});
                       },
@@ -877,7 +878,7 @@ class _MultipleSearchSelectionState<T>
                             ),
                       );
                     }
-                    widget.onPickedChange(pickedItems);
+                    widget.onPickedChange?.call(pickedItems);
                     widget.onTapClearAll?.call();
                     setState(() {});
                   },
@@ -914,6 +915,7 @@ class _MultipleSearchSelectionState<T>
               ),
             ),
             child: TextField(
+              key: const Key('searchfield'),
               focusNode: _textFieldFocus,
               controller: _textEditingController,
               style: widget.searchFieldTextStyle,
