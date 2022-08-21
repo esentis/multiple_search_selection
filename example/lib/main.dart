@@ -90,13 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           );
         },
-        onTapShowedItem: () {},
-        onPickedChange: (items) {},
-        onItemAdded: (item) {},
-        onItemRemoved: (item) {},
         sortShowedItems: true,
         sortPickedItems: true,
-        onTapSelectAll: () => print('select all tapped'),
         selectAllButton: Padding(
           padding: const EdgeInsets.all(12.0),
           child: DecoratedBox(
@@ -112,7 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-        onTapClearAll: () => print('clear all tapped'),
         clearAllButton: Padding(
           padding: const EdgeInsets.all(12.0),
           child: DecoratedBox(
