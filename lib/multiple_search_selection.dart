@@ -25,6 +25,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     Function(T)? onItemRemoved,
     Function(T)? onItemAdded,
     Function(List<T>)? onPickedChange,
+    Key? key,
     FuzzySearch? fuzzySearch,
     double? maximumShowItemsHeight,
     ShowedItemsVisibility? itemsVisibility,
@@ -73,6 +74,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       MultipleSearchSelection._(
         items: items,
         title: title,
+        key: key ?? ValueKey(items.hashCode),
         fieldToCheck: fieldToCheck,
         itemBuilder: itemBuilder,
         onPickedChange: onPickedChange,
@@ -130,6 +132,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required this.fieldToCheck,
     required this.itemBuilder,
     required this.pickedItemBuilder,
+    super.key,
     this.onPickedChange,
     this.items,
     this.future,
