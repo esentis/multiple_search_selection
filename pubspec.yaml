@@ -1,6 +1,6 @@
 name: multiple_search_selection
 description: A highly customizable multiple selection widget with fuzzy search functionality.
-version: 2.2.2
+version: 2.3.0
 homepage: "https://github.com/esentis/multiple_search_selection"
 
 environment:
