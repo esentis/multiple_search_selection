@@ -1,7 +1,16 @@
-## 2.2.2 ♻️ Code refactoring
+## 2.3.0 ♻️ 🔥 🐛 Code refactoring, Breaking changes & Bug fixes
 
-Fields made optional:
+🔥 Breaking changes:
 
+- Minimum Dart SDK updated to 2.17.0
+
+🐛 Bug fixes:
+
+- Dropdown was not correctly rebuilding after changing the initial `items` list.
+
+♻️ Fields made optional:
+
+- Key parameter has been added. It defaults to `ValueKey(items.hasCode)`.
 - [maximumShowItemsHeight]. It defaults to 150.
 - [onPickedChange]. Your call if you need it.
 - [itemsVisibility]. It defaults to always on.
