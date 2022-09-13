@@ -64,6 +64,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     BoxDecoration? showedItemsBoxDecoration,
     bool? sortPickedItems,
     bool? sortShowedItems,
+    bool? clearSearchFieldOnSelect,
     Widget? showItemsButton,
     VoidCallback? onTapShowItems,
     Widget? selectAllButton,
@@ -75,6 +76,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         items: items,
         title: title,
         key: key ?? ValueKey(items.hashCode),
+        clearSearchFieldOnSelect: clearSearchFieldOnSelect ?? false,
         fieldToCheck: fieldToCheck,
         itemBuilder: itemBuilder,
         onPickedChange: onPickedChange,
@@ -182,6 +184,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.onTapClearAll,
     this.onTapSelectAll,
     this.onTapShowItems,
+    this.clearSearchFieldOnSelect,
   });
 
   final Future<List<T>>? future;
@@ -233,6 +236,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// Hide or show clear all button, defaults to [true].
   final bool? showClearAllButton;
+
+  /// Whether to clear the searchfield and reset the showed items when you pick an item. Defaults to [false].
+  final bool? clearSearchFieldOnSelect;
 
   /// A callback when user selects or deselects an item. Always returns the currently picked items.
   final Function(List<T>)? onPickedChange;
@@ -774,6 +780,15 @@ class _MultipleSearchSelectionState<T>
                                                           .opaque,
                                                       onTap: () {
                                                         _onAddItem(item);
+                                                        if (widget
+                                                                .clearSearchFieldOnSelect ??
+                                                            false) {
+                                                          _textEditingController
+                                                              .clear();
+                                                          showedItems =
+                                                              allItems;
+                                                        }
+
                                                         stateSetter(() {});
                                                         setState(() {});
                                                       },
@@ -1033,6 +1048,11 @@ class _MultipleSearchSelectionState<T>
                             behavior: HitTestBehavior.opaque,
                             onTap: () {
                               _onAddItem(item);
+                              if (widget.clearSearchFieldOnSelect ?? false) {
+                                _textEditingController.clear();
+                                showedItems = allItems;
+                              }
+
                               setState(() {});
                             },
                             child: IgnorePointer(
