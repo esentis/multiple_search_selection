@@ -1,3 +1,7 @@
+# 2.3.1 ✨ New features
+
+- [clearSearchFieldOnSelect]. Whether to clear the searchfield and reset the showed items when you pick an item. Defaults to [false].
+
 ## 2.3.0 ♻️ 🔥 🐛 Code refactoring, Breaking changes & Bug fixes
 
 🔥 Breaking changes:
@@ -16,7 +20,7 @@
 - [itemsVisibility]. It defaults to always on.
 - [fuzzySearch]. It defaults to none.
 
-## 2.2.1 🐛 Bug fixes
+### 2.2.1 🐛 Bug fixes
 
 - Fixes `itemsVisibility: ShowedItemsVisibility.onType` not showing anything.
 
