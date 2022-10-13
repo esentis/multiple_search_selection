@@ -1,6 +1,7 @@
 import 'package:example/constants.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:multiple_search_selection/helpers/create_options.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
 
 void main() {
@@ -45,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: MultipleSearchSelection<Country>.create(
+      body: MultipleSearchSelection<Country>.creatable(
         title: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Text(
@@ -57,10 +58,20 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         onItemAdded: (c) {},
-        addItem: (text) {
-          print('adding $text');
-          return Country(name: text, iso: text);
-        },
+
+        createOptions: CreateOptions(
+          createItem: (text) {
+            return Country(name: text, iso: text);
+          },
+          createItemBuilder: (text) => Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Create "$text"'),
+            ),
+          ),
+          pickCreatedItem: true,
+        ),
         items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;
