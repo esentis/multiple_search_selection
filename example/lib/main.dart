@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: MultipleSearchSelection<Country>(
+      body: MultipleSearchSelection<Country>.create(
         title: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Text(
@@ -56,6 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
+        onItemAdded: (c) {},
+        addItem: (text) {
+          print('adding $text');
+          return Country(name: text, iso: text);
+        },
         items: countries, // List<Country>
         fieldToCheck: (c) {
           return c.name;

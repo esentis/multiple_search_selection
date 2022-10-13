@@ -75,6 +75,123 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       MultipleSearchSelection._(
         items: items,
         title: title,
+        createable: false,
+        key: key ?? ValueKey(items.hashCode),
+        clearSearchFieldOnSelect: clearSearchFieldOnSelect ?? false,
+        fieldToCheck: fieldToCheck,
+        itemBuilder: itemBuilder,
+        onPickedChange: onPickedChange,
+        pickedItemBuilder: pickedItemBuilder,
+        clearAllButton: clearAllButton,
+        fuzzySearch: fuzzySearch ?? FuzzySearch.none,
+        initialPickedItems: initialPickedItems,
+        itemsVisibility: itemsVisibility ?? ShowedItemsVisibility.alwaysOn,
+        maximumShowItemsHeight: maximumShowItemsHeight ?? 150,
+        noResultsWidget: noResultsWidget,
+        onItemAdded: onItemAdded,
+        onItemRemoved: onItemRemoved,
+        onTapClearAll: onTapClearAll,
+        onTapSelectAll: onTapSelectAll,
+        onTapShowItems: onTapShowItems,
+        onTapShowedItem: onTapShowedItem,
+        outerContainerBorderColor: outerContainerBorderColor,
+        pickedItemSpacing: pickedItemSpacing,
+        pickedItemsBorderColor: pickedItemsBorderColor,
+        pickedItemsBoxDecoration: pickedItemsBoxDecoration,
+        pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
+        pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
+        pickedItemsScrollController: pickedItemsScrollController,
+        pickedItemsScrollPhysics: pickedItemsScrollPhysics,
+        pickedItemsScrollbarColor: pickedItemsScrollbarColor,
+        pickedItemsScrollbarMinOverscrollLength:
+            pickedItemsScrollbarMinOverscrollLength,
+        pickedItemsScrollbarMinThumbLength: pickedItemsScrollbarMinThumbLength,
+        pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
+        pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
+        searchFieldInputDecoration: searchFieldInputDecoration,
+        searchFieldTextStyle: searchFieldTextStyle,
+        selectAllButton: selectAllButton,
+        showClearAllButton: showClearAllButton,
+        showItemsButton: showItemsButton,
+        showPickedItemScrollbar: showPickedItemScrollbar,
+        showSelectAllButton: showSelectAllButton,
+        showShowedItemsScrollbar: showShowedItemsScrollbar,
+        showedItemContainerHeight: showedItemContainerHeight,
+        showedItemContainerPadding: showedItemContainerPadding,
+        showedItemsBackgroundColor: showedItemsBackgroundColor,
+        showedItemsBoxDecoration: showedItemsBoxDecoration,
+        showedItemsScrollController: showedItemsScrollController,
+        showedItemsScrollPhysics: showedItemsScrollPhysics,
+        showedItemsScrollbarColor: showedItemsScrollbarColor,
+        showedItemsScrollbarMinOverscrollLength:
+            showedItemsScrollbarMinOverscrollLength,
+        showedItemsScrollbarMinThumbLength: showedItemsScrollbarMinThumbLength,
+        showedItemsScrollbarRadius: showedItemsScrollbarRadius,
+        sortPickedItems: sortPickedItems ?? false,
+        sortShowedItems: sortShowedItems ?? false,
+      );
+
+  factory MultipleSearchSelection.create({
+    required List<T> items,
+    required Widget Function(T) pickedItemBuilder,
+    required String Function(T) fieldToCheck,
+    required Widget Function(T) itemBuilder,
+    required T Function(String) addItem,
+    Function(T)? onItemRemoved,
+    Function(T)? onItemAdded,
+    Function(List<T>)? onPickedChange,
+    Key? key,
+    FuzzySearch? fuzzySearch,
+    double? maximumShowItemsHeight,
+    ShowedItemsVisibility? itemsVisibility,
+    List<T>? initialPickedItems,
+    Widget? title,
+    Color? pickedItemsBorderColor,
+    Color? outerContainerBorderColor,
+    Color? showedItemsScrollbarColor,
+    Color? showedItemsBackgroundColor,
+    double? showedItemsScrollbarMinThumbLength,
+    double? showedItemsScrollbarMinOverscrollLength,
+    Radius? showedItemsScrollbarRadius,
+    double? showedItemContainerHeight,
+    EdgeInsets? showedItemContainerPadding,
+    bool? showShowedItemsScrollbar,
+    bool? showSelectAllButton,
+    bool? showClearAllButton,
+    InputDecoration? searchFieldInputDecoration,
+    TextStyle? searchFieldTextStyle,
+    Widget? noResultsWidget,
+    double? pickedItemSpacing,
+    double? pickedItemsContainerMaxHeight,
+    double? pickedItemsContainerMinHeight,
+    Color? pickedItemsScrollbarColor,
+    double? pickedItemsScrollbarThickness,
+    double? pickedItemsScrollbarMinOverscrollLength,
+    Radius? pickedItemsScrollbarRadius,
+    double? pickedItemsScrollbarMinThumbLength,
+    BoxDecoration? pickedItemsBoxDecoration,
+    bool? showPickedItemScrollbar,
+    VoidCallback? onTapShowedItem,
+    ScrollController? pickedItemsScrollController,
+    ScrollController? showedItemsScrollController,
+    ScrollPhysics? pickedItemsScrollPhysics,
+    ScrollPhysics? showedItemsScrollPhysics,
+    BoxDecoration? showedItemsBoxDecoration,
+    bool? sortPickedItems,
+    bool? sortShowedItems,
+    bool? clearSearchFieldOnSelect,
+    Widget? showItemsButton,
+    VoidCallback? onTapShowItems,
+    Widget? selectAllButton,
+    VoidCallback? onTapSelectAll,
+    Widget? clearAllButton,
+    VoidCallback? onTapClearAll,
+  }) =>
+      MultipleSearchSelection._(
+        items: items,
+        title: title,
+        createable: true,
+        addItem: addItem,
         key: key ?? ValueKey(items.hashCode),
         clearSearchFieldOnSelect: clearSearchFieldOnSelect ?? false,
         fieldToCheck: fieldToCheck,
@@ -134,8 +251,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required this.fieldToCheck,
     required this.itemBuilder,
     required this.pickedItemBuilder,
+    required this.createable,
     super.key,
     this.onPickedChange,
+    this.addItem,
     this.items,
     this.future,
     this.initialPickedItems,
@@ -403,6 +522,11 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// A callback when the clear all button is pressed.
   final VoidCallback? onTapClearAll;
+
+  /// Whether the widget is createable style.
+  final bool createable;
+
+  final T Function(String text)? addItem;
 
   @override
   _MultipleSearchSelectionState<T> createState() =>
@@ -762,17 +886,25 @@ class _MultipleSearchSelectionState<T>
                                                 _showedItemsScrollController,
                                             children: showedItems.isEmpty
                                                 ? [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                        6.0,
-                                                      ),
-                                                      child: widget
-                                                              .noResultsWidget ??
-                                                          const Text(
-                                                            'No results',
-                                                          ),
-                                                    )
+                                                    if (widget.createable)
+                                                      TextButton(
+                                                        onPressed: () {},
+                                                        child: Text(
+                                                            'Create the item'),
+                                                      )
+                                                    else
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(
+                                                          6.0,
+                                                        ),
+                                                        child: widget
+                                                                .noResultsWidget ??
+                                                            const Text(
+                                                              'No results',
+                                                            ),
+                                                      )
                                                   ]
                                                 : showedItems.map((T item) {
                                                     return GestureDetector(
@@ -1037,11 +1169,30 @@ class _MultipleSearchSelectionState<T>
                       _showedItemsScrollController,
                   children: showedItems.isEmpty
                       ? [
-                          Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: widget.noResultsWidget ??
-                                const Text('No results'),
-                          )
+                          if (widget.createable)
+                            TextButton(
+                              onPressed: () {
+                                final T itemToAdd = widget.addItem!
+                                    .call(_textEditingController.text);
+                                allItems.add(itemToAdd);
+                                _textEditingController.clear();
+                                showedItems = allItems;
+                                setState(() {});
+                              },
+                              child: Text(
+                                'Add "${_textEditingController.text}"',
+                              ),
+                            )
+                          else
+                            Padding(
+                              padding: const EdgeInsets.all(
+                                6.0,
+                              ),
+                              child: widget.noResultsWidget ??
+                                  const Text(
+                                    'No results',
+                                  ),
+                            )
                         ]
                       : showedItems.map((T item) {
                           return GestureDetector(
