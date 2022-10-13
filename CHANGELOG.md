@@ -1,4 +1,30 @@
-# 2.3.1 ✨ New features
+# 2.3.2 ✨ New features
+
+New constructor added `MultipleSearchSelection<T>.creatable` which can now create new item when search result does not return any results. It takes a new required parameter, `createOptions` e.g :
+
+```dart
+// [T] here is [Country]
+createOptions: CreateOptions<Country>(
+    // You need to create and return the item you want to add since [T] is not always [String].
+    createItem: (text) {
+        return Country(name: text, iso: text);
+    },
+    // Create item Widget that appears instead of no results.
+    createItemBuilder: (text) => Align(
+        alignment: Alignment.centerLeft,
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text('Create "$text"'),
+            ),
+        ),
+    // Whether you want to pick the newly created item or just add it to your list. Defaults to false.
+    pickCreatedItem: true,
+),
+```
+
+<img src="https://i.imgur.com/XVwxgXA.gif" title="Creatable" />
+
+## 2.3.1 ✨ New features
 
 - [clearSearchFieldOnSelect]. Whether to clear the searchfield and reset the showed items when you pick an item. Defaults to [false].
 
