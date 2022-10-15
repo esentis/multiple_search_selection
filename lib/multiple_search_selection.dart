@@ -837,6 +837,7 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
                                                             widget.onItemAdded?.call(
                                                               itemToAdd,
                                                             );
+                                                            widget.createOptions!.onItemCreated?.call(itemToAdd);
                                                           } else {
                                                             allItems.add(itemToAdd);
                                                           }
@@ -1096,6 +1097,7 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
                                     pickedItems,
                                   );
                                   widget.onItemAdded?.call(itemToAdd);
+                                  widget.createOptions!.onItemCreated?.call(itemToAdd);
                                 } else {
                                   allItems.add(itemToAdd);
                                 }
