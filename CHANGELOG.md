@@ -1,4 +1,8 @@
-# 2.3.2 ✨ New features
+# 2.3.3 🐛 Bug fixes
+
+- Adds missed [onItemCreated] parameter to [createOptions]
+
+## 2.3.2 ✨ New features
 
 New constructor added `MultipleSearchSelection<T>.creatable` which can now create new item when search result does not return any results. It takes a new required parameter, `createOptions` e.g :
 
