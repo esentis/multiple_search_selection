@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  lint: ^1.8.2
+  lint: ^2.0.1
 
 dev_dependencies:
   flutter_lints: ^2.0.0
