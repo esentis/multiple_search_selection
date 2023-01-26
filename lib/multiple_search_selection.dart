@@ -881,11 +881,13 @@ class _MultipleSearchSelectionState<T>
                                                     if (widget.isCreatable)
                                                       GestureDetector(
                                                         onTap: () {
-                                                          final T itemToAdd = widget
-                                                              .createOptions!
-                                                              .createItem(
-                                                                  _textEditingController
-                                                                      .text);
+                                                          final T itemToAdd =
+                                                              widget
+                                                                  .createOptions!
+                                                                  .createItem(
+                                                            _textEditingController
+                                                                .text,
+                                                          );
                                                           if (widget
                                                               .createOptions!
                                                               .pickCreatedItem) {
@@ -904,7 +906,8 @@ class _MultipleSearchSelectionState<T>
                                                                 .createOptions!
                                                                 .onItemCreated
                                                                 ?.call(
-                                                                    itemToAdd);
+                                                              itemToAdd,
+                                                            );
                                                           } else {
                                                             allItems
                                                                 .add(itemToAdd);
