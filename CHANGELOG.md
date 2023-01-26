@@ -1,6 +1,9 @@
-# 2.3.3 🐛 Bug fixes
+# 2.3.4 🎨 Updates CHANGELOG
+
+## 2.3.3 🐛✨ Bug fixes & New features
 
 - Adds missed [onItemCreated] parameter to [createOptions]
+- Adds `caseSensitiveSearch` so you can search with case sensitive. Thanks to [anqit](https://github.com/anqit)
 
 ## 2.3.2 ✨ New features
 
