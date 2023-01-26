@@ -5,12 +5,12 @@ import 'dart:math';
 /// The Levenshtein distance between two words is the minimum number of single-character
 ///
 /// edits (insertions, deletions or substitutions) required to change one word into the other.
-int getLevenshtein(String base, String query) {
+int getLevenshtein(String base, String query, { bool caseSensitive = false }) {
   if (base.isEmpty) {
     return 30;
   }
-  final a = base.toLowerCase();
-  final b = query.toLowerCase();
+  final a = caseSensitive ? base : base.toLowerCase();
+  final b = caseSensitive ? query : query.toLowerCase();
 
   final costs = List.filled(b.length + 1, 0);
   for (var j = 0; j < costs.length; j++) {

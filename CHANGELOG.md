@@ -1,4 +1,15 @@
-# 2.3.2 ✨ New features
+## 2.3.5 🐛 Bug fixes
+
+- Fixes issue were fuzzy search was not always working
+
+## 2.3.4 🎨 Updates CHANGELOG
+
+## 2.3.3 🐛✨ Bug fixes & New features
+
+- Adds missed [onItemCreated] parameter to [createOptions]
+- Adds `caseSensitiveSearch` so you can search with case sensitive. Thanks to [anqit](https://github.com/anqit)
+
+## 2.3.2 ✨ New features
 
 New constructor added `MultipleSearchSelection<T>.creatable` which can now create new item when search result does not return any results. It takes a new required parameter, `createOptions` e.g :
 

@@ -63,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
           createItem: (text) {
             return Country(name: text, iso: text);
           },
+          onItemCreated: (c) => print('Country ${c.name} created'),
           createItemBuilder: (text) => Align(
             alignment: Alignment.centerLeft,
             child: Padding(
@@ -138,7 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-        fuzzySearch: FuzzySearch.jaro,
+        caseSensitiveSearch: false,
+        fuzzySearch: FuzzySearch.none,
         itemsVisibility: ShowedItemsVisibility.alwaysOn,
         showSelectAllButton: true,
         maximumShowItemsHeight: 200,
