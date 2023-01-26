@@ -192,7 +192,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     VoidCallback? onTapSelectAll,
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
-    bool? caseSensitive,
+    bool? caseSensitiveSearch,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -251,7 +251,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemsScrollbarRadius: showedItemsScrollbarRadius,
         sortPickedItems: sortPickedItems ?? false,
         sortShowedItems: sortShowedItems ?? false,
-        caseSensitiveSearch: caseSensitive ?? false,
+        caseSensitiveSearch: caseSensitiveSearch ?? false,
       );
 
   const MultipleSearchSelection._({
