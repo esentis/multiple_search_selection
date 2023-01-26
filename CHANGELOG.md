@@ -1,4 +1,8 @@
-# 2.3.4 🎨 Updates CHANGELOG
+## 2.3.5 🐛 Bug fixes
+
+- Fixes issue were fuzzy search not always working
+
+## 2.3.4 🎨 Updates CHANGELOG
 
 ## 2.3.3 🐛✨ Bug fixes & New features
 

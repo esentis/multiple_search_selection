@@ -77,6 +77,8 @@ createOptions: CreateOptions<Country>(
     createItem: (text) {
         return Country(name: text, iso: text);
     },
+    // A callback when the item is succesfully created.
+    onItemCreated: (c) => print('Country ${c.name} created'),
     // Create item Widget that appears instead of no results.
     createItemBuilder: (text) => Align(
         alignment: Alignment.centerLeft,
