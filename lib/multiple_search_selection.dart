@@ -73,6 +73,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     VoidCallback? onTapSelectAll,
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
+    bool? caseSensitiveSearch,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -129,6 +130,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemsScrollbarRadius: showedItemsScrollbarRadius,
         sortPickedItems: sortPickedItems ?? false,
         sortShowedItems: sortShowedItems ?? false,
+        caseSensitiveSearch: caseSensitiveSearch ?? false,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -188,6 +190,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     VoidCallback? onTapSelectAll,
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
+    bool? caseSensitiveSearch,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -244,6 +247,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemsScrollbarRadius: showedItemsScrollbarRadius,
         sortPickedItems: sortPickedItems ?? false,
         sortShowedItems: sortShowedItems ?? false,
+        caseSensitiveSearch: caseSensitiveSearch ?? false,
       );
 
   const MultipleSearchSelection._({
@@ -303,6 +307,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.onTapSelectAll,
     this.onTapShowItems,
     this.clearSearchFieldOnSelect,
+    this.caseSensitiveSearch = false,
   });
 
   final Future<List<T>>? future;
@@ -492,7 +497,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// This is the builder of showed items.
   final Widget Function(T) itemBuilder;
 
-  /// The toggle items button when [itemsVisibility] == [ShowedItemsVisibility.toggle]. Ontap logic is already defiend and you can't override it with
+  /// The toggle items button when [itemsVisibility] == [ShowedItemsVisibility.toggle]. Ontap logic is already defined and you can't override it with
   ///
   /// a widget that has onTap, e.g [TextButton]. If you want to do something when you tap the button
   ///
@@ -526,6 +531,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final bool isCreatable;
 
   final CreateOptions<T>? createOptions;
+
+  final bool caseSensitiveSearch;
 
   @override
   _MultipleSearchSelectionState<T> createState() => _MultipleSearchSelectionState<T>();
@@ -579,32 +586,36 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
     pickedItems.addAll(widget.initialPickedItems ?? []);
   }
 
+  List<T> _searchAllItems(String query, { bool fuzzy = false }) {
+    final q = widget.caseSensitiveSearch ? query : query.toLowerCase();
+
+    return allItems.where((item) {
+        final i = widget.caseSensitiveSearch ? widget.fieldToCheck(item) : widget.fieldToCheck(item).toLowerCase();
+        bool matches = i.contains(q);
+
+        if (fuzzy) {
+          if (widget.fuzzySearch == FuzzySearch.jaro) {
+            matches |= getJaro(widget.fieldToCheck(item), query, caseSensitive: widget.caseSensitiveSearch) >= 0.8;
+          } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
+            matches |= getLevenshtein(widget.fieldToCheck(item), query, caseSensitive: widget.caseSensitiveSearch) <= 2;
+          }
+        }
+
+        return matches;
+    }) .toList();
+  }
+
   void _onRemoveItem(T item) {
     pickedItems.remove(item);
     allItems.add(item);
-    showedItems = allItems
-        .where(
-          (item) => widget.fieldToCheck.call(item).contains(
-                _textEditingController.text,
-              ),
-        )
-        .toList();
-    if (showedItems.isNotEmpty) {
-      if (widget.sortShowedItems) {
-        showedItems.sort(
-          (a, b) => widget.fieldToCheck(a).compareTo(
-                widget.fieldToCheck(b),
-              ),
-        );
-      }
-    }
     if (widget.sortShowedItems) {
       allItems.sort(
-        (a, b) => widget.fieldToCheck(a).compareTo(
-              widget.fieldToCheck(b),
-            ),
+            (a, b) => widget.fieldToCheck(a).compareTo(
+          widget.fieldToCheck(b),
+        ),
       );
     }
+    showedItems = _searchAllItems( _textEditingController.text);
 
     widget.onPickedChange?.call(pickedItems);
     widget.onItemRemoved?.call(item);
@@ -753,35 +764,7 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
                                               ),
                                             ),
                                         onChanged: (value) {
-                                          if (widget.fuzzySearch == FuzzySearch.jaro) {
-                                            showedItems = allItems.where(
-                                              (item) {
-                                                return widget.fieldToCheck.call(item).toLowerCase().contains(value) ||
-                                                    (getJaro(
-                                                          widget.fieldToCheck.call(item),
-                                                          value,
-                                                        ) >=
-                                                        0.8);
-                                              },
-                                            ).toList();
-                                          } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-                                            showedItems = allItems.where(
-                                              (item) {
-                                                return widget.fieldToCheck.call(item).toLowerCase().contains(value) ||
-                                                    (getLevenshtein(
-                                                          widget.fieldToCheck.call(item),
-                                                          value,
-                                                        ) <=
-                                                        2);
-                                              },
-                                            ).toList();
-                                          } else {
-                                            showedItems = allItems
-                                                .where(
-                                                  (item) => widget.fieldToCheck.call(item).toLowerCase().contains(value),
-                                                )
-                                                .toList();
-                                          }
+                                          showedItems = _searchAllItems(value, fuzzy: true);
                                           setState(() {});
                                           stateSetter(() {});
                                         },
@@ -920,11 +903,7 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
                         }
                         allItems.removeWhere((e) => showedItems.contains(e));
 
-                        showedItems = allItems
-                            .where(
-                              (item) => widget.fieldToCheck.call(item).toLowerCase().contains(_textEditingController.text),
-                            )
-                            .toList();
+                        showedItems = _searchAllItems(_textEditingController.text);
                         if (showedItems.isNotEmpty) {
                           if (widget.sortShowedItems) {
                             showedItems.sort(
@@ -950,11 +929,7 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
                     allItems.addAll(pickedItems);
-                    showedItems = allItems
-                        .where(
-                          (item) => widget.fieldToCheck(item).toLowerCase().contains(_textEditingController.text),
-                        )
-                        .toList();
+                    showedItems = _searchAllItems(_textEditingController.text);
                     if (showedItems.isNotEmpty) {
                       if (widget.sortShowedItems) {
                         showedItems.sort(
@@ -1024,25 +999,7 @@ class _MultipleSearchSelectionState<T> extends State<MultipleSearchSelection<T>>
                     ),
                   ),
               onChanged: (value) {
-                if (widget.fuzzySearch == FuzzySearch.jaro) {
-                  showedItems = allItems.where(
-                    (item) {
-                      return widget.fieldToCheck(item).toLowerCase().contains(value) || (getJaro(widget.fieldToCheck(item), value) >= 0.8);
-                    },
-                  ).toList();
-                } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-                  showedItems = allItems.where(
-                    (item) {
-                      return widget.fieldToCheck(item).toLowerCase().contains(value) || (getLevenshtein(widget.fieldToCheck(item), value) <= 2);
-                    },
-                  ).toList();
-                } else {
-                  showedItems = allItems
-                      .where(
-                        (item) => widget.fieldToCheck(item).toLowerCase().contains(value),
-                      )
-                      .toList();
-                }
+                showedItems = _searchAllItems(value, fuzzy: true);
                 if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
                   expanded = widget.itemsVisibility == ShowedItemsVisibility.onType && _textEditingController.text.isNotEmpty;
                 }

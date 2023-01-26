@@ -8,7 +8,10 @@ import 'package:multiple_search_selection/helpers/extensions.dart';
 /// its inverse, called the Jaro similarity, is a measure of two strings' similarity:
 ///
 /// the higher the value, the more similar the strings are.
-double getJaro(String s, String t) {
+double getJaro(String a, String b, { bool caseSensitive = false }) {
+  final s = caseSensitive ? a : a.toLowerCase();
+  final t = caseSensitive ? b : b.toLowerCase();
+
   final int sLen = s.length;
   final int tLen = t.length;
 
