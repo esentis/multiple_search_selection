@@ -1,6 +1,6 @@
 ## 2.3.5 🐛 Bug fixes
 
-- Fixes issue were fuzzy search not always working
+- Fixes issue were fuzzy search was not always working
 
 ## 2.3.4 🎨 Updates CHANGELOG
 
