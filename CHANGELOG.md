@@ -1,3 +1,7 @@
+## 2.3.6 🎨 ♻️ Improves structure & Refactors code
+
+- Removes redundant code & refactors methods.
+
 ## 2.3.5 🐛 Bug fixes
 
 - Fixes issue were fuzzy search was not always working
