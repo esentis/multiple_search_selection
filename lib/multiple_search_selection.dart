@@ -263,7 +263,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.onPickedChange,
     this.createOptions,
     this.items,
-    this.future,
     this.initialPickedItems,
     this.fuzzySearch = FuzzySearch.none,
     this.onItemAdded,
@@ -313,8 +312,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.clearSearchFieldOnSelect,
     this.caseSensitiveSearch = false,
   });
-
-  final Future<List<T>>? future;
 
   /// The title widget on top of the picked items.
   final Widget? title;
@@ -534,8 +531,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// Whether the widget is createable style.
   final bool isCreatable;
 
+  /// The [CreateOptions] of the creatable widget.
   final CreateOptions<T>? createOptions;
 
+  /// Whether the search is case sensitive. Defaults to [false].
   final bool caseSensitiveSearch;
 
   @override
@@ -558,14 +557,8 @@ class _MultipleSearchSelectionState<T>
   final FocusNode _textFieldFocus = FocusNode();
 
   Future<void> _prepareItems() async {
-    if (widget.future != null) {
-      final List<T> futureList = await widget.future!;
-      showedItems = [...futureList];
-      allItems = [...futureList];
-    } else {
-      showedItems = [...widget.items ?? []];
-      allItems = [...widget.items ?? []];
-    }
+    showedItems = [...widget.items ?? []];
+    allItems = [...widget.items ?? []];
 
     if (widget.sortShowedItems) {
       showedItems.sort(
@@ -592,7 +585,7 @@ class _MultipleSearchSelectionState<T>
     pickedItems.addAll(widget.initialPickedItems ?? []);
   }
 
-  List<T> _searchAllItems(String query, {bool fuzzy = false}) {
+  List<T> _searchAllItems(String query) {
     final q = widget.caseSensitiveSearch ? query : query.toLowerCase();
 
     return allItems.where((item) {
@@ -601,7 +594,7 @@ class _MultipleSearchSelectionState<T>
           : widget.fieldToCheck(item).toLowerCase();
       bool matches = i.contains(q);
 
-      if (fuzzy) {
+      if (widget.fuzzySearch != FuzzySearch.none) {
         if (widget.fuzzySearch == FuzzySearch.jaro) {
           matches |= getJaro(
                 widget.fieldToCheck(item),
@@ -635,7 +628,6 @@ class _MultipleSearchSelectionState<T>
     }
     showedItems = _searchAllItems(
       _textEditingController.text,
-      fuzzy: widget.fuzzySearch != FuzzySearch.none,
     );
 
     widget.onPickedChange?.call(pickedItems);
@@ -661,6 +653,77 @@ class _MultipleSearchSelectionState<T>
       pickedItems,
     );
     widget.onItemAdded?.call(pickedItem);
+  }
+
+  void _onCreateItem() {
+    final T itemToAdd =
+        widget.createOptions!.createItem(_textEditingController.text);
+    if (widget.createOptions!.pickCreatedItem) {
+      pickedItems.add(itemToAdd);
+      widget.onPickedChange?.call(
+        pickedItems,
+      );
+      widget.onItemAdded?.call(itemToAdd);
+      widget.createOptions!.onItemCreated?.call(itemToAdd);
+    } else {
+      allItems.add(itemToAdd);
+    }
+
+    _textEditingController.clear();
+    showedItems = allItems;
+    setState(() {});
+  }
+
+  void _selectAllItems() {
+    pickedItems.addAll(showedItems);
+    if (widget.sortPickedItems) {
+      pickedItems.sort(
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
+      );
+    }
+    allItems.removeWhere((e) => showedItems.contains(e));
+
+    showedItems = _searchAllItems(_textEditingController.text);
+    if (showedItems.isNotEmpty) {
+      if (widget.sortShowedItems) {
+        showedItems.sort(
+          (a, b) => widget.fieldToCheck(a).compareTo(
+                widget.fieldToCheck(b),
+              ),
+        );
+      }
+    }
+
+    widget.onPickedChange?.call(pickedItems);
+    widget.onTapSelectAll?.call();
+    setState(() {});
+  }
+
+  void _clearAllPickedItems() {
+    allItems.addAll(pickedItems);
+    showedItems = _searchAllItems(_textEditingController.text);
+    if (showedItems.isNotEmpty) {
+      if (widget.sortShowedItems) {
+        showedItems.sort(
+          (a, b) => widget.fieldToCheck(a).compareTo(
+                widget.fieldToCheck(b),
+              ),
+        );
+      }
+    }
+    pickedItems.removeRange(0, pickedItems.length);
+    if (widget.sortShowedItems) {
+      allItems.sort(
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
+      );
+    }
+    widget.onPickedChange?.call(pickedItems);
+    widget.onTapClearAll?.call();
+    setState(() {});
   }
 
   @override
@@ -801,11 +864,7 @@ class _MultipleSearchSelectionState<T>
                                               ),
                                             ),
                                         onChanged: (value) {
-                                          showedItems = _searchAllItems(
-                                            value,
-                                            fuzzy: widget.fuzzySearch !=
-                                                FuzzySearch.none,
-                                          );
+                                          showedItems = _searchAllItems(value);
                                           setState(() {});
                                           stateSetter(() {});
                                         },
@@ -881,44 +940,8 @@ class _MultipleSearchSelectionState<T>
                                                     if (widget.isCreatable)
                                                       GestureDetector(
                                                         onTap: () {
-                                                          final T itemToAdd =
-                                                              widget
-                                                                  .createOptions!
-                                                                  .createItem(
-                                                            _textEditingController
-                                                                .text,
-                                                          );
-                                                          if (widget
-                                                              .createOptions!
-                                                              .pickCreatedItem) {
-                                                            pickedItems
-                                                                .add(itemToAdd);
-                                                            widget
-                                                                .onPickedChange
-                                                                ?.call(
-                                                              pickedItems,
-                                                            );
-                                                            widget.onItemAdded
-                                                                ?.call(
-                                                              itemToAdd,
-                                                            );
-                                                            widget
-                                                                .createOptions!
-                                                                .onItemCreated
-                                                                ?.call(
-                                                              itemToAdd,
-                                                            );
-                                                          } else {
-                                                            allItems
-                                                                .add(itemToAdd);
-                                                          }
-
-                                                          _textEditingController
-                                                              .clear();
-                                                          showedItems =
-                                                              allItems;
+                                                          _onCreateItem();
                                                           stateSetter(() {});
-                                                          setState(() {});
                                                         },
                                                         child: AbsorbPointer(
                                                           child: widget
@@ -995,35 +1018,7 @@ class _MultipleSearchSelectionState<T>
                   if (widget.showSelectAllButton ?? true)
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        pickedItems.addAll(showedItems);
-                        if (widget.sortPickedItems) {
-                          pickedItems.sort(
-                            (a, b) => widget.fieldToCheck(a).compareTo(
-                                  widget.fieldToCheck(b),
-                                ),
-                          );
-                        }
-                        allItems.removeWhere((e) => showedItems.contains(e));
-
-                        showedItems = _searchAllItems(
-                          _textEditingController.text,
-                          fuzzy: widget.fuzzySearch != FuzzySearch.none,
-                        );
-                        if (showedItems.isNotEmpty) {
-                          if (widget.sortShowedItems) {
-                            showedItems.sort(
-                              (a, b) => widget.fieldToCheck(a).compareTo(
-                                    widget.fieldToCheck(b),
-                                  ),
-                            );
-                          }
-                        }
-
-                        widget.onPickedChange?.call(pickedItems);
-                        widget.onTapSelectAll?.call();
-                        setState(() {});
-                      },
+                      onTap: _selectAllItems,
                       child: IgnorePointer(
                         child:
                             widget.selectAllButton ?? const Text('Select all'),
@@ -1034,33 +1029,7 @@ class _MultipleSearchSelectionState<T>
               if (pickedItems.isNotEmpty && (widget.showClearAllButton ?? true))
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () {
-                    allItems.addAll(pickedItems);
-                    showedItems = _searchAllItems(
-                      _textEditingController.text,
-                      fuzzy: widget.fuzzySearch != FuzzySearch.none,
-                    );
-                    if (showedItems.isNotEmpty) {
-                      if (widget.sortShowedItems) {
-                        showedItems.sort(
-                          (a, b) => widget.fieldToCheck(a).compareTo(
-                                widget.fieldToCheck(b),
-                              ),
-                        );
-                      }
-                    }
-                    pickedItems.removeRange(0, pickedItems.length);
-                    if (widget.sortShowedItems) {
-                      allItems.sort(
-                        (a, b) => widget.fieldToCheck(a).compareTo(
-                              widget.fieldToCheck(b),
-                            ),
-                      );
-                    }
-                    widget.onPickedChange?.call(pickedItems);
-                    widget.onTapClearAll?.call();
-                    setState(() {});
-                  },
+                  onTap: _clearAllPickedItems,
                   child: IgnorePointer(
                     child: widget.clearAllButton ?? const Text('Clear all'),
                   ),
@@ -1112,10 +1081,7 @@ class _MultipleSearchSelectionState<T>
                     ),
                   ),
               onChanged: (value) {
-                showedItems = _searchAllItems(
-                  value,
-                  fuzzy: widget.fuzzySearch != FuzzySearch.none,
-                );
+                showedItems = _searchAllItems(value);
                 if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
                   expanded =
                       widget.itemsVisibility == ShowedItemsVisibility.onType &&
@@ -1173,25 +1139,7 @@ class _MultipleSearchSelectionState<T>
                       ? [
                           if (widget.isCreatable)
                             GestureDetector(
-                              onTap: () {
-                                final T itemToAdd = widget.createOptions!
-                                    .createItem(_textEditingController.text);
-                                if (widget.createOptions!.pickCreatedItem) {
-                                  pickedItems.add(itemToAdd);
-                                  widget.onPickedChange?.call(
-                                    pickedItems,
-                                  );
-                                  widget.onItemAdded?.call(itemToAdd);
-                                  widget.createOptions!.onItemCreated
-                                      ?.call(itemToAdd);
-                                } else {
-                                  allItems.add(itemToAdd);
-                                }
-
-                                _textEditingController.clear();
-                                showedItems = allItems;
-                                setState(() {});
-                              },
+                              onTap: _onCreateItem,
                               child: AbsorbPointer(
                                 child: widget.createOptions!.createItemBuilder(
                                   _textEditingController.text,
