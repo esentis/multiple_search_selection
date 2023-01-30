@@ -75,6 +75,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
     bool? caseSensitiveSearch,
+    TextEditingController? textEditingController,
+    FocusNode? textFieldFocus,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -104,7 +106,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsBoxDecoration: pickedItemsBoxDecoration,
         pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
         pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-        pickedItemsScrollController: pickedItemsScrollController,
+        pickedItemsScrollController: pickedItemsScrollController ?? ScrollController(),
         pickedItemsScrollPhysics: pickedItemsScrollPhysics,
         pickedItemsScrollbarColor: pickedItemsScrollbarColor,
         pickedItemsScrollbarMinOverscrollLength:
@@ -124,7 +126,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBackgroundColor: showedItemsBackgroundColor,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController: showedItemsScrollController,
+        showedItemsScrollController: showedItemsScrollController ?? ScrollController(),
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -135,6 +137,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         sortShowedItems: sortShowedItems ?? false,
         caseSensitiveSearch: caseSensitiveSearch ?? false,
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
+        textEditingController: textEditingController ?? TextEditingController(),
+        textFieldFocus: textFieldFocus ?? FocusNode(),
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -196,6 +200,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
     bool? caseSensitiveSearch,
+    TextEditingController? textEditingController,
+    FocusNode? textFieldFocus,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -225,7 +231,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsBoxDecoration: pickedItemsBoxDecoration,
         pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
         pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-        pickedItemsScrollController: pickedItemsScrollController,
+        pickedItemsScrollController: pickedItemsScrollController ?? ScrollController(),
         pickedItemsScrollPhysics: pickedItemsScrollPhysics,
         pickedItemsScrollbarColor: pickedItemsScrollbarColor,
         pickedItemsScrollbarMinOverscrollLength:
@@ -245,7 +251,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBackgroundColor: showedItemsBackgroundColor,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController: showedItemsScrollController,
+        showedItemsScrollController: showedItemsScrollController ?? ScrollController(),
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -256,6 +262,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         sortShowedItems: sortShowedItems ?? false,
         caseSensitiveSearch: caseSensitiveSearch ?? false,
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
+        textEditingController: textEditingController ?? TextEditingController(),
+        textFieldFocus: textFieldFocus ?? FocusNode(),
       );
 
   const MultipleSearchSelection._({
@@ -263,6 +271,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required this.itemBuilder,
     required this.pickedItemBuilder,
     required this.isCreatable,
+    required this.showedItemsScrollController,
+    required this.pickedItemsScrollController,
+    required this.textEditingController,
+    required this.textFieldFocus,
     super.key,
     this.onPickedChange,
     this.createOptions,
@@ -287,7 +299,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showedItemContainerHeight,
     this.showedItemContainerPadding,
     this.showedItemsBackgroundColor,
-    this.showedItemsScrollController,
     this.showedItemsScrollPhysics,
     this.showedItemsBoxDecoration,
     this.searchFieldInputDecoration,
@@ -303,7 +314,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.pickedItemsScrollbarMinOverscrollLength,
     this.pickedItemsScrollbarRadius,
     this.pickedItemsScrollbarMinThumbLength,
-    this.pickedItemsScrollController,
     this.pickedItemsScrollPhysics,
     this.pickedItemsBoxDecoration,
     this.showItemsButton,
@@ -421,10 +431,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final VoidCallback? onTapShowedItem;
 
   /// The [ScrollController] of the picked items list.
-  final ScrollController? pickedItemsScrollController;
+  final ScrollController pickedItemsScrollController;
 
   /// The [ScrollController] of showed items list.
-  final ScrollController? showedItemsScrollController;
+  final ScrollController showedItemsScrollController;
 
   /// The [ScrollPhysics] of the picked items list.
   final ScrollPhysics? pickedItemsScrollPhysics;
@@ -552,6 +562,12 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// Whether the search is case sensitive. Defaults to [false].
   final bool caseSensitiveSearch;
 
+  /// The controller for the input text field
+  final TextEditingController textEditingController;
+
+  /// The focus node for the input text field
+  final FocusNode textFieldFocus;
+
   @override
   _MultipleSearchSelectionState<T> createState() =>
       _MultipleSearchSelectionState<T>();
@@ -565,11 +581,6 @@ class _MultipleSearchSelectionState<T>
   bool expanded = false;
 
   List<T> pickedItems = [];
-  final ScrollController _pickedItemsController = ScrollController();
-  final ScrollController _showedItemsScrollController = ScrollController();
-  final TextEditingController _textEditingController = TextEditingController();
-
-  final FocusNode _textFieldFocus = FocusNode();
 
   Future<void> _prepareItems() async {
     showedItems = [...widget.items ?? []];
@@ -640,7 +651,7 @@ class _MultipleSearchSelectionState<T>
       );
     }
     showedItems = _searchAllItems(
-      _textEditingController.text,
+      widget.textEditingController.text,
     );
 
     widget.onPickedChange?.call(pickedItems);
@@ -669,7 +680,7 @@ class _MultipleSearchSelectionState<T>
 
   void _onCreateItem() {
     final T itemToAdd =
-        widget.createOptions!.createItem(_textEditingController.text);
+        widget.createOptions!.createItem(widget.textEditingController.text);
     if (widget.createOptions!.pickCreatedItem) {
       pickedItems.add(itemToAdd);
       widget.onPickedChange?.call(
@@ -681,7 +692,7 @@ class _MultipleSearchSelectionState<T>
       allItems.add(itemToAdd);
     }
 
-    _textEditingController.clear();
+    widget.textEditingController.clear();
     showedItems = allItems;
     setState(() {});
   }
@@ -697,7 +708,7 @@ class _MultipleSearchSelectionState<T>
     }
     allItems.removeWhere((e) => showedItems.contains(e));
 
-    showedItems = _searchAllItems(_textEditingController.text);
+    showedItems = _searchAllItems(widget.textEditingController.text);
     if (showedItems.isNotEmpty) {
       if (widget.sortShowedItems) {
         showedItems.sort(
@@ -722,7 +733,7 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
-    showedItems = _searchAllItems(_textEditingController.text);
+    showedItems = _searchAllItems(widget.textEditingController.text);
 
     pickedItems.removeRange(0, pickedItems.length);
 
@@ -753,38 +764,36 @@ class _MultipleSearchSelectionState<T>
                   ),
                 )
               ]) ??
-              Container(
-                width: MediaQuery.of(context).size.width,
-                constraints: BoxConstraints(
-                  maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
-                  minHeight: widget.pickedItemsContainerMinHeight ?? 50,
+          Container(
+            width: MediaQuery.of(context).size.width,
+            constraints: BoxConstraints(
+              maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
+              minHeight: widget.pickedItemsContainerMinHeight ?? 50,
+            ),
+            decoration: widget.pickedItemsBoxDecoration ??
+                BoxDecoration(
+                  border: pickedItems.isNotEmpty
+                      ? Border.all(
+                          color: Colors.grey.withOpacity(0.5),
+                        )
+                      : null,
                 ),
-                decoration: widget.pickedItemsBoxDecoration ??
-                    BoxDecoration(
-                      border: pickedItems.isNotEmpty
-                          ? Border.all(
-                              color: Colors.grey.withOpacity(0.5),
-                            )
-                          : null,
-                    ),
-                child: RawScrollbar(
-                  thumbVisibility: widget.showPickedItemScrollbar,
-                  thumbColor: widget.pickedItemsScrollbarColor,
-                  minOverscrollLength:
-                      widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
-                  minThumbLength:
-                      widget.pickedItemsScrollbarMinThumbLength ?? 30,
-                  thickness: widget.pickedItemsScrollbarThickness ?? 10,
-                  radius: widget.pickedItemsScrollbarRadius ??
-                      const Radius.circular(5),
-                  controller: widget.pickedItemsScrollController ??
-                      _pickedItemsController,
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context)
-                        .copyWith(scrollbars: false),
-                    child: SingleChildScrollView(
-                      controller: widget.pickedItemsScrollController ??
-                          _pickedItemsController,
+            child: RawScrollbar(
+              thumbVisibility: widget.showPickedItemScrollbar,
+              thumbColor: widget.pickedItemsScrollbarColor,
+              minOverscrollLength:
+                  widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
+              minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
+              thickness: widget.pickedItemsScrollbarThickness ?? 10,
+              radius:
+                  widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
+              controller:
+                  widget.pickedItemsScrollController,
+              child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: SingleChildScrollView(
+                  controller: widget.pickedItemsScrollController,
                       physics: widget.pickedItemsScrollPhysics,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -860,8 +869,8 @@ class _MultipleSearchSelectionState<T>
                                       ),
                                       child: TextField(
                                         key: const Key('toggle-searchfield'),
-                                        focusNode: _textFieldFocus,
-                                        controller: _textEditingController,
+                                        focusNode: widget.textFieldFocus,
+                                        controller: widget.textEditingController,
                                         style: widget.searchFieldTextStyle,
                                         decoration: widget
                                                 .searchFieldInputDecoration ??
@@ -921,9 +930,7 @@ class _MultipleSearchSelectionState<T>
                                             ),
                                           ),
                                       child: RawScrollbar(
-                                        controller: widget
-                                                .showedItemsScrollController ??
-                                            _showedItemsScrollController,
+                                        controller: widget.showedItemsScrollController,
                                         thumbColor:
                                             widget.showedItemsScrollbarColor,
                                         thickness: widget
@@ -950,9 +957,7 @@ class _MultipleSearchSelectionState<T>
                                             padding: EdgeInsets.zero,
                                             primary: false,
                                             shrinkWrap: true,
-                                            controller: widget
-                                                    .showedItemsScrollController ??
-                                                _showedItemsScrollController,
+                                            controller: widget.showedItemsScrollController,
                                             children: showedItems.isEmpty
                                                 ? [
                                                     if (widget.isCreatable)
@@ -965,7 +970,7 @@ class _MultipleSearchSelectionState<T>
                                                           child: widget
                                                               .createOptions!
                                                               .createItemBuilder(
-                                                            _textEditingController
+                                                            widget.textEditingController
                                                                 .text,
                                                           ),
                                                         ),
@@ -993,7 +998,7 @@ class _MultipleSearchSelectionState<T>
                                                         if (widget
                                                                 .clearSearchFieldOnSelect ??
                                                             false) {
-                                                          _textEditingController
+                                                          widget.textEditingController
                                                               .clear();
                                                           showedItems =
                                                               allItems;
@@ -1020,7 +1025,7 @@ class _MultipleSearchSelectionState<T>
                             },
                           ),
                         ).whenComplete(() {
-                          _textEditingController.clear();
+                          widget.textEditingController.clear();
                           showedItems = allItems;
                         });
                       },
@@ -1082,8 +1087,8 @@ class _MultipleSearchSelectionState<T>
             ),
             child: TextField(
               key: const Key('searchfield'),
-              focusNode: _textFieldFocus,
-              controller: _textEditingController,
+              focusNode: widget.textFieldFocus,
+              controller: widget.textEditingController,
               style: widget.searchFieldTextStyle,
               decoration: widget.searchFieldInputDecoration ??
                   InputDecoration(
@@ -1103,7 +1108,7 @@ class _MultipleSearchSelectionState<T>
                 if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
                   expanded =
                       widget.itemsVisibility == ShowedItemsVisibility.onType &&
-                          _textEditingController.text.isNotEmpty;
+                          widget.textEditingController.text.isNotEmpty;
                 }
                 setState(() {});
               },
@@ -1134,8 +1139,7 @@ class _MultipleSearchSelectionState<T>
                   ),
                 ),
             child: RawScrollbar(
-              controller: widget.showedItemsScrollController ??
-                  _showedItemsScrollController,
+              controller: widget.showedItemsScrollController,
               thumbColor: widget.showedItemsScrollbarColor,
               thickness: widget.showedItemsScrollbarMinThumbLength ?? 10,
               minThumbLength: widget.showedItemsScrollbarMinThumbLength ?? 30,
@@ -1151,8 +1155,7 @@ class _MultipleSearchSelectionState<T>
                   padding: EdgeInsets.zero,
                   primary: false,
                   shrinkWrap: true,
-                  controller: widget.showedItemsScrollController ??
-                      _showedItemsScrollController,
+                  controller: widget.showedItemsScrollController,
                   children: showedItems.isEmpty
                       ? [
                           if (widget.isCreatable)
@@ -1160,7 +1163,7 @@ class _MultipleSearchSelectionState<T>
                               onTap: _onCreateItem,
                               child: AbsorbPointer(
                                 child: widget.createOptions!.createItemBuilder(
-                                  _textEditingController.text,
+                                  widget.textEditingController.text,
                                 ),
                               ),
                             )
@@ -1181,7 +1184,7 @@ class _MultipleSearchSelectionState<T>
                             onTap: () {
                               _onAddItem(item);
                               if (widget.clearSearchFieldOnSelect ?? false) {
-                                _textEditingController.clear();
+                                widget.textEditingController.clear();
                                 showedItems = allItems;
                               }
 
