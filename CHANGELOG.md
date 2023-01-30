@@ -1,6 +1,7 @@
 ## 2.3.6 🎨 ♻️ Improves structure & Refactors code
 
 - Removes redundant code & refactors methods.
+- Fixes `onItemRemoved` being called twice. Thanks to [anqit](https://github.com/anqit)
 
 ## 2.3.5 🐛 Bug fixes
 
