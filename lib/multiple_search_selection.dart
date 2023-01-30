@@ -594,22 +594,20 @@ class _MultipleSearchSelectionState<T>
           : widget.fieldToCheck(item).toLowerCase();
       bool matches = i.contains(q);
 
-      if (widget.fuzzySearch != FuzzySearch.none) {
-        if (widget.fuzzySearch == FuzzySearch.jaro) {
-          matches |= getJaro(
-                widget.fieldToCheck(item),
-                query,
-                caseSensitive: widget.caseSensitiveSearch,
-              ) >=
-              0.8;
-        } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-          matches |= getLevenshtein(
-                widget.fieldToCheck(item),
-                query,
-                caseSensitive: widget.caseSensitiveSearch,
-              ) <=
-              2;
-        }
+      if (widget.fuzzySearch == FuzzySearch.jaro) {
+        matches |= getJaro(
+              widget.fieldToCheck(item),
+              query,
+              caseSensitive: widget.caseSensitiveSearch,
+            ) >=
+            0.8;
+      } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
+        matches |= getLevenshtein(
+              widget.fieldToCheck(item),
+              query,
+              caseSensitive: widget.caseSensitiveSearch,
+            ) <=
+            2;
       }
 
       return matches;
@@ -633,7 +631,6 @@ class _MultipleSearchSelectionState<T>
     widget.onPickedChange?.call(pickedItems);
     widget.onItemRemoved?.call(item);
     setState(() {});
-    widget.onItemRemoved?.call(item);
   }
 
   void _onAddItem(T item) {
@@ -703,24 +700,17 @@ class _MultipleSearchSelectionState<T>
 
   void _clearAllPickedItems() {
     allItems.addAll(pickedItems);
-    showedItems = _searchAllItems(_textEditingController.text);
-    if (showedItems.isNotEmpty) {
-      if (widget.sortShowedItems) {
-        showedItems.sort(
-          (a, b) => widget.fieldToCheck(a).compareTo(
-                widget.fieldToCheck(b),
-              ),
-        );
-      }
-    }
-    pickedItems.removeRange(0, pickedItems.length);
     if (widget.sortShowedItems) {
       allItems.sort(
-        (a, b) => widget.fieldToCheck(a).compareTo(
-              widget.fieldToCheck(b),
-            ),
+            (a, b) => widget.fieldToCheck(a).compareTo(
+          widget.fieldToCheck(b),
+        ),
       );
     }
+    showedItems = _searchAllItems(_textEditingController.text);
+
+    pickedItems.removeRange(0, pickedItems.length);
+
     widget.onPickedChange?.call(pickedItems);
     widget.onTapClearAll?.call();
     setState(() {});
