@@ -27,6 +27,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     void Function(T)? onItemRemoved,
     void Function(T)? onItemAdded,
     void Function(List<T>)? onPickedChange,
+    Widget Function(List<Widget> pickedItems)? pickedItemsContainerBuilder,
     Key? key,
     FuzzySearch? fuzzySearch,
     double? maximumShowItemsHeight,
@@ -133,6 +134,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         sortPickedItems: sortPickedItems ?? false,
         sortShowedItems: sortShowedItems ?? false,
         caseSensitiveSearch: caseSensitiveSearch ?? false,
+        pickedItemsContainerBuilder: pickedItemsContainerBuilder,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -144,6 +146,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required String Function(T) fieldToCheck,
     required Widget Function(T) itemBuilder,
     required CreateOptions<T> createOptions,
+    Widget Function(List<Widget> pickedItems)? pickedItemsContainerBuilder,
     void Function(T)? onItemRemoved,
     void Function(T)? onItemAdded,
     Function(List<T>)? onPickedChange,
@@ -252,6 +255,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         sortPickedItems: sortPickedItems ?? false,
         sortShowedItems: sortShowedItems ?? false,
         caseSensitiveSearch: caseSensitiveSearch ?? false,
+        pickedItemsContainerBuilder: pickedItemsContainerBuilder,
       );
 
   const MultipleSearchSelection._({
@@ -311,6 +315,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.onTapShowItems,
     this.clearSearchFieldOnSelect,
     this.caseSensitiveSearch = false,
+    this.pickedItemsContainerBuilder,
   });
 
   /// The title widget on top of the picked items.
@@ -464,8 +469,18 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// ### Shows results with minimum 2 edits.
   final FuzzySearch? fuzzySearch;
 
-  /// This is the builder of picked items.
+  /// This is the builder of each picked item.
   final Widget Function(T) pickedItemBuilder;
+
+  /// This is the builder of the whole picked items container.
+  ///
+  /// [pickedItems] is created from the [pickedItemBuilder] and [pickedItemBuilder] is called for each item in [pickedItems].
+  ///
+  /// This will make all the pickedItemsContainer* properties useless.
+  ///
+  /// If this is null, the default wrap will be used.
+  ///
+  final Widget Function(List<Widget> pickedItems)? pickedItemsContainerBuilder;
 
   /// This is the field to check when searching & sorting the List<T>.
   ///
@@ -702,9 +717,9 @@ class _MultipleSearchSelectionState<T>
     allItems.addAll(pickedItems);
     if (widget.sortShowedItems) {
       allItems.sort(
-            (a, b) => widget.fieldToCheck(a).compareTo(
-          widget.fieldToCheck(b),
-        ),
+        (a, b) => widget.fieldToCheck(a).compareTo(
+              widget.fieldToCheck(b),
+            ),
       );
     }
     showedItems = _searchAllItems(_textEditingController.text);
@@ -725,63 +740,76 @@ class _MultipleSearchSelectionState<T>
           widget.title!,
         ],
         if (pickedItems.isNotEmpty)
-          // picked item chips
-          Container(
-            width: MediaQuery.of(context).size.width,
-            constraints: BoxConstraints(
-              maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
-              minHeight: widget.pickedItemsContainerMinHeight ?? 50,
-            ),
-            decoration: widget.pickedItemsBoxDecoration ??
-                BoxDecoration(
-                  border: pickedItems.isNotEmpty
-                      ? Border.all(
-                          color: Colors.grey.withOpacity(0.5),
-                        )
-                      : null,
+          widget.pickedItemsContainerBuilder?.call([
+                ...pickedItems.map(
+                  (e) => GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      _onRemoveItem(e);
+                    },
+                    child: IgnorePointer(
+                      child: widget.pickedItemBuilder.call(e),
+                    ),
+                  ),
+                )
+              ]) ??
+              Container(
+                width: MediaQuery.of(context).size.width,
+                constraints: BoxConstraints(
+                  maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
+                  minHeight: widget.pickedItemsContainerMinHeight ?? 50,
                 ),
-            child: RawScrollbar(
-              thumbVisibility: widget.showPickedItemScrollbar,
-              thumbColor: widget.pickedItemsScrollbarColor,
-              minOverscrollLength:
-                  widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
-              minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
-              thickness: widget.pickedItemsScrollbarThickness ?? 10,
-              radius:
-                  widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
-              controller:
-                  widget.pickedItemsScrollController ?? _pickedItemsController,
-              child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
+                decoration: widget.pickedItemsBoxDecoration ??
+                    BoxDecoration(
+                      border: pickedItems.isNotEmpty
+                          ? Border.all(
+                              color: Colors.grey.withOpacity(0.5),
+                            )
+                          : null,
+                    ),
+                child: RawScrollbar(
+                  thumbVisibility: widget.showPickedItemScrollbar,
+                  thumbColor: widget.pickedItemsScrollbarColor,
+                  minOverscrollLength:
+                      widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
+                  minThumbLength:
+                      widget.pickedItemsScrollbarMinThumbLength ?? 30,
+                  thickness: widget.pickedItemsScrollbarThickness ?? 10,
+                  radius: widget.pickedItemsScrollbarRadius ??
+                      const Radius.circular(5),
                   controller: widget.pickedItemsScrollController ??
                       _pickedItemsController,
-                  physics: widget.pickedItemsScrollPhysics,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      spacing: widget.pickedItemSpacing ?? 5,
-                      runSpacing: widget.pickedItemSpacing ?? 5,
-                      children: [
-                        ...pickedItems.map(
-                          (e) => GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              _onRemoveItem(e);
-                            },
-                            child: IgnorePointer(
-                              child: widget.pickedItemBuilder.call(e),
-                            ),
-                          ),
-                        )
-                      ],
+                  child: ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context)
+                        .copyWith(scrollbars: false),
+                    child: SingleChildScrollView(
+                      controller: widget.pickedItemsScrollController ??
+                          _pickedItemsController,
+                      physics: widget.pickedItemsScrollPhysics,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Wrap(
+                          spacing: widget.pickedItemSpacing ?? 5,
+                          runSpacing: widget.pickedItemSpacing ?? 5,
+                          children: [
+                            ...pickedItems.map(
+                              (e) => GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  _onRemoveItem(e);
+                                },
+                                child: IgnorePointer(
+                                  child: widget.pickedItemBuilder.call(e),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
         if ((widget.showClearAllButton ?? true) ||
             widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
           const SizedBox(
