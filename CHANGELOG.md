@@ -1,3 +1,38 @@
+## 2.3.7 ✨ New features
+
+- Adds `pickedItemsContainerBuilder`. You can now provide your own custom `Widget` for the picked items. `pickedItems` (`List<Widget>`) are created from the `pickedItemBuilder`. So having those items you can customise the layout at your needs.
+
+```dart
+pickedItemsContainerBuilder: (pickedItems) => Center(
+    child: Container(
+    height: 150,
+    width: 150,
+    decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[400]!),
+      ),
+    child: ListView(
+        children: pickedItems,
+    ),
+  ),
+),
+pickedItemBuilder: (country) {
+    return Padding(
+    padding: const EdgeInsets.all(8),
+    child: Center(
+        child: Text(
+        country.name,
+        style: const TextStyle(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
+        ),
+      ),
+    ),
+  );
+},
+```
+
+<img src="https://i.imgur.com/EXZvBr0.gif" title="pickedItemsBuilder" />
+
 ## 2.3.6 🎨 ♻️ Improves structure & Refactors code
 
 - Removes redundant code & refactors methods.
