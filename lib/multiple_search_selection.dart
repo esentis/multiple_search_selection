@@ -46,6 +46,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? showShowedItemsScrollbar,
     bool? showSelectAllButton,
     bool? showClearAllButton,
+    bool showClearTextFieldButton = false,
     InputDecoration? searchFieldInputDecoration,
     TextStyle? searchFieldTextStyle,
     Widget? noResultsWidget,
@@ -77,6 +78,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? caseSensitiveSearch,
     TextEditingController? textEditingController,
     FocusNode? textFieldFocus,
+    String hintText = 'Type here to search',
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -118,6 +120,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         searchFieldTextStyle: searchFieldTextStyle,
         selectAllButton: selectAllButton,
         showClearAllButton: showClearAllButton,
+        showClearTextFieldButton: showClearTextFieldButton,
         showItemsButton: showItemsButton,
         showPickedItemScrollbar: showPickedItemScrollbar,
         showSelectAllButton: showSelectAllButton,
@@ -139,6 +142,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
         textEditingController: textEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
+        hintText: hintText,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -172,6 +176,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? showShowedItemsScrollbar,
     bool? showSelectAllButton,
     bool? showClearAllButton,
+    bool showClearTextFieldButton = false,
     InputDecoration? searchFieldInputDecoration,
     TextStyle? searchFieldTextStyle,
     double? pickedItemSpacing,
@@ -202,6 +207,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? caseSensitiveSearch,
     TextEditingController? textEditingController,
     FocusNode? textFieldFocus,
+    String hintText = 'Type here to search',
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -246,6 +252,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showItemsButton: showItemsButton,
         showPickedItemScrollbar: showPickedItemScrollbar,
         showSelectAllButton: showSelectAllButton,
+        showClearTextFieldButton: showClearTextFieldButton,
         showShowedItemsScrollbar: showShowedItemsScrollbar,
         showedItemContainerHeight: showedItemContainerHeight,
         showedItemContainerPadding: showedItemContainerPadding,
@@ -264,6 +271,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
         textEditingController: textEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
+        hintText: hintText,
       );
 
   const MultipleSearchSelection._({
@@ -288,6 +296,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.maximumShowItemsHeight = 150,
     this.showClearAllButton = true,
     this.showSelectAllButton = true,
+    this.showClearTextFieldButton = false,
     this.sortPickedItems = false,
     this.sortShowedItems = false,
     this.showShowedItemsScrollbar = true,
@@ -326,6 +335,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.clearSearchFieldOnSelect,
     this.caseSensitiveSearch = false,
     this.pickedItemsContainerBuilder,
+    this.hintText = 'Type here to search',
   });
 
   /// The title widget on top of the picked items.
@@ -375,6 +385,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// Hide or show clear all button, defaults to [true].
   final bool? showClearAllButton;
+
+  /// Hide or show clear text field button, defaults to [false]
+  final bool showClearTextFieldButton;
 
   /// Whether to clear the searchfield and reset the showed items when you pick an item. Defaults to [false].
   final bool? clearSearchFieldOnSelect;
@@ -567,6 +580,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// The focus node for the input text field
   final FocusNode textFieldFocus;
+
+  /// Hint text to display in the text input
+  final String hintText;
 
   @override
   _MultipleSearchSelectionState<T> createState() =>
@@ -879,7 +895,7 @@ class _MultipleSearchSelectionState<T>
                                                   const EdgeInsets.only(
                                                 left: 6,
                                               ),
-                                              hintText: 'Type here to search',
+                                              hintText: widget.hintText,
                                               hintStyle: const TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -889,6 +905,14 @@ class _MultipleSearchSelectionState<T>
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),
+                                              suffixIcon: widget.showClearTextFieldButton ?
+                                                  IconButton(
+                                                      onPressed: () {
+                                                        widget.textEditingController.clear();
+                                                        showedItems = allItems;
+                                                      },
+                                                      icon: const Icon(Icons.clear),
+                                                  ) : null,
                                             ),
                                         onChanged: (value) {
                                           showedItems = _searchAllItems(value);
@@ -1093,7 +1117,7 @@ class _MultipleSearchSelectionState<T>
               decoration: widget.searchFieldInputDecoration ??
                   InputDecoration(
                     contentPadding: const EdgeInsets.only(left: 6),
-                    hintText: 'Type here to search',
+                    hintText: widget.hintText,
                     hintStyle: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -1102,6 +1126,14 @@ class _MultipleSearchSelectionState<T>
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(20),
                     ),
+                    suffixIcon: widget.showClearTextFieldButton ?
+                        IconButton(
+                            onPressed: () {
+                              widget.textEditingController.clear();
+                              showedItems = allItems;
+                            },
+                            icon: const Icon(Icons.clear),
+                        ) : null,
                   ),
               onChanged: (value) {
                 showedItems = _searchAllItems(value);
