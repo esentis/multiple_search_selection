@@ -47,7 +47,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? showSelectAllButton,
     bool? showClearAllButton,
     bool showClearTextFieldButton = false,
-    InputDecoration? searchFieldInputDecoration,
     TextStyle? searchFieldTextStyle,
     Widget? noResultsWidget,
     double? pickedItemSpacing,
@@ -116,7 +115,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsScrollbarMinThumbLength: pickedItemsScrollbarMinThumbLength,
         pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
         pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
-        searchFieldInputDecoration: searchFieldInputDecoration,
         searchFieldTextStyle: searchFieldTextStyle,
         selectAllButton: selectAllButton,
         showClearAllButton: showClearAllButton,
@@ -177,7 +175,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? showSelectAllButton,
     bool? showClearAllButton,
     bool showClearTextFieldButton = false,
-    InputDecoration? searchFieldInputDecoration,
     TextStyle? searchFieldTextStyle,
     double? pickedItemSpacing,
     double? pickedItemsContainerMaxHeight,
@@ -245,7 +242,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsScrollbarMinThumbLength: pickedItemsScrollbarMinThumbLength,
         pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
         pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
-        searchFieldInputDecoration: searchFieldInputDecoration,
         searchFieldTextStyle: searchFieldTextStyle,
         selectAllButton: selectAllButton,
         showClearAllButton: showClearAllButton,
@@ -310,7 +306,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showedItemsBackgroundColor,
     this.showedItemsScrollPhysics,
     this.showedItemsBoxDecoration,
-    this.searchFieldInputDecoration,
     this.noResultsWidget,
     this.outerContainerBorderColor,
     this.itemsVisibility = ShowedItemsVisibility.alwaysOn,
@@ -400,9 +395,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// A callback when an item is added, returns the item aswell.
   final Function(T)? onItemAdded;
-
-  /// The input decoration of the search text field.
-  final InputDecoration? searchFieldInputDecoration;
 
   /// The text style of the search text field.
   final TextStyle? searchFieldTextStyle;
@@ -888,9 +880,7 @@ class _MultipleSearchSelectionState<T>
                                         focusNode: widget.textFieldFocus,
                                         controller: widget.textEditingController,
                                         style: widget.searchFieldTextStyle,
-                                        decoration: widget
-                                                .searchFieldInputDecoration ??
-                                            InputDecoration(
+                                        decoration: InputDecoration(
                                               contentPadding:
                                                   const EdgeInsets.only(
                                                 left: 6,
@@ -1114,8 +1104,7 @@ class _MultipleSearchSelectionState<T>
               focusNode: widget.textFieldFocus,
               controller: widget.textEditingController,
               style: widget.searchFieldTextStyle,
-              decoration: widget.searchFieldInputDecoration ??
-                  InputDecoration(
+              decoration: InputDecoration(
                     contentPadding: const EdgeInsets.only(left: 6),
                     hintText: widget.hintText,
                     hintStyle: const TextStyle(
