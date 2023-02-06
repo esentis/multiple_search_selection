@@ -758,8 +758,8 @@ class _MultipleSearchSelectionState<T>
         if (widget.title != null) ...[
           widget.title!,
         ],
-        if (pickedItems.isNotEmpty)
-          widget.pickedItemsContainerBuilder?.call([
+        if (widget.pickedItemsContainerBuilder != null)
+          widget.pickedItemsContainerBuilder!.call([
                 ...pickedItems.map(
                   (e) => GestureDetector(
                     behavior: HitTestBehavior.opaque,
@@ -771,7 +771,8 @@ class _MultipleSearchSelectionState<T>
                     ),
                   ),
                 )
-              ]) ??
+              ])
+        else if (pickedItems.isNotEmpty)
           Container(
             width: MediaQuery.of(context).size.width,
             constraints: BoxConstraints(
