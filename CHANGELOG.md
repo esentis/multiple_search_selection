@@ -1,3 +1,36 @@
+## 2.4.0 ✨🔥 New features & Breaking changes
+
+- Refactored the displayed items to use lazy loading, resulting in a significant improvement in performance for large lists. Additionally, the index is now accessible for further customization.
+
+```dart
+itemBuilder: (country, index) {
+    if (index==0) return Text('Hello World');
+    return Padding(
+    padding: const EdgeInsets.all(6.0),
+    child: Container(
+        decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        color: Colors.white,
+         ),
+        child: Padding(
+         padding: const EdgeInsets.symmetric(
+            vertical: 20.0,
+            horizontal: 12,
+         ),
+         child: Text(country.name),
+      ),
+    ),
+  );
+},
+```
+
+- Exposes some more `InputDecoration` parameters :
+  - Adds `showClearSearchFieldButton` which adds a suffix icon to clear searchfield
+  - Adds `hintText`
+  - Adds `textFieldFocus`
+  - Adds `textEdittingController`
+- If `pickedItemsContainerBuilder` is provided it will build even if no items are picked
+
 ## 2.3.7 ✨ New features
 
 - Adds `pickedItemsContainerBuilder`. You can now provide your own custom `Widget` for the picked items. `pickedItems` (`List<Widget>`) are created from the `pickedItemBuilder`. So having those items you can customise the layout at your needs.
