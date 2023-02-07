@@ -23,7 +23,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required List<T> items,
     required Widget Function(T) pickedItemBuilder,
     required String Function(T) fieldToCheck,
-    required Widget Function(T) itemBuilder,
+    required Widget Function(T, int) itemBuilder,
     void Function(T)? onItemRemoved,
     void Function(T)? onItemAdded,
     void Function(List<T>)? onPickedChange,
@@ -108,11 +108,12 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsBoxDecoration: pickedItemsBoxDecoration,
         pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
         pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-        pickedItemsScrollController: pickedItemsScrollController ?? ScrollController(),
+        pickedItemsScrollController:
+            pickedItemsScrollController ?? ScrollController(),
         pickedItemsScrollPhysics: pickedItemsScrollPhysics,
         pickedItemsScrollbarColor: pickedItemsScrollbarColor,
         pickedItemsScrollbarMinOverscrollLength:
-          pickedItemsScrollbarMinOverscrollLength,
+            pickedItemsScrollbarMinOverscrollLength,
         pickedItemsScrollbarMinThumbLength: pickedItemsScrollbarMinThumbLength,
         pickedItemsScrollbarRadius: pickedItemsScrollbarRadius,
         pickedItemsScrollbarThickness: pickedItemsScrollbarThickness,
@@ -129,7 +130,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBackgroundColor: showedItemsBackgroundColor,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController: showedItemsScrollController ?? ScrollController(),
+        showedItemsScrollController:
+            showedItemsScrollController ?? ScrollController(),
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -140,7 +142,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         sortShowedItems: sortShowedItems ?? false,
         caseSensitiveSearch: caseSensitiveSearch ?? false,
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
-        textEditingController: textEditingController ?? TextEditingController(),
+        searchFieldTextEditingController:
+            textEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
         hintText: hintText,
       );
@@ -152,7 +155,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required List<T> items,
     required Widget Function(T) pickedItemBuilder,
     required String Function(T) fieldToCheck,
-    required Widget Function(T) itemBuilder,
+    required Widget Function(T, int) itemBuilder,
     required CreateOptions<T> createOptions,
     Widget Function(List<Widget> pickedItems)? pickedItemsContainerBuilder,
     void Function(T)? onItemRemoved,
@@ -237,7 +240,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsBoxDecoration: pickedItemsBoxDecoration,
         pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
         pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-        pickedItemsScrollController: pickedItemsScrollController ?? ScrollController(),
+        pickedItemsScrollController:
+            pickedItemsScrollController ?? ScrollController(),
         pickedItemsScrollPhysics: pickedItemsScrollPhysics,
         pickedItemsScrollbarColor: pickedItemsScrollbarColor,
         pickedItemsScrollbarMinOverscrollLength:
@@ -258,7 +262,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBackgroundColor: showedItemsBackgroundColor,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController: showedItemsScrollController ?? ScrollController(),
+        showedItemsScrollController:
+            showedItemsScrollController ?? ScrollController(),
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -269,7 +274,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         sortShowedItems: sortShowedItems ?? false,
         caseSensitiveSearch: caseSensitiveSearch ?? false,
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
-        textEditingController: textEditingController ?? TextEditingController(),
+        searchFieldTextEditingController:
+            textEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
         hintText: hintText,
       );
@@ -281,7 +287,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required this.isCreatable,
     required this.showedItemsScrollController,
     required this.pickedItemsScrollController,
-    required this.textEditingController,
+    required this.searchFieldTextEditingController,
     required this.textFieldFocus,
     super.key,
     this.onPickedChange,
@@ -534,7 +540,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final String Function(T) fieldToCheck;
 
   /// This is the builder of showed items.
-  final Widget Function(T) itemBuilder;
+  ///
+  /// [index] is the index of the item in the showed items list.
+  final Widget Function(T, int) itemBuilder;
 
   /// The toggle items button when [itemsVisibility] == [ShowedItemsVisibility.toggle]. Ontap logic is already defined and you can't override it with
   ///
@@ -576,7 +584,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final bool caseSensitiveSearch;
 
   /// The controller for the input text field
-  final TextEditingController textEditingController;
+  final TextEditingController searchFieldTextEditingController;
 
   /// The focus node for the input text field
   final FocusNode textFieldFocus;
@@ -667,7 +675,7 @@ class _MultipleSearchSelectionState<T>
       );
     }
     showedItems = _searchAllItems(
-      widget.textEditingController.text,
+      widget.searchFieldTextEditingController.text,
     );
 
     widget.onPickedChange?.call(pickedItems);
@@ -695,8 +703,8 @@ class _MultipleSearchSelectionState<T>
   }
 
   void _onCreateItem() {
-    final T itemToAdd =
-        widget.createOptions!.createItem(widget.textEditingController.text);
+    final T itemToAdd = widget.createOptions!
+        .createItem(widget.searchFieldTextEditingController.text);
     if (widget.createOptions!.pickCreatedItem) {
       pickedItems.add(itemToAdd);
       widget.onPickedChange?.call(
@@ -708,7 +716,7 @@ class _MultipleSearchSelectionState<T>
       allItems.add(itemToAdd);
     }
 
-    widget.textEditingController.clear();
+    widget.searchFieldTextEditingController.clear();
     showedItems = allItems;
     setState(() {});
   }
@@ -724,7 +732,7 @@ class _MultipleSearchSelectionState<T>
     }
     allItems.removeWhere((e) => showedItems.contains(e));
 
-    showedItems = _searchAllItems(widget.textEditingController.text);
+    showedItems = _searchAllItems(widget.searchFieldTextEditingController.text);
     if (showedItems.isNotEmpty) {
       if (widget.sortShowedItems) {
         showedItems.sort(
@@ -749,13 +757,62 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
-    showedItems = _searchAllItems(widget.textEditingController.text);
+    showedItems = _searchAllItems(widget.searchFieldTextEditingController.text);
 
     pickedItems.removeRange(0, pickedItems.length);
 
     widget.onPickedChange?.call(pickedItems);
     widget.onTapClearAll?.call();
     setState(() {});
+  }
+
+  ListView _buildShowedItems() {
+    return ListView.builder(
+      padding: EdgeInsets.zero,
+      primary: false,
+      controller: widget.showedItemsScrollController,
+      itemCount: showedItems.isEmpty ? 1 : showedItems.length,
+      itemBuilder: (context, index) {
+        if (showedItems.isEmpty) {
+          return widget.isCreatable
+              ? GestureDetector(
+                  onTap: _onCreateItem,
+                  child: AbsorbPointer(
+                    child: widget.createOptions!.createItemBuilder(
+                      widget.searchFieldTextEditingController.text,
+                    ),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(6.0),
+                  child: widget.noResultsWidget ??
+                      const Text(
+                        'No results',
+                      ),
+                );
+        }
+
+        final item = showedItems[index];
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            _onAddItem(item);
+            if (widget.clearSearchFieldOnSelect ?? false) {
+              widget.searchFieldTextEditingController.clear();
+              showedItems = allItems;
+            }
+
+            setState(() {});
+          },
+          child: IgnorePointer(
+            child: widget.itemBuilder(
+              item,
+              index,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -768,18 +825,18 @@ class _MultipleSearchSelectionState<T>
         ],
         if (widget.pickedItemsContainerBuilder != null)
           widget.pickedItemsContainerBuilder!.call([
-                ...pickedItems.map(
-                  (e) => GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      _onRemoveItem(e);
-                    },
-                    child: IgnorePointer(
-                      child: widget.pickedItemBuilder.call(e),
-                    ),
-                  ),
-                )
-              ])
+            ...pickedItems.map(
+              (e) => GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  _onRemoveItem(e);
+                },
+                child: IgnorePointer(
+                  child: widget.pickedItemBuilder.call(e),
+                ),
+              ),
+            )
+          ])
         else if (pickedItems.isNotEmpty)
           Container(
             width: MediaQuery.of(context).size.width,
@@ -804,38 +861,37 @@ class _MultipleSearchSelectionState<T>
               thickness: widget.pickedItemsScrollbarThickness ?? 10,
               radius:
                   widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
-              controller:
-                  widget.pickedItemsScrollController,
+              controller: widget.pickedItemsScrollController,
               child: ScrollConfiguration(
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
                 child: SingleChildScrollView(
                   controller: widget.pickedItemsScrollController,
-                      physics: widget.pickedItemsScrollPhysics,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Wrap(
-                          spacing: widget.pickedItemSpacing ?? 5,
-                          runSpacing: widget.pickedItemSpacing ?? 5,
-                          children: [
-                            ...pickedItems.map(
-                              (e) => GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  _onRemoveItem(e);
-                                },
-                                child: IgnorePointer(
-                                  child: widget.pickedItemBuilder.call(e),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                  physics: widget.pickedItemsScrollPhysics,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Wrap(
+                      spacing: widget.pickedItemSpacing ?? 5,
+                      runSpacing: widget.pickedItemSpacing ?? 5,
+                      children: [
+                        ...pickedItems.map(
+                          (e) => GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              _onRemoveItem(e);
+                            },
+                            child: IgnorePointer(
+                              child: widget.pickedItemBuilder.call(e),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   ),
                 ),
               ),
+            ),
+          ),
         if ((widget.showClearAllButton ?? true) ||
             widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
           const SizedBox(
@@ -887,10 +943,11 @@ class _MultipleSearchSelectionState<T>
                                       child: TextField(
                                         key: const Key('toggle-searchfield'),
                                         focusNode: widget.textFieldFocus,
-                                        controller: widget.textEditingController,
+                                        controller: widget
+                                            .searchFieldTextEditingController,
                                         style: widget.searchFieldTextStyle,
                                         decoration: widget
-                                              .searchFieldInputDecoration ??
+                                                .searchFieldInputDecoration ??
                                             InputDecoration(
                                               contentPadding:
                                                   const EdgeInsets.only(
@@ -906,14 +963,20 @@ class _MultipleSearchSelectionState<T>
                                                 borderRadius:
                                                     BorderRadius.circular(20),
                                               ),
-                                              suffixIcon: widget.showClearSearchFieldButton ?
-                                                  IconButton(
+                                              suffixIcon: widget
+                                                      .showClearSearchFieldButton
+                                                  ? IconButton(
                                                       onPressed: () {
-                                                        widget.textEditingController.clear();
+                                                        widget
+                                                            .searchFieldTextEditingController
+                                                            .clear();
                                                         showedItems = allItems;
                                                       },
-                                                      icon: const Icon(Icons.clear),
-                                                  ) : null,
+                                                      icon: const Icon(
+                                                        Icons.clear,
+                                                      ),
+                                                    )
+                                                  : null,
                                             ),
                                         onChanged: (value) {
                                           showedItems = _searchAllItems(value);
@@ -955,7 +1018,8 @@ class _MultipleSearchSelectionState<T>
                                             ),
                                           ),
                                       child: RawScrollbar(
-                                        controller: widget.showedItemsScrollController,
+                                        controller:
+                                            widget.showedItemsScrollController,
                                         thumbColor:
                                             widget.showedItemsScrollbarColor,
                                         thickness: widget
@@ -978,69 +1042,7 @@ class _MultipleSearchSelectionState<T>
                                                   .copyWith(
                                             scrollbars: false,
                                           ),
-                                          child: ListView(
-                                            padding: EdgeInsets.zero,
-                                            primary: false,
-                                            shrinkWrap: true,
-                                            controller: widget.showedItemsScrollController,
-                                            children: showedItems.isEmpty
-                                                ? [
-                                                    if (widget.isCreatable)
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          _onCreateItem();
-                                                          stateSetter(() {});
-                                                        },
-                                                        child: AbsorbPointer(
-                                                          child: widget
-                                                              .createOptions!
-                                                              .createItemBuilder(
-                                                            widget.textEditingController
-                                                                .text,
-                                                          ),
-                                                        ),
-                                                      )
-                                                    else
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(
-                                                          6.0,
-                                                        ),
-                                                        child: widget
-                                                                .noResultsWidget ??
-                                                            const Text(
-                                                              'No results',
-                                                            ),
-                                                      )
-                                                  ]
-                                                : showedItems.map((T item) {
-                                                    return GestureDetector(
-                                                      behavior: HitTestBehavior
-                                                          .opaque,
-                                                      onTap: () {
-                                                        _onAddItem(item);
-                                                        if (widget
-                                                                .clearSearchFieldOnSelect ??
-                                                            false) {
-                                                          widget.textEditingController
-                                                              .clear();
-                                                          showedItems =
-                                                              allItems;
-                                                        }
-
-                                                        stateSetter(() {});
-                                                        setState(() {});
-                                                      },
-                                                      child: IgnorePointer(
-                                                        child:
-                                                            widget.itemBuilder(
-                                                          item,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                          ),
+                                          child: _buildShowedItems(),
                                         ),
                                       ),
                                     )
@@ -1050,7 +1052,7 @@ class _MultipleSearchSelectionState<T>
                             },
                           ),
                         ).whenComplete(() {
-                          widget.textEditingController.clear();
+                          widget.searchFieldTextEditingController.clear();
                           showedItems = allItems;
                         });
                       },
@@ -1113,7 +1115,7 @@ class _MultipleSearchSelectionState<T>
             child: TextField(
               key: const Key('searchfield'),
               focusNode: widget.textFieldFocus,
-              controller: widget.textEditingController,
+              controller: widget.searchFieldTextEditingController,
               style: widget.searchFieldTextStyle,
               decoration: widget.searchFieldInputDecoration ??
                   InputDecoration(
@@ -1127,21 +1129,22 @@ class _MultipleSearchSelectionState<T>
                       borderSide: BorderSide.none,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    suffixIcon: widget.showClearSearchFieldButton ?
-                        IconButton(
+                    suffixIcon: widget.showClearSearchFieldButton
+                        ? IconButton(
                             onPressed: () {
-                              widget.textEditingController.clear();
+                              widget.searchFieldTextEditingController.clear();
                               showedItems = allItems;
                             },
                             icon: const Icon(Icons.clear),
-                        ) : null,
+                          )
+                        : null,
                   ),
               onChanged: (value) {
                 showedItems = _searchAllItems(value);
                 if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                  expanded =
-                      widget.itemsVisibility == ShowedItemsVisibility.onType &&
-                          widget.textEditingController.text.isNotEmpty;
+                  expanded = widget.itemsVisibility ==
+                          ShowedItemsVisibility.onType &&
+                      widget.searchFieldTextEditingController.text.isNotEmpty;
                 }
                 setState(() {});
               },
@@ -1184,53 +1187,7 @@ class _MultipleSearchSelectionState<T>
               child: ScrollConfiguration(
                 behavior:
                     ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  primary: false,
-                  shrinkWrap: true,
-                  controller: widget.showedItemsScrollController,
-                  children: showedItems.isEmpty
-                      ? [
-                          if (widget.isCreatable)
-                            GestureDetector(
-                              onTap: _onCreateItem,
-                              child: AbsorbPointer(
-                                child: widget.createOptions!.createItemBuilder(
-                                  widget.textEditingController.text,
-                                ),
-                              ),
-                            )
-                          else
-                            Padding(
-                              padding: const EdgeInsets.all(
-                                6.0,
-                              ),
-                              child: widget.noResultsWidget ??
-                                  const Text(
-                                    'No results',
-                                  ),
-                            )
-                        ]
-                      : showedItems.map((T item) {
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              _onAddItem(item);
-                              if (widget.clearSearchFieldOnSelect ?? false) {
-                                widget.textEditingController.clear();
-                                showedItems = allItems;
-                              }
-
-                              setState(() {});
-                            },
-                            child: IgnorePointer(
-                              child: widget.itemBuilder(
-                                item,
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                ),
+                child: _buildShowedItems(),
               ),
             ),
           )
