@@ -1,3 +1,7 @@
+## 2.4.1 🐛 Bug fixes
+
+- Resolved issue of displayed items failing to wrap when there were fewer items to display in the container.
+
 ## 2.4.0 ✨🔥 New features & Breaking changes
 
 - Refactored the displayed items to use lazy loading, resulting in a significant improvement in performance for large lists. Additionally, the index is now accessible for further customization.
