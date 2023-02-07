@@ -770,6 +770,7 @@ class _MultipleSearchSelectionState<T>
     return ListView.builder(
       padding: EdgeInsets.zero,
       primary: false,
+      shrinkWrap: true,
       controller: widget.showedItemsScrollController,
       itemCount: showedItems.isEmpty ? 1 : showedItems.length,
       itemBuilder: (context, index) {
