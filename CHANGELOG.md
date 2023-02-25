@@ -1,3 +1,7 @@
+## 2.4.2 🐛 Bug fixes
+
+- Fixes short circuiting issue
+
 ## 2.4.1 🐛 Bug fixes
 
 - Resolved issue of displayed items failing to wrap when there were fewer items to display in the container.
