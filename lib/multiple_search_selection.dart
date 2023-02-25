@@ -645,14 +645,14 @@ class _MultipleSearchSelectionState<T>
       bool matches = i.contains(q);
 
       if (widget.fuzzySearch == FuzzySearch.jaro) {
-        matches |= getJaro(
+        matches = matches || getJaro(
               widget.fieldToCheck(item),
               query,
               caseSensitive: widget.caseSensitiveSearch,
             ) >=
             0.8;
       } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-        matches |= getLevenshtein(
+        matches = matches || getLevenshtein(
               widget.fieldToCheck(item),
               query,
               caseSensitive: widget.caseSensitiveSearch,
