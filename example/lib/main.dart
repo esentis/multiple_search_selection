@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         onItemAdded: (c) {},
-
+        showClearSearchFieldButton: true,
         createOptions: CreateOptions(
           createItem: (text) {
             return Country(name: text, iso: text);
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         fieldToCheck: (c) {
           return c.name;
         },
-        itemBuilder: (country) {
+        itemBuilder: (country, index) {
           return Padding(
             padding: const EdgeInsets.all(6.0),
             child: Container(

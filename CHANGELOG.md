@@ -1,3 +1,94 @@
+# 2.4.3 ✨ New features
+
+- Renames `outerContainer` to `searchField` to properly reflect its purpose.
+
+- Adds a new parameter called `searchFieldBoxDecoration`, which allows you to specify the decoration of the top portion of the dialog box when the `ShowedItemsVisibility` is set to `toggle`.
+
+- Adds deprecated flags to exposed `Decoration` parameters from `pickedItemsBoxDecoration`, `searchFieldBoxDecoration` & `showedItemsBoxDecoration`. Will be removed on next version.
+
+- Fixes discrepancies of the decoration parameters.
+
+# 2.4.2 🐛 Bug fixes
+
+- Fixes short circuiting issue
+
+## 2.4.1 🐛 Bug fixes
+
+- Resolved issue of displayed items failing to wrap when there were fewer items to display in the container.
+
+## 2.4.0 ✨🔥 New features & Breaking changes
+
+- Refactored the displayed items to use lazy loading, resulting in a significant improvement in performance for large lists. Additionally, the index is now accessible for further customization.
+
+```dart
+itemBuilder: (country, index) {
+    if (index==0) return Text('Hello World');
+    return Padding(
+    padding: const EdgeInsets.all(6.0),
+    child: Container(
+        decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(6),
+        color: Colors.white,
+         ),
+        child: Padding(
+         padding: const EdgeInsets.symmetric(
+            vertical: 20.0,
+            horizontal: 12,
+         ),
+         child: Text(country.name),
+      ),
+    ),
+  );
+},
+```
+
+- Exposes some more `InputDecoration` parameters :
+  - Adds `showClearSearchFieldButton` which adds a suffix icon to clear searchfield
+  - Adds `hintText`
+  - Adds `textFieldFocus`
+  - Adds `textEdittingController`
+- If `pickedItemsContainerBuilder` is provided it will build even if no items are picked
+
+## 2.3.7 ✨ New features
+
+- Adds `pickedItemsContainerBuilder`. You can now provide your own custom `Widget` for the picked items. `pickedItems` (`List<Widget>`) are created from the `pickedItemBuilder`. So having those items you can customise the layout at your needs.
+
+```dart
+pickedItemsContainerBuilder: (pickedItems) => Center(
+    child: Container(
+    height: 150,
+    width: 150,
+    decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[400]!),
+      ),
+    child: ListView(
+        children: pickedItems,
+    ),
+  ),
+),
+pickedItemBuilder: (country) {
+    return Padding(
+    padding: const EdgeInsets.all(8),
+    child: Center(
+        child: Text(
+        country.name,
+        style: const TextStyle(
+            color: Colors.blue,
+            decoration: TextDecoration.underline,
+        ),
+      ),
+    ),
+  );
+},
+```
+
+<img src="https://i.imgur.com/EXZvBr0.gif" title="pickedItemsBuilder" />
+
+## 2.3.6 🎨 ♻️ Improves structure & Refactors code
+
+- Removes redundant code & refactors methods.
+- Fixes `onItemRemoved` being called twice. Thanks to [anqit](https://github.com/anqit)
+
 ## 2.3.5 🐛 Bug fixes
 
 - Fixes issue were fuzzy search was not always working
