@@ -36,6 +36,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     Widget? title,
     Color? pickedItemsBorderColor,
     Color? outerContainerBorderColor,
+    Color? outerContainerColor,
     Color? showedItemsScrollbarColor,
     Color? showedItemsBackgroundColor,
     double? showedItemsScrollbarMinThumbLength,
@@ -102,6 +103,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         onTapSelectAll: onTapSelectAll,
         onTapShowItems: onTapShowItems,
         onTapShowedItem: onTapShowedItem,
+        outerContainerColor: outerContainerColor,
         outerContainerBorderColor: outerContainerBorderColor,
         pickedItemSpacing: pickedItemSpacing,
         pickedItemsBorderColor: pickedItemsBorderColor,
@@ -168,6 +170,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     List<T>? initialPickedItems,
     Widget? title,
     Color? pickedItemsBorderColor,
+    Color? outerContainerColor,
     Color? outerContainerBorderColor,
     Color? showedItemsScrollbarColor,
     Color? showedItemsBackgroundColor,
@@ -234,6 +237,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         onTapSelectAll: onTapSelectAll,
         onTapShowItems: onTapShowItems,
         onTapShowedItem: onTapShowedItem,
+        outerContainerColor: outerContainerColor,
         outerContainerBorderColor: outerContainerBorderColor,
         pickedItemSpacing: pickedItemSpacing,
         pickedItemsBorderColor: pickedItemsBorderColor,
@@ -318,6 +322,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showedItemsBoxDecoration,
     this.searchFieldInputDecoration,
     this.noResultsWidget,
+    this.outerContainerColor,
     this.outerContainerBorderColor,
     this.itemsVisibility = ShowedItemsVisibility.alwaysOn,
     this.pickedItemsBorderColor,
@@ -349,6 +354,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
 
   /// The border color of the picked items container.
   final Color? pickedItemsBorderColor;
+
+  /// The color of the container that includes the search text field and  the showed items.
+  final Color? outerContainerColor;
 
   /// The border color of the container that includes the search text field and  the showed items.
   final Color? outerContainerBorderColor;
@@ -645,19 +653,21 @@ class _MultipleSearchSelectionState<T>
       bool matches = i.contains(q);
 
       if (widget.fuzzySearch == FuzzySearch.jaro) {
-        matches = matches || getJaro(
-              widget.fieldToCheck(item),
-              query,
-              caseSensitive: widget.caseSensitiveSearch,
-            ) >=
-            0.8;
+        matches = matches ||
+            getJaro(
+                  widget.fieldToCheck(item),
+                  query,
+                  caseSensitive: widget.caseSensitiveSearch,
+                ) >=
+                0.8;
       } else if (widget.fuzzySearch == FuzzySearch.levenshtein) {
-        matches = matches || getLevenshtein(
-              widget.fieldToCheck(item),
-              query,
-              caseSensitive: widget.caseSensitiveSearch,
-            ) <=
-            2;
+        matches = matches ||
+            getLevenshtein(
+                  widget.fieldToCheck(item),
+                  query,
+                  caseSensitive: widget.caseSensitiveSearch,
+                ) <=
+                2;
       }
 
       return matches;
@@ -849,7 +859,8 @@ class _MultipleSearchSelectionState<T>
                 BoxDecoration(
                   border: pickedItems.isNotEmpty
                       ? Border.all(
-                          color: Colors.grey.withOpacity(0.5),
+                          color: widget.outerContainerBorderColor ??
+                              Colors.grey.withOpacity(0.5),
                         )
                       : null,
                 ),
@@ -919,7 +930,8 @@ class _MultipleSearchSelectionState<T>
                                   children: [
                                     DecoratedBox(
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: widget.outerContainerColor ??
+                                            Colors.white,
                                         border: Border(
                                           top: BorderSide(
                                             color: widget
@@ -937,7 +949,9 @@ class _MultipleSearchSelectionState<T>
                                                 Colors.grey.withOpacity(0.5),
                                           ),
                                           bottom: BorderSide(
-                                            color: Colors.grey.withOpacity(0.5),
+                                            color: widget
+                                                    .outerContainerBorderColor ??
+                                                Colors.grey.withOpacity(0.5),
                                           ),
                                         ),
                                       ),
@@ -1094,7 +1108,7 @@ class _MultipleSearchSelectionState<T>
         if (widget.itemsVisibility != ShowedItemsVisibility.toggle)
           DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: widget.outerContainerColor ?? Colors.white,
               border: Border(
                 top: BorderSide(
                   color: widget.outerContainerBorderColor ??
@@ -1109,7 +1123,8 @@ class _MultipleSearchSelectionState<T>
                       Colors.grey.withOpacity(0.5),
                 ),
                 bottom: BorderSide(
-                  color: Colors.grey.withOpacity(0.5),
+                  color: widget.outerContainerBorderColor ??
+                      Colors.grey.withOpacity(0.5),
                 ),
               ),
             ),
