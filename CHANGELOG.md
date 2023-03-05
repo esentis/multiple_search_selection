@@ -1,4 +1,14 @@
-## 2.4.2 🐛 Bug fixes
+# 2.4.3 ✨ New features
+
+- Renames `outerContainer` to `searchField` to properly reflect its purpose.
+
+- Adds a new parameter called `searchFieldBoxDecoration`, which allows you to specify the decoration of the top portion of the dialog box when the `ShowedItemsVisibility` is set to `toggle`.
+
+- Adds deprecated flags to exposed `Decoration` parameters from `pickedItemsBoxDecoration`, `searchFieldBoxDecoration` & `showedItemsBoxDecoration`. Will be removed on next version.
+
+- Fixes discrepancies of the decoration parameters.
+
+# 2.4.2 🐛 Bug fixes
 
 - Fixes short circuiting issue
 
