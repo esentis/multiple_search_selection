@@ -1,4 +1,8 @@
-# 2.4.3 ✨ New features
+## 2.4.4 🐛 Bug fixes
+
+- Resolves an issue with `showedItems` not dissapearing when `itemsVisibility == ShowedItemsVisibility.onType` & `clearSearchFieldOnSelect == true`
+
+## 2.4.3 ✨ New features
 
 - Renames `outerContainer` to `searchField` to properly reflect its purpose.
 
@@ -8,7 +12,7 @@
 
 - Fixes discrepancies of the decoration parameters.
 
-# 2.4.2 🐛 Bug fixes
+## 2.4.2 🐛 Bug fixes
 
 - Fixes short circuiting issue
 

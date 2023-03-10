@@ -887,6 +887,9 @@ class _MultipleSearchSelectionState<T>
           onTap: () {
             _onAddItem(item);
             if (widget.clearSearchFieldOnSelect ?? false) {
+              if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
+                expanded = false;
+              }
               widget.searchFieldTextEditingController.clear();
               showedItems = allItems;
             }
