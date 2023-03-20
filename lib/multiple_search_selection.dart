@@ -97,6 +97,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     TextEditingController? textEditingController,
     FocusNode? textFieldFocus,
     String hintText = 'Type here to search',
+    double? showedItemExtent,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -167,6 +168,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
             textEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
         hintText: hintText,
+        showedItemExtent: showedItemExtent,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -250,6 +252,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     TextEditingController? textEditingController,
     FocusNode? textFieldFocus,
     String hintText = 'Type here to search',
+    double? showedItemExtent,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -320,6 +323,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
             textEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
         hintText: hintText,
+        showedItemExtent: showedItemExtent,
       );
 
   const MultipleSearchSelection._({
@@ -402,6 +406,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.caseSensitiveSearch = false,
     this.pickedItemsContainerBuilder,
     this.hintText = 'Type here to search',
+    this.showedItemExtent,
   });
 
   /// The title widget on top of the picked items.
@@ -678,6 +683,15 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// Hint text to display in the text input
   final String hintText;
 
+  /// When we have very large lists with dynamic content,
+  /// unfortunately there is an open issue in flutter that causes the list to be very slow when
+  /// scrolled with the srollbar.
+  ///
+  /// In that case you can set this to use a fixed height for each item resolving the jankiness.
+  ///
+  /// The downside obviously would be that you can't have dynamic height items.
+  final double? showedItemExtent;
+
   @override
   _MultipleSearchSelectionState<T> createState() =>
       _MultipleSearchSelectionState<T>();
@@ -809,6 +823,12 @@ class _MultipleSearchSelectionState<T>
     setState(() {});
   }
 
+  void _onClearTextField() {
+    widget.searchFieldTextEditingController.clear();
+    showedItems = allItems;
+    setState(() {});
+  }
+
   void _selectAllItems() {
     pickedItems.addAll(showedItems);
     if (widget.sortPickedItems) {
@@ -845,6 +865,7 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
+
     showedItems = _searchAllItems(widget.searchFieldTextEditingController.text);
 
     pickedItems.removeRange(0, pickedItems.length);
@@ -859,8 +880,11 @@ class _MultipleSearchSelectionState<T>
       padding: EdgeInsets.zero,
       primary: false,
       shrinkWrap: true,
+      cacheExtent: 900,
+      addAutomaticKeepAlives: false,
       controller: widget.showedItemsScrollController,
       itemCount: showedItems.isEmpty ? 1 : showedItems.length,
+      itemExtent: widget.showedItemExtent,
       itemBuilder: (context, index) {
         if (showedItems.isEmpty) {
           return widget.isCreatable
@@ -1048,12 +1072,8 @@ class _MultipleSearchSelectionState<T>
                                               suffixIcon: widget
                                                       .showClearSearchFieldButton
                                                   ? IconButton(
-                                                      onPressed: () {
-                                                        widget
-                                                            .searchFieldTextEditingController
-                                                            .clear();
-                                                        showedItems = allItems;
-                                                      },
+                                                      onPressed:
+                                                          _onClearTextField,
                                                       icon: const Icon(
                                                         Icons.clear,
                                                       ),
@@ -1099,33 +1119,13 @@ class _MultipleSearchSelectionState<T>
                                               ),
                                             ),
                                           ),
-                                      child: RawScrollbar(
-                                        controller:
-                                            widget.showedItemsScrollController,
-                                        thumbColor:
-                                            widget.showedItemsScrollbarColor,
-                                        thickness: widget
-                                                .showedItemsScrollbarMinThumbLength ??
-                                            10,
-                                        minThumbLength: widget
-                                                .showedItemsScrollbarMinThumbLength ??
-                                            30,
-                                        minOverscrollLength: widget
-                                                .showedItemsScrollbarMinOverscrollLength ??
-                                            5,
-                                        radius:
-                                            widget.showedItemsScrollbarRadius ??
-                                                const Radius.circular(5),
-                                        thumbVisibility:
-                                            widget.showShowedItemsScrollbar,
-                                        child: ScrollConfiguration(
-                                          behavior:
-                                              ScrollConfiguration.of(context)
-                                                  .copyWith(
-                                            scrollbars: false,
-                                          ),
-                                          child: _buildShowedItems(),
+                                      child: ScrollConfiguration(
+                                        behavior:
+                                            ScrollConfiguration.of(context)
+                                                .copyWith(
+                                          scrollbars: false,
                                         ),
+                                        child: _buildShowedItems(),
                                       ),
                                     )
                                   ],
@@ -1215,10 +1215,7 @@ class _MultipleSearchSelectionState<T>
                     ),
                     suffixIcon: widget.showClearSearchFieldButton
                         ? IconButton(
-                            onPressed: () {
-                              widget.searchFieldTextEditingController.clear();
-                              showedItems = allItems;
-                            },
+                            onPressed: _onClearTextField,
                             icon: const Icon(Icons.clear),
                           )
                         : null,
