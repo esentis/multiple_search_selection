@@ -1,6 +1,17 @@
-## 2.4.4 🐛 Bug fixes
+## 2.4.5 🐛✨ Bug fixes & New features
+
+### Fixes
 
 - Resolves an issue with `showedItems` not dissapearing when `itemsVisibility == ShowedItemsVisibility.onType` & `clearSearchFieldOnSelect == true`
+
+### Features
+
+- Adds `showedItemsExtent` flag.
+  When we have very large lists with dynamic content, unfortunately there is an open [issue](https://github.com/flutter/flutter/issues/52207) in Flutter that causes the list to be very slow when scrolled with the srollbar. In that case you can set this to use a fixed height for each item resolving the jankiness. The downside obviously would be that you can't have dynamic height items.
+
+## 2.4.4 🐛 Bug fixes
+
+- Resolves an issue when the clear textfield button was not resetting showed items.
 
 ## 2.4.3 ✨ New features
 
