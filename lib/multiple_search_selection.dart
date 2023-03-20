@@ -809,6 +809,12 @@ class _MultipleSearchSelectionState<T>
     setState(() {});
   }
 
+  void _onClearTextField() {
+    widget.searchFieldTextEditingController.clear();
+    showedItems = allItems;
+    setState(() {});
+  }
+
   void _selectAllItems() {
     pickedItems.addAll(showedItems);
     if (widget.sortPickedItems) {
@@ -845,6 +851,7 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
+
     showedItems = _searchAllItems(widget.searchFieldTextEditingController.text);
 
     pickedItems.removeRange(0, pickedItems.length);
@@ -1048,12 +1055,8 @@ class _MultipleSearchSelectionState<T>
                                               suffixIcon: widget
                                                       .showClearSearchFieldButton
                                                   ? IconButton(
-                                                      onPressed: () {
-                                                        widget
-                                                            .searchFieldTextEditingController
-                                                            .clear();
-                                                        showedItems = allItems;
-                                                      },
+                                                      onPressed:
+                                                          _onClearTextField,
                                                       icon: const Icon(
                                                         Icons.clear,
                                                       ),
@@ -1099,33 +1102,13 @@ class _MultipleSearchSelectionState<T>
                                               ),
                                             ),
                                           ),
-                                      child: RawScrollbar(
-                                        controller:
-                                            widget.showedItemsScrollController,
-                                        thumbColor:
-                                            widget.showedItemsScrollbarColor,
-                                        thickness: widget
-                                                .showedItemsScrollbarMinThumbLength ??
-                                            10,
-                                        minThumbLength: widget
-                                                .showedItemsScrollbarMinThumbLength ??
-                                            30,
-                                        minOverscrollLength: widget
-                                                .showedItemsScrollbarMinOverscrollLength ??
-                                            5,
-                                        radius:
-                                            widget.showedItemsScrollbarRadius ??
-                                                const Radius.circular(5),
-                                        thumbVisibility:
-                                            widget.showShowedItemsScrollbar,
-                                        child: ScrollConfiguration(
-                                          behavior:
-                                              ScrollConfiguration.of(context)
-                                                  .copyWith(
-                                            scrollbars: false,
-                                          ),
-                                          child: _buildShowedItems(),
+                                      child: ScrollConfiguration(
+                                        behavior:
+                                            ScrollConfiguration.of(context)
+                                                .copyWith(
+                                          scrollbars: false,
                                         ),
+                                        child: _buildShowedItems(),
                                       ),
                                     )
                                   ],
@@ -1215,10 +1198,7 @@ class _MultipleSearchSelectionState<T>
                     ),
                     suffixIcon: widget.showClearSearchFieldButton
                         ? IconButton(
-                            onPressed: () {
-                              widget.searchFieldTextEditingController.clear();
-                              showedItems = allItems;
-                            },
+                            onPressed: _onClearTextField,
                             icon: const Icon(Icons.clear),
                           )
                         : null,
