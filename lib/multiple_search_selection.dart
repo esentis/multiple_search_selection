@@ -94,7 +94,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
     bool? caseSensitiveSearch,
-    TextEditingController? textEditingController,
+    TextEditingController? searchFieldTextEditingController,
     FocusNode? textFieldFocus,
     String hintText = 'Type here to search',
     double? showedItemExtent,
@@ -165,7 +165,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         caseSensitiveSearch: caseSensitiveSearch ?? false,
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
         searchFieldTextEditingController:
-            textEditingController ?? TextEditingController(),
+            searchFieldTextEditingController ?? TextEditingController(),
         textFieldFocus: textFieldFocus ?? FocusNode(),
         hintText: hintText,
         showedItemExtent: showedItemExtent,
