@@ -1,3 +1,17 @@
+## 2.5.0 ✨🔥 New features & Breaking changes
+
+### Breaking changes
+
+- Removes deprecated parameters
+
+### Features
+
+- Adds `maxSelectedItems` parameter to specify the maximum amount of items the user can select from the items' list. If the maximum number is picked:
+  - The search TextField is disabled and the items' list is hidden.
+  - The select all button is hidden.
+  - The show items button is hidden, if the item visibility is Toggle.
+  - The dialog of the items is popped, if the item visibility is Toggle.
+
 ## 2.4.5 🐛✨ Bug fixes & New features
 
 ### Fixes
