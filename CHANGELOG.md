@@ -1,3 +1,7 @@
+## 2.5.1 🐛 Bug fixes
+
+- Fixes range exception issue when selecting all items
+
 ## 2.5.0 ✨🔥 New features & Breaking changes
 
 ### Breaking changes
