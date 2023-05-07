@@ -1,3 +1,7 @@
+## 2.5.2 🐛 Bug fixes
+
+- Resolves the inconsistency where ShowedItemsVisibility.onType was showing all items after selecting one from the list.
+
 ## 2.5.1 🐛 Bug fixes
 
 - Fixes range exception issue when selecting all items
