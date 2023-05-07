@@ -816,8 +816,10 @@ class _MultipleSearchSelectionState<T>
       itemCount: showedItems.isEmpty ? 1 : showedItems.length,
       itemExtent: widget.showedItemExtent,
       itemBuilder: (context, index) {
-        if (showedItems.isEmpty && allItems.isNotEmpty) {
-          return widget.isCreatable
+        if ((showedItems.isEmpty && allItems.isNotEmpty) ||
+            (showedItems.isEmpty && allItems.isEmpty)) {
+          return widget.isCreatable &&
+                  widget.searchFieldTextEditingController.text.isNotEmpty
               ? GestureDetector(
                   onTap: _onCreateItem,
                   child: AbsorbPointer(
