@@ -730,6 +730,16 @@ class _MultipleSearchSelectionState<T>
         Navigator.pop(context);
       }
     }
+
+    if (widget.clearSearchFieldOnSelect ?? false) {
+      widget.searchFieldTextEditingController.clear();
+      showedItems = allItems;
+    }
+    if (widget.itemsVisibility == ShowedItemsVisibility.onType &&
+        widget.searchFieldTextEditingController.text.isEmpty) {
+      expanded = false;
+    }
+    setState(() {});
   }
 
   void _onCreateItem() {
@@ -746,14 +756,23 @@ class _MultipleSearchSelectionState<T>
       allItems.add(itemToAdd);
     }
 
-    widget.searchFieldTextEditingController.clear();
-    showedItems = allItems;
+    if (widget.clearSearchFieldOnSelect ?? false) {
+      widget.searchFieldTextEditingController.clear();
+      showedItems = allItems;
+    }
+    if (widget.itemsVisibility == ShowedItemsVisibility.onType &&
+        widget.searchFieldTextEditingController.text.isEmpty) {
+      expanded = false;
+    }
     setState(() {});
   }
 
   void _onClearTextField() {
     widget.searchFieldTextEditingController.clear();
     showedItems = allItems;
+    if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
+      expanded = false;
+    }
     setState(() {});
   }
 
@@ -842,15 +861,6 @@ class _MultipleSearchSelectionState<T>
           behavior: HitTestBehavior.opaque,
           onTap: () {
             _onAddItem(item);
-            if (widget.clearSearchFieldOnSelect ?? false) {
-              if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                expanded = false;
-              }
-              widget.searchFieldTextEditingController.clear();
-              showedItems = allItems;
-            }
-
-            setState(() {});
           },
           child: IgnorePointer(
             child: widget.itemBuilder(
