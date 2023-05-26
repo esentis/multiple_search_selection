@@ -5,7 +5,7 @@ homepage: "https://github.com/esentis/multiple_search_selection"
 screenshots:
   - description: "Main screenshot"
     path: screenshots/main.gif
-  - descriptuon: "Createable style screenshot"
+  - description: "Createable style screenshot"
     path: screenshots/createable.gif
   - description: "Always on screenshot"
     path: screenshots/always_on.gif
