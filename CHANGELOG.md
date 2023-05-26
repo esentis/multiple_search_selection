@@ -1,3 +1,5 @@
+## 2.5.3 ✨ Adds screenshots & Allows higher than 3.0.0 version SDK
+
 ## 2.5.2 🐛 Bug fixes
 
 - Resolves the inconsistency where ShowedItemsVisibility.onType was showing all items after selecting one from the list.
