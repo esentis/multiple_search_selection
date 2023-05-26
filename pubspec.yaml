@@ -1,10 +1,21 @@
 name: multiple_search_selection
 description: A highly customizable multiple selection widget with fuzzy search functionality.
-version: 2.5.2
+version: 2.5.3
 homepage: "https://github.com/esentis/multiple_search_selection"
+screenshots:
+  - description: "Main screenshot"
+    path: screenshots/main.gif
+  - descriptuon: "Createable style screenshot"
+    path: screenshots/createable.gif
+  - description: "Always on screenshot"
+    path: screenshots/always_on.gif
+  - description: "On toggle screenshot"
+    path: screenshots/on_toggle.gif
+  - description: "On type screenshot"
+    path: screenshots/on_type.gif
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=2.17.0 <4.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
