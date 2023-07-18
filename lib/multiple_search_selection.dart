@@ -1,3 +1,4 @@
+/// A highly customizable multiple selection widget with fuzzy search functionality
 library multiple_search_selection;
 
 import 'package:flutter/material.dart';
