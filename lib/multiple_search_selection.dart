@@ -896,7 +896,7 @@ class _MultipleSearchSelectionState<T>
                   child: widget.pickedItemBuilder.call(e),
                 ),
               ),
-            )
+            ),
           ])
         else if (pickedItems.isNotEmpty)
           Container(
@@ -945,7 +945,7 @@ class _MultipleSearchSelectionState<T>
                               child: widget.pickedItemBuilder.call(e),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -1063,7 +1063,7 @@ class _MultipleSearchSelectionState<T>
                                             ? const SizedBox()
                                             : _buildShowedItems(),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               );
@@ -1104,9 +1104,9 @@ class _MultipleSearchSelectionState<T>
                   child: IgnorePointer(
                     child: widget.clearAllButton ?? const Text('Clear all'),
                   ),
-                )
+                ),
             ],
-          )
+          ),
         ],
         const SizedBox(
           height: 10,
@@ -1204,7 +1204,7 @@ class _MultipleSearchSelectionState<T>
                     maxItemsSelected ? const SizedBox() : _buildShowedItems(),
               ),
             ),
-          )
+          ),
       ],
     );
   }
