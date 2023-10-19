@@ -1,3 +1,4 @@
+/// A highly customizable multiple selection widget with fuzzy search functionality
 library multiple_search_selection;
 
 import 'package:flutter/material.dart';
@@ -79,6 +80,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     String hintText = 'Type here to search',
     double? showedItemExtent,
     int? maxSelectedItems,
+    bool? autoCorrect,
+    bool? enableSuggestions,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -143,9 +146,11 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
         searchFieldTextEditingController:
             searchFieldTextEditingController ?? TextEditingController(),
-        textFieldFocus: textFieldFocus ?? FocusNode(),
+        searchFieldFocus: textFieldFocus ?? FocusNode(),
         hintText: hintText,
         showedItemExtent: showedItemExtent,
+        autoCorrect: autoCorrect ?? true,
+        enableSuggestions: enableSuggestions ?? true,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -207,10 +212,12 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     VoidCallback? onTapClearAll,
     bool? caseSensitiveSearch,
     TextEditingController? textEditingController,
-    FocusNode? textFieldFocus,
+    FocusNode? searchFieldFocus,
     String hintText = 'Type here to search',
     double? showedItemExtent,
     int? maxSelectedItems,
+    bool? autoCorrect,
+    bool? enableSuggestions,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -275,9 +282,11 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         pickedItemsContainerBuilder: pickedItemsContainerBuilder,
         searchFieldTextEditingController:
             textEditingController ?? TextEditingController(),
-        textFieldFocus: textFieldFocus ?? FocusNode(),
+        searchFieldFocus: searchFieldFocus ?? FocusNode(),
         hintText: hintText,
         showedItemExtent: showedItemExtent,
+        autoCorrect: autoCorrect ?? true,
+        enableSuggestions: enableSuggestions ?? true,
       );
 
   const MultipleSearchSelection._({
@@ -288,7 +297,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     required this.showedItemsScrollController,
     required this.pickedItemsScrollController,
     required this.searchFieldTextEditingController,
-    required this.textFieldFocus,
+    required this.searchFieldFocus,
     super.key,
     this.maxSelectedItems,
     this.onPickedChange,
@@ -342,6 +351,8 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.pickedItemsContainerBuilder,
     this.hintText = 'Type here to search',
     this.showedItemExtent,
+    this.autoCorrect = true,
+    this.enableSuggestions = true,
   });
 
   /// The maximum number of items that can be picked. If null, there is no limit.
@@ -592,7 +603,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final TextEditingController searchFieldTextEditingController;
 
   /// The focus node for the input text field
-  final FocusNode textFieldFocus;
+  final FocusNode searchFieldFocus;
 
   /// Hint text to display in the text input
   final String hintText;
@@ -605,6 +616,12 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   ///
   /// The downside obviously would be that you can't have dynamic height items.
   final double? showedItemExtent;
+
+  /// Whether the search field should auto correct the input text. Defaults to [true].
+  final bool autoCorrect;
+
+  /// Whether the search field should provided suggestions. Defaults to [true].
+  final bool enableSuggestions;
 
   @override
   _MultipleSearchSelectionState<T> createState() =>
@@ -730,6 +747,16 @@ class _MultipleSearchSelectionState<T>
         Navigator.pop(context);
       }
     }
+
+    if (widget.clearSearchFieldOnSelect ?? false) {
+      widget.searchFieldTextEditingController.clear();
+      showedItems = allItems;
+    }
+    if (widget.itemsVisibility == ShowedItemsVisibility.onType &&
+        widget.searchFieldTextEditingController.text.isEmpty) {
+      expanded = false;
+    }
+    setState(() {});
   }
 
   void _onCreateItem() {
@@ -746,14 +773,23 @@ class _MultipleSearchSelectionState<T>
       allItems.add(itemToAdd);
     }
 
-    widget.searchFieldTextEditingController.clear();
-    showedItems = allItems;
+    if (widget.clearSearchFieldOnSelect ?? false) {
+      widget.searchFieldTextEditingController.clear();
+      showedItems = allItems;
+    }
+    if (widget.itemsVisibility == ShowedItemsVisibility.onType &&
+        widget.searchFieldTextEditingController.text.isEmpty) {
+      expanded = false;
+    }
     setState(() {});
   }
 
   void _onClearTextField() {
     widget.searchFieldTextEditingController.clear();
     showedItems = allItems;
+    if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
+      expanded = false;
+    }
     setState(() {});
   }
 
@@ -816,8 +852,10 @@ class _MultipleSearchSelectionState<T>
       itemCount: showedItems.isEmpty ? 1 : showedItems.length,
       itemExtent: widget.showedItemExtent,
       itemBuilder: (context, index) {
-        if (showedItems.isEmpty && allItems.isNotEmpty) {
-          return widget.isCreatable
+        if ((showedItems.isEmpty && allItems.isNotEmpty) ||
+            (showedItems.isEmpty && allItems.isEmpty)) {
+          return widget.isCreatable &&
+                  widget.searchFieldTextEditingController.text.isNotEmpty
               ? GestureDetector(
                   onTap: _onCreateItem,
                   child: AbsorbPointer(
@@ -840,15 +878,6 @@ class _MultipleSearchSelectionState<T>
           behavior: HitTestBehavior.opaque,
           onTap: () {
             _onAddItem(item);
-            if (widget.clearSearchFieldOnSelect ?? false) {
-              if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                expanded = false;
-              }
-              widget.searchFieldTextEditingController.clear();
-              showedItems = allItems;
-            }
-
-            setState(() {});
           },
           child: IgnorePointer(
             child: widget.itemBuilder(
@@ -883,7 +912,7 @@ class _MultipleSearchSelectionState<T>
                   child: widget.pickedItemBuilder.call(e),
                 ),
               ),
-            )
+            ),
           ])
         else if (pickedItems.isNotEmpty)
           Container(
@@ -932,7 +961,7 @@ class _MultipleSearchSelectionState<T>
                               child: widget.pickedItemBuilder.call(e),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -975,8 +1004,15 @@ class _MultipleSearchSelectionState<T>
                                                 ),
                                               ),
                                       child: TextField(
-                                        key: const Key('toggle-searchfield'),
-                                        focusNode: widget.textFieldFocus,
+                                        focusNode: widget.searchFieldFocus,
+                                        enableSuggestions:
+                                            widget.enableSuggestions,
+                                        autocorrect: widget.autoCorrect,
+                                        keyboardType:
+                                            !widget.enableSuggestions ||
+                                                    !widget.autoCorrect
+                                                ? TextInputType.visiblePassword
+                                                : null,
                                         enabled: !maxItemsSelected,
                                         controller: widget
                                             .searchFieldTextEditingController,
@@ -1050,7 +1086,7 @@ class _MultipleSearchSelectionState<T>
                                             ? const SizedBox()
                                             : _buildShowedItems(),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 ),
                               );
@@ -1091,9 +1127,9 @@ class _MultipleSearchSelectionState<T>
                   child: IgnorePointer(
                     child: widget.clearAllButton ?? const Text('Clear all'),
                   ),
-                )
+                ),
             ],
-          )
+          ),
         ],
         const SizedBox(
           height: 10,
@@ -1119,11 +1155,15 @@ class _MultipleSearchSelectionState<T>
                   ),
                 ),
             child: TextField(
-              key: const Key('searchfield'),
-              focusNode: widget.textFieldFocus,
+              focusNode: widget.searchFieldFocus,
               enabled: !maxItemsSelected,
               controller: widget.searchFieldTextEditingController,
               style: widget.searchFieldTextStyle,
+              enableSuggestions: widget.enableSuggestions,
+              autocorrect: widget.autoCorrect,
+              keyboardType: !widget.enableSuggestions || !widget.autoCorrect
+                  ? TextInputType.visiblePassword
+                  : null,
               decoration: widget.searchFieldInputDecoration ??
                   InputDecoration(
                     contentPadding: const EdgeInsets.only(left: 6),
@@ -1191,7 +1231,7 @@ class _MultipleSearchSelectionState<T>
                     maxItemsSelected ? const SizedBox() : _buildShowedItems(),
               ),
             ),
-          )
+          ),
       ],
     );
   }

@@ -120,3 +120,5 @@ lib/generated_plugin_registrant.dart
 .idea/
 *.iml
 #/.idea/
+.vscode
+.vscode/*
