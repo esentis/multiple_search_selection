@@ -1,3 +1,9 @@
+## 2.5.4 ✨🔥 New features & Breaking changes
+
+- Renames `textFieldFocus` to `searchFieldFocus`
+- Adds `autoCorrect` flag, to check if the search field should auto correct the input text
+- Adds `enableSuggestions` flag, to check if the search field should provide suggestions
+
 ## 2.5.3 ✨ Adds screenshots & Allows higher than 3.0.0 version SDK
 
 ## 2.5.2 🐛 Bug fixes
