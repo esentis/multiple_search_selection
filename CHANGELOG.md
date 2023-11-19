@@ -1,3 +1,7 @@
+## 2.5.5 ✨ New features
+
+- Adds a new flag `placePickedItemContainerBelow` which defaults to `false`. Picked items will be displayed at the bottom instead of top
+
 ## 2.5.4 ✨🔥 New features & Breaking changes
 
 - Renames `textFieldFocus` to `searchFieldFocus`
