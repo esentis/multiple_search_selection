@@ -82,6 +82,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     int? maxSelectedItems,
     bool? autoCorrect,
     bool? enableSuggestions,
+    bool? placePickedItemContainerBelow,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -151,6 +152,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemExtent: showedItemExtent,
         autoCorrect: autoCorrect ?? true,
         enableSuggestions: enableSuggestions ?? true,
+        placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -218,6 +220,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     int? maxSelectedItems,
     bool? autoCorrect,
     bool? enableSuggestions,
+    bool? placePickedItemContainerBelow,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -287,6 +290,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemExtent: showedItemExtent,
         autoCorrect: autoCorrect ?? true,
         enableSuggestions: enableSuggestions ?? true,
+        placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
       );
 
   const MultipleSearchSelection._({
@@ -353,6 +357,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.showedItemExtent,
     this.autoCorrect = true,
     this.enableSuggestions = true,
+    this.placePickedItemContainerBelow = false,
   });
 
   /// The maximum number of items that can be picked. If null, there is no limit.
@@ -623,6 +628,9 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// Whether the search field should provided suggestions. Defaults to [true].
   final bool enableSuggestions;
 
+  /// Place the pickedItemsContainer bottom of the search box
+  final bool placePickedItemContainerBelow;
+
   @override
   _MultipleSearchSelectionState<T> createState() =>
       _MultipleSearchSelectionState<T>();
@@ -890,6 +898,81 @@ class _MultipleSearchSelectionState<T>
     );
   }
 
+  List<Widget> _pickedItemsBuilder(BuildContext context, bool display) {
+    if (display == false) return [];
+    return [
+      if (widget.pickedItemsContainerBuilder != null)
+        widget.pickedItemsContainerBuilder!.call([
+          ...pickedItems.map(
+            (e) => GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                _onRemoveItem(e);
+              },
+              child: IgnorePointer(
+                child: widget.pickedItemBuilder.call(e),
+              ),
+            ),
+          ),
+        ])
+      else if (pickedItems.isNotEmpty)
+        Container(
+          width: MediaQuery.of(context).size.width,
+          constraints: BoxConstraints(
+            maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
+            minHeight: widget.pickedItemsContainerMinHeight ?? 50,
+          ),
+          decoration: widget.pickedItemsBoxDecoration ??
+              BoxDecoration(
+                border: pickedItems.isNotEmpty
+                    ? Border.all(
+                        color: Colors.grey.withOpacity(0.5),
+                      )
+                    : null,
+              ),
+          child: RawScrollbar(
+            thumbVisibility: widget.showPickedItemScrollbar,
+            thumbColor: widget.pickedItemsScrollbarColor,
+            minOverscrollLength:
+                widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
+            minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
+            thickness: widget.pickedItemsScrollbarThickness ?? 10,
+            radius:
+                widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
+            controller: widget.pickedItemsScrollController,
+            child: ScrollConfiguration(
+              behavior:
+                  ScrollConfiguration.of(context).copyWith(scrollbars: false),
+              child: SingleChildScrollView(
+                controller: widget.pickedItemsScrollController,
+                physics: widget.pickedItemsScrollPhysics,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Wrap(
+                    spacing: widget.pickedItemSpacing ?? 5,
+                    runSpacing: widget.pickedItemSpacing ?? 5,
+                    children: [
+                      ...pickedItems.map(
+                        (e) => GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () {
+                            _onRemoveItem(e);
+                          },
+                          child: IgnorePointer(
+                            child: widget.pickedItemBuilder.call(e),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool maxItemsSelected = widget.maxSelectedItems != null &&
@@ -900,75 +983,7 @@ class _MultipleSearchSelectionState<T>
         if (widget.title != null) ...[
           widget.title!,
         ],
-        if (widget.pickedItemsContainerBuilder != null)
-          widget.pickedItemsContainerBuilder!.call([
-            ...pickedItems.map(
-              (e) => GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  _onRemoveItem(e);
-                },
-                child: IgnorePointer(
-                  child: widget.pickedItemBuilder.call(e),
-                ),
-              ),
-            ),
-          ])
-        else if (pickedItems.isNotEmpty)
-          Container(
-            width: MediaQuery.of(context).size.width,
-            constraints: BoxConstraints(
-              maxHeight: widget.pickedItemsContainerMaxHeight ?? 150,
-              minHeight: widget.pickedItemsContainerMinHeight ?? 50,
-            ),
-            decoration: widget.pickedItemsBoxDecoration ??
-                BoxDecoration(
-                  border: pickedItems.isNotEmpty
-                      ? Border.all(
-                          color: Colors.grey.withOpacity(0.5),
-                        )
-                      : null,
-                ),
-            child: RawScrollbar(
-              thumbVisibility: widget.showPickedItemScrollbar,
-              thumbColor: widget.pickedItemsScrollbarColor,
-              minOverscrollLength:
-                  widget.pickedItemsScrollbarMinOverscrollLength ?? 5,
-              minThumbLength: widget.pickedItemsScrollbarMinThumbLength ?? 30,
-              thickness: widget.pickedItemsScrollbarThickness ?? 10,
-              radius:
-                  widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
-              controller: widget.pickedItemsScrollController,
-              child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: SingleChildScrollView(
-                  controller: widget.pickedItemsScrollController,
-                  physics: widget.pickedItemsScrollPhysics,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Wrap(
-                      spacing: widget.pickedItemSpacing ?? 5,
-                      runSpacing: widget.pickedItemSpacing ?? 5,
-                      children: [
-                        ...pickedItems.map(
-                          (e) => GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              _onRemoveItem(e);
-                            },
-                            child: IgnorePointer(
-                              child: widget.pickedItemBuilder.call(e),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+        ..._pickedItemsBuilder(context, widget.placePickedItemContainerBelow == false),
         if ((widget.showClearAllButton ?? true) ||
             widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
           const SizedBox(
@@ -1232,6 +1247,7 @@ class _MultipleSearchSelectionState<T>
               ),
             ),
           ),
+        ..._pickedItemsBuilder(context, widget.placePickedItemContainerBelow == true),
       ],
     );
   }
