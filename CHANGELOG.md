@@ -1,3 +1,16 @@
+## 2.5.6 ✨ New features
+
+- Introduces a new parameter, `MultipleSearchController`, which serves as a `controller` for accessing both displayed and selected items. The only limitation is that it must be utilized after the widget has been constructed.
+
+```dart
+controller.getAllItems();
+controller.getPickedItems();
+```
+
+- Introduces additional options in `CreateOptions` for the `creatable` widget:
+  - `allowDuplicates`: This option is set to `true` by default. When set to `false`, it prohibits the selection of any new `T` item that already exists. It's important to note that `T` must implement the `==` method for the library to accurately determine whether the `T` item already exists among displayed or picked items.
+  - `onDuplicateItem(T)`: This callback function is triggered when an attempt is made to add a duplicate item.
+
 ## 2.5.5 ✨ New features
 
 - Adds a new flag `placePickedItemContainerBelow` which defaults to `false`. Picked items will be displayed at the bottom instead of top
