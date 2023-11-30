@@ -16,13 +16,22 @@ class CreateOptions<T> {
   /// Whether to automatically pick the created item.
   final bool pickCreatedItem;
 
+  /// Whether to allow duplicates in the list.
+  ///
+  /// If [true] then the item will be added to the list even if it already exists.
+  final bool allowDuplicates;
+
   /// A callback after the item is created and added to your list/picked items.
   final Function(T)? onItemCreated;
+
+  final Function(T)? onDuplicateItem;
 
   const CreateOptions({
     required this.createItem,
     required this.createItemBuilder,
+    this.onDuplicateItem,
     this.pickCreatedItem = false,
+    this.allowDuplicates = false,
     this.onItemCreated,
   });
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/helpers/create_options.dart';
 import 'package:multiple_search_selection/helpers/jaro.dart';
 import 'package:multiple_search_selection/helpers/levenshtein.dart';
+import 'package:multiple_search_selection/helpers/search_controller.dart';
 
 enum FuzzySearch {
   levenshtein,
@@ -83,6 +84,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? autoCorrect,
     bool? enableSuggestions,
     bool? placePickedItemContainerBelow,
+    MultipleSearchController? controller,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -153,6 +155,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         autoCorrect: autoCorrect ?? true,
         enableSuggestions: enableSuggestions ?? true,
         placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
+        controller: controller,
       );
 
   /// [MultipleSearchSelection.creatable] constructor provides a way to add a new item in your list,
@@ -221,6 +224,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     bool? autoCorrect,
     bool? enableSuggestions,
     bool? placePickedItemContainerBelow,
+    MultipleSearchController? controller,
   }) =>
       MultipleSearchSelection._(
         items: items,
@@ -291,6 +295,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         autoCorrect: autoCorrect ?? true,
         enableSuggestions: enableSuggestions ?? true,
         placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
+        controller: controller,
       );
 
   const MultipleSearchSelection._({
@@ -358,6 +363,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     this.autoCorrect = true,
     this.enableSuggestions = true,
     this.placePickedItemContainerBelow = false,
+    this.controller,
   });
 
   /// The maximum number of items that can be picked. If null, there is no limit.
@@ -631,6 +637,13 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// Place the pickedItemsContainer bottom of the search box
   final bool placePickedItemContainerBelow;
 
+  /// This is the controller for the [MultipleSearchSelection].
+  ///
+  /// Use this controller to :
+  ///
+  /// 1. Get the items in the list.
+  /// 2. Get the picked items in the list.
+  final MultipleSearchController? controller;
   @override
   _MultipleSearchSelectionState<T> createState() =>
       _MultipleSearchSelectionState<T>();
@@ -661,17 +674,6 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _prepareItems();
-
-    expanded = widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
-
-    pickedItems.addAll(widget.initialPickedItems ?? []);
   }
 
   List<T> _searchAllItems(String query) {
@@ -770,6 +772,13 @@ class _MultipleSearchSelectionState<T>
   void _onCreateItem() {
     final T itemToAdd = widget.createOptions!
         .createItem(widget.searchFieldTextEditingController.text);
+
+    if (widget.createOptions!.allowDuplicates == false &&
+        (allItems.contains(itemToAdd) || pickedItems.contains(itemToAdd))) {
+      widget.createOptions!.onDuplicateItem?.call(itemToAdd);
+      return;
+    }
+
     if (widget.createOptions!.pickCreatedItem) {
       pickedItems.add(itemToAdd);
       widget.onPickedChange?.call(
@@ -974,6 +983,22 @@ class _MultipleSearchSelectionState<T>
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _prepareItems();
+
+    expanded = widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
+
+    if (widget.controller != null) {
+      widget.controller!.getAllItems = () => allItems;
+      widget.controller!.getPickedItems = () => pickedItems;
+    }
+
+    pickedItems.addAll(widget.initialPickedItems ?? []);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final bool maxItemsSelected = widget.maxSelectedItems != null &&
         (widget.maxSelectedItems!) <= pickedItems.length;
@@ -983,7 +1008,8 @@ class _MultipleSearchSelectionState<T>
         if (widget.title != null) ...[
           widget.title!,
         ],
-        ..._pickedItemsBuilder(context, widget.placePickedItemContainerBelow == false),
+        ..._pickedItemsBuilder(
+            context, widget.placePickedItemContainerBelow == false),
         if ((widget.showClearAllButton ?? true) ||
             widget.itemsVisibility == ShowedItemsVisibility.toggle) ...[
           const SizedBox(
@@ -1247,7 +1273,8 @@ class _MultipleSearchSelectionState<T>
               ),
             ),
           ),
-        ..._pickedItemsBuilder(context, widget.placePickedItemContainerBelow == true),
+        ..._pickedItemsBuilder(
+            context, widget.placePickedItemContainerBelow == true),
       ],
     );
   }
