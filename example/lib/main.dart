@@ -2,6 +2,7 @@ import 'package:example/constants.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/helpers/create_options.dart';
+import 'package:multiple_search_selection/helpers/search_controller.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
 
 void main() {
@@ -40,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  MultipleSearchController controller = MultipleSearchController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: MultipleSearchSelection<Country>.creatable(
+        controller: controller,
         title: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Text(
@@ -57,12 +60,19 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-        onItemAdded: (c) {},
+        onItemAdded: (c) {
+          controller.getAllItems();
+          controller.getPickedItems();
+        },
         showClearSearchFieldButton: true,
         createOptions: CreateOptions(
           createItem: (text) {
             return Country(name: text, iso: text);
           },
+          onDuplicateItem: (item) {
+            print('Duplicate item $item');
+          },
+          allowDuplicates: false,
           onItemCreated: (c) => print('Country ${c.name} created'),
           createItemBuilder: (text) => Align(
             alignment: Alignment.centerLeft,
