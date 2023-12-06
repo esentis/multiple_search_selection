@@ -1,7 +1,7 @@
 import 'package:example/constants.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:multiple_search_selection/helpers/create_options.dart';
+import 'package:multiple_search_selection/helpers/overlay_options.dart';
 import 'package:multiple_search_selection/helpers/search_controller.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
 
@@ -51,7 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            MultipleSearchSelection<Country>.creatable(
+            MultipleSearchSelection<Country>.overlay(
+              overlayOptions: const OverlayOptions(
+                closeOnFocusLost: false,
+              ),
               controller: controller,
               title: Padding(
                 padding: const EdgeInsets.all(12.0),
@@ -69,24 +72,24 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               clearSearchFieldOnSelect: true,
               showClearSearchFieldButton: true,
-              createOptions: CreateOptions(
-                createItem: (text) {
-                  return Country(name: text, iso: text);
-                },
-                onDuplicateItem: (item) {
-                  print('Duplicate item $item');
-                },
-                allowDuplicates: false,
-                onItemCreated: (c) => print('Country ${c.name} created'),
-                createItemBuilder: (text) => Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text('Create "$text"'),
-                  ),
-                ),
-                pickCreatedItem: true,
-              ),
+              // createOptions: CreateOptions(
+              //   createItem: (text) {
+              //     return Country(name: text, iso: text);
+              //   },
+              //   onDuplicateItem: (item) {
+              //     print('Duplicate item $item');
+              //   },
+              //   allowDuplicates: false,
+              //   onItemCreated: (c) => print('Country ${c.name} created'),
+              //   createItemBuilder: (text) => Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: Text('Create "$text"'),
+              //     ),
+              //   ),
+              //   pickCreatedItem: true,
+              // ),
               items: countries, // List<Country>
               fieldToCheck: (c) {
                 return c.name;
@@ -155,7 +158,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               caseSensitiveSearch: false,
               fuzzySearch: FuzzySearch.none,
-              itemsVisibility: ShowedItemsVisibility.onType,
               showSelectAllButton: true,
               maximumShowItemsHeight: 200,
             ),
