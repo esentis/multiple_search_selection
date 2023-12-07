@@ -138,8 +138,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerHeight: showedItemContainerHeight,
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController:
-            showedItemsScrollController ?? ScrollController(),
+        showedItemsScrollController: showedItemsScrollController,
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -279,8 +278,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerHeight: showedItemContainerHeight,
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController:
-            showedItemsScrollController ?? ScrollController(),
+        showedItemsScrollController: showedItemsScrollController,
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -420,8 +418,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         showedItemContainerHeight: showedItemContainerHeight,
         showedItemContainerPadding: showedItemContainerPadding,
         showedItemsBoxDecoration: showedItemsBoxDecoration,
-        showedItemsScrollController:
-            showedItemsScrollController ?? ScrollController(),
+        showedItemsScrollController: showedItemsScrollController,
         showedItemsScrollPhysics: showedItemsScrollPhysics,
         showedItemsScrollbarColor: showedItemsScrollbarColor,
         showedItemsScrollbarMinOverscrollLength:
@@ -628,10 +625,10 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final VoidCallback? onTapShowedItem;
 
   /// The [ScrollController] of the picked items list.
-  final ScrollController pickedItemsScrollController;
+  final ScrollController? pickedItemsScrollController;
 
   /// The [ScrollController] of showed items list.
-  final ScrollController showedItemsScrollController;
+  final ScrollController? showedItemsScrollController;
 
   /// The [ScrollPhysics] of the picked items list.
   final ScrollPhysics? pickedItemsScrollPhysics;
@@ -643,7 +640,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   final bool sortPickedItems;
 
   /// Whether the showed items are sorted alphabetically. Defaults to [false].
-  final bool sortShowedItems;
+  final bool? sortShowedItems;
 
   /// How the showed items are displayed.
   ///
@@ -822,6 +819,8 @@ class _MultipleSearchSelectionState<T>
   final GlobalKey _searchFieldKey = GlobalKey();
   final LayerLink _layerLink = LayerLink();
 
+  late ScrollController _showedItemsScrollController;
+
   void _openDropdown() {
     print('Opening dropdown');
     if (!isOverlayShown && shouldShowOverlay) {
@@ -917,7 +916,7 @@ class _MultipleSearchSelectionState<T>
     showedItems = [...widget.items ?? []];
     allItems = [...widget.items ?? []];
 
-    if (widget.sortShowedItems) {
+    if (widget.sortShowedItems ?? false) {
       showedItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -965,7 +964,7 @@ class _MultipleSearchSelectionState<T>
   void _onRemoveItem(T item) {
     pickedItems.remove(item);
     allItems.add(item);
-    if (widget.sortShowedItems) {
+    if (widget.sortShowedItems ?? false) {
       allItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -1103,7 +1102,7 @@ class _MultipleSearchSelectionState<T>
 
     showedItems = _searchAllItems(widget.searchFieldTextEditingController.text);
     if (showedItems.isNotEmpty) {
-      if (widget.sortShowedItems) {
+      if (widget.sortShowedItems ?? false) {
         showedItems.sort(
           (a, b) => widget.fieldToCheck(a).compareTo(
                 widget.fieldToCheck(b),
@@ -1130,7 +1129,7 @@ class _MultipleSearchSelectionState<T>
 
   void _clearAllPickedItems() {
     allItems.addAll(pickedItems);
-    if (widget.sortShowedItems) {
+    if (widget.sortShowedItems ?? false) {
       allItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
               widget.fieldToCheck(b),
@@ -1161,7 +1160,7 @@ class _MultipleSearchSelectionState<T>
       shrinkWrap: true,
       cacheExtent: 900,
       addAutomaticKeepAlives: false,
-      controller: widget.showedItemsScrollController,
+      controller: _showedItemsScrollController,
       itemCount: showedItems.isEmpty ? 1 : showedItems.length,
       itemExtent: widget.showedItemExtent,
       itemBuilder: (context, index) {
@@ -1187,22 +1186,37 @@ class _MultipleSearchSelectionState<T>
         }
 
         final item = showedItems[index];
-        return Listener(
-          onPointerDown: (_) => widget.searchFieldFocus.requestFocus(),
-          onPointerMove: (_) => widget.searchFieldFocus.requestFocus(),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              _onAddItem(item);
-            },
-            child: IgnorePointer(
-              child: widget.itemBuilder(
-                item,
-                index,
-              ),
-            ),
-          ),
-        );
+        return widget.isOverlay
+            ? Listener(
+                onPointerDown: (_) => widget.searchFieldFocus.requestFocus(),
+                onPointerMove: (_) => widget.searchFieldFocus.requestFocus(),
+                onPointerUp: (_) => widget.searchFieldFocus.requestFocus(),
+                behavior: HitTestBehavior.opaque,
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () async {
+                    _onAddItem(item);
+                  },
+                  child: IgnorePointer(
+                    child: widget.itemBuilder(
+                      item,
+                      index,
+                    ),
+                  ),
+                ),
+              )
+            : GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  _onAddItem(item);
+                },
+                child: IgnorePointer(
+                  child: widget.itemBuilder(
+                    item,
+                    index,
+                  ),
+                ),
+              );
       },
     );
   }
@@ -1288,6 +1302,9 @@ class _MultipleSearchSelectionState<T>
 
     _prepareItems();
 
+    _showedItemsScrollController =
+        widget.showedItemsScrollController ?? ScrollController();
+
     shouldShowOverlay =
         widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
 
@@ -1311,7 +1328,7 @@ class _MultipleSearchSelectionState<T>
 
       widget.searchFieldFocus.addListener(() {
         if (!widget.searchFieldFocus.hasFocus) {
-          Future.delayed(const Duration(milliseconds: 150), () {
+          Future.delayed(const Duration(milliseconds: 200), () {
             // Check again if the focus is not back on the TextField
             if (!widget.searchFieldFocus.hasFocus) {
               _closeDropdown();
