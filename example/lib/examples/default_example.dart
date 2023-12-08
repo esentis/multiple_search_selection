@@ -14,7 +14,7 @@ class DefaultConstructorExample extends StatelessWidget {
       children: [
         MultipleSearchSelection<Country>(
           controller: controller,
-
+          itemsVisibility: ShowedItemsVisibility.onType,
           title: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(
