@@ -1,3 +1,13 @@
+## 2.6.0 Breaking Changes & New Features
+
+### New features
+
+- Introduces a new constructor `MultipleSearchSelection.overlay` which showed items act as an overlay instead of pushing bottom widgets
+
+| Overlay                                               | Default                                               |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| ![Overlay](https://i.imgur.com/cQPqHyX.gif "Overlay") | ![Default](https://i.imgur.com/gjEAzW8.gif "Default") |
+
 ## 2.5.6 ✨ New features
 
 - Introduces a new parameter, `MultipleSearchController`, which serves as a `controller` for accessing both displayed and selected items. The only limitation is that it must be utilized after the widget has been constructed.
