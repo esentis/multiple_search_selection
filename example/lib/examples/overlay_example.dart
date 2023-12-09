@@ -15,6 +15,14 @@ class OverlayConstructorExample extends StatelessWidget {
     return Column(
       children: [
         MultipleSearchSelection<Country>.overlay(
+          searchField: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search countries',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
           overlayOptions: OverlayOptions(
             closeOnItemSelected: false,
             canCreateItem: true,
@@ -54,7 +62,6 @@ class OverlayConstructorExample extends StatelessWidget {
             controller.getPickedItems();
           },
           clearSearchFieldOnSelect: true,
-          showClearSearchFieldButton: true,
           items: countries, // List<Country>
           fieldToCheck: (c) {
             return c.name;

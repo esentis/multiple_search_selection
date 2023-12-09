@@ -20,6 +20,9 @@ void main() {
       MaterialApp(
         home: Scaffold(
           body: MultipleSearchSelection<String>(
+            searchField: const TextField(
+              key: Key('searchField'),
+            ),
             key: const Key('multipleSearchSelection'),
             items: items,
             pickedItemBuilder: (item) => Text(item),
@@ -44,6 +47,9 @@ void main() {
       MaterialApp(
         home: Scaffold(
           body: MultipleSearchSelection<String>(
+            searchField: const TextField(
+              key: Key('searchField'),
+            ),
             key: const Key('multipleSearchSelection'),
             items: items,
             pickedItemBuilder: (item) => Text(item),

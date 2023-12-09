@@ -14,6 +14,14 @@ class CreatableConstructorExample extends StatelessWidget {
     return Column(
       children: [
         MultipleSearchSelection<Country>.creatable(
+          searchField: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search countries',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
           createOptions: CreateOptions(
             create: (text) {
               return Country(name: text, iso: text);
@@ -49,7 +57,6 @@ class CreatableConstructorExample extends StatelessWidget {
             controller.getPickedItems();
           },
           clearSearchFieldOnSelect: true,
-          showClearSearchFieldButton: true,
           items: countries, // List<Country>
           fieldToCheck: (c) {
             return c.name;

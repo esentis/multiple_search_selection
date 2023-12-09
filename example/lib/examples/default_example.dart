@@ -13,6 +13,17 @@ class DefaultConstructorExample extends StatelessWidget {
     return Column(
       children: [
         MultipleSearchSelection<Country>(
+          searchField: TextField(
+            decoration: InputDecoration(
+              hintText: 'Search countries',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+          onSearchChanged: (text) {
+            print('Text is $text');
+          },
           controller: controller,
           itemsVisibility: ShowedItemsVisibility.onType,
           title: Padding(
@@ -30,7 +41,6 @@ class DefaultConstructorExample extends StatelessWidget {
             controller.getPickedItems();
           },
           clearSearchFieldOnSelect: true,
-          showClearSearchFieldButton: true,
           items: countries, // List<Country>
           fieldToCheck: (c) {
             return c.name;

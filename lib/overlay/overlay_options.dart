@@ -14,7 +14,7 @@ class OverlayOptions<T> {
   ///
   /// The default value is:
   /// ```dart
-  /// Offset(0, 47.5)
+  /// Offset(0, 56)
   /// ```
   final Offset? offset;
 
