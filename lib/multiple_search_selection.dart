@@ -7,13 +7,16 @@ import 'package:multiple_search_selection/helpers/jaro.dart';
 import 'package:multiple_search_selection/helpers/levenshtein.dart';
 import 'package:multiple_search_selection/overlay/overlay_options.dart';
 
-/// This is the controller for the [InfiniteGroupedList].
+/// This is the controller for the [MultipleSearchSelection].
 ///
 /// Use this controller to :
 ///
-/// 1. Get the items in the list.
-/// 2. Retry the last failed load more call.
-/// 3. Refresh the list.
+/// 1. getAllItems
+/// 2. getPickedItems
+/// 3. searchItems
+/// 4. clearSearchField
+/// 5. clearAllPickedItems
+/// 6. selectAllItems
 class MultipleSearchController<T> {
   /// Call this function to get the items in the list.
   late List<T> Function() getAllItems;
@@ -1450,9 +1453,6 @@ class _MultipleSearchSelectionState<T>
                                             : _buildShowedItems(),
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    )
                                   ],
                                 ),
                               );
