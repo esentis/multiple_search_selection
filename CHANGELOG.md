@@ -1,3 +1,39 @@
+## 2.6.0 Breaking Changes & New Features
+
+### New features
+
+- Introduces a new constructor `MultipleSearchSelection.overlay` in which the showed items, act as an overlay instead of pushing bottom widgets. You can customise overlay's behaviour through `OverlayOptions`.
+
+| Overlay                                               | Default                                               |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| ![Overlay](https://i.imgur.com/cQPqHyX.gif "Overlay") | ![Default](https://i.imgur.com/gjEAzW8.gif "Default") |
+
+### Breaking changes
+
+The implementation of `searchField` has been updated for enhanced customization. You can now use the `searchField` parameter to pass a fully customizable `TextField`. This change offers greater flexibility in tailoring the search field to your specific needs. Please note that the `onChanged` event is managed internally. For capturing changes in the search field, use `onSearchChanged` instead of `onChanged`.
+
+Below already exposed parameters are removed :
+
+- `searchFieldInputDecoration`
+- `searchFieldTextStyle`
+- `showClearSearchFieldButton`
+- `searchFieldInputDecoration`
+- `autoCorrect`
+- `enableSuggestions`
+- `searchFieldBoxDecoration`
+- `searchFieldTextEditingController`
+- `searchFieldFocus`
+
+Parameters renamed to better reflect their purpose :
+
+- At `CreateOptions` class:
+  - `createItem` to `create`
+  - `createItemBuilder` to `createBuilder`
+  - `pickCreateItem` to `pickCreated`
+  - `onItemCreated` to `onCreated`
+  - `onDublicateItem` to `onDuplicate`
+- `textFieldFocus` to `searchFieldFocus`
+
 ## 2.5.6 ✨ New features
 
 - Introduces a new parameter, `MultipleSearchController`, which serves as a `controller` for accessing both displayed and selected items. The only limitation is that it must be utilized after the widget has been constructed.
