@@ -818,6 +818,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// 1. Get the items in the list.
   /// 2. Get the picked items in the list.
   final MultipleSearchController? controller;
+
   @override
   _MultipleSearchSelectionState<T> createState() =>
       _MultipleSearchSelectionState<T>();
@@ -837,6 +838,53 @@ class _MultipleSearchSelectionState<T>
 
   late ScrollController _showedItemsScrollController;
   late OverlayPortalController _overlayPortalController;
+
+  Widget _searchField({
+    required bool maxItemsSelected,
+    required void Function(String)? onChanged,
+  }) {
+    return DecoratedBox(
+      decoration: widget.searchFieldBoxDecoration ??
+          BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey.withOpacity(0.5),
+            ),
+          ),
+      child: TextField(
+        focusNode: widget.searchFieldFocus,
+        key: _searchFieldKey,
+        enabled: !maxItemsSelected,
+        controller: widget.searchFieldTextEditingController,
+        style: widget.searchFieldTextStyle,
+        enableSuggestions: widget.enableSuggestions,
+        autocorrect: widget.autoCorrect,
+        keyboardType: !widget.enableSuggestions || !widget.autoCorrect
+            ? TextInputType.visiblePassword
+            : null,
+        decoration: widget.searchFieldInputDecoration ??
+            InputDecoration(
+              contentPadding: const EdgeInsets.only(left: 6),
+              hintText: widget.hintText,
+              hintStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              suffixIcon: widget.showClearSearchFieldButton
+                  ? IconButton(
+                      onPressed: _onClearSearchField,
+                      icon: const Icon(Icons.clear),
+                    )
+                  : null,
+            ),
+        onChanged: onChanged,
+      ),
+    );
+  }
 
   Widget _overlayedShowedItems() {
     final renderBox =
@@ -1069,7 +1117,7 @@ class _MultipleSearchSelectionState<T>
     }
   }
 
-  void _onClearTextField() {
+  void _onClearSearchField() {
     if (widget.searchFieldTextEditingController.text.isNotEmpty) {
       widget.searchFieldTextEditingController.clear();
       showedItems = allItems;
@@ -1372,67 +1420,17 @@ class _MultipleSearchSelectionState<T>
                           builder: (context) => StatefulBuilder(
                             builder: (context, stateSetter) {
                               return Dialog(
+                                backgroundColor: Colors.white,
                                 child: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    DecoratedBox(
-                                      decoration:
-                                          widget.searchFieldBoxDecoration ??
-                                              BoxDecoration(
-                                                color: Colors.white,
-                                                border: Border.all(
-                                                  color: Colors.grey
-                                                      .withOpacity(0.5),
-                                                ),
-                                              ),
-                                      child: TextField(
-                                        focusNode: widget.searchFieldFocus,
-                                        enableSuggestions:
-                                            widget.enableSuggestions,
-                                        autocorrect: widget.autoCorrect,
-                                        keyboardType:
-                                            !widget.enableSuggestions ||
-                                                    !widget.autoCorrect
-                                                ? TextInputType.visiblePassword
-                                                : null,
-                                        enabled: !maxItemsSelected,
-                                        controller: widget
-                                            .searchFieldTextEditingController,
-                                        style: widget.searchFieldTextStyle,
-                                        decoration: widget
-                                                .searchFieldInputDecoration ??
-                                            InputDecoration(
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                left: 6,
-                                              ),
-                                              hintText: widget.hintText,
-                                              hintStyle: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              border: OutlineInputBorder(
-                                                borderSide: BorderSide.none,
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
-                                              ),
-                                              suffixIcon: widget
-                                                      .showClearSearchFieldButton
-                                                  ? IconButton(
-                                                      onPressed:
-                                                          _onClearTextField,
-                                                      icon: const Icon(
-                                                        Icons.clear,
-                                                      ),
-                                                    )
-                                                  : null,
-                                            ),
-                                        onChanged: (value) {
-                                          showedItems = _searchAllItems(value);
-                                          setState(() {});
-                                          stateSetter(() {});
-                                        },
-                                      ),
+                                    _searchField(
+                                      maxItemsSelected: maxItemsSelected,
+                                      onChanged: (value) {
+                                        showedItems = _searchAllItems(value);
+                                        setState(() {});
+                                        stateSetter(() {});
+                                      },
                                     ),
                                     Container(
                                       constraints: BoxConstraints(
@@ -1469,6 +1467,9 @@ class _MultipleSearchSelectionState<T>
                                             : _buildShowedItems(),
                                       ),
                                     ),
+                                    SizedBox(
+                                      height: 10,
+                                    )
                                   ],
                                 ),
                               );
@@ -1534,74 +1535,25 @@ class _MultipleSearchSelectionState<T>
             widget.isOverlay) ...[
           Column(
             children: [
-              TapRegion(
-                onTapInside: (event) {
-                  _overlayPortalController.show();
-                },
-                child: DecoratedBox(
-                  decoration: widget.searchFieldBoxDecoration ??
-                      BoxDecoration(
-                        color: Colors.white,
-                        border: Border(
-                          top: BorderSide(
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                          left: BorderSide(
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                          right: BorderSide(
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                          bottom: BorderSide(
-                            color: Colors.grey.withOpacity(0.5),
-                          ),
-                        ),
-                      ),
-                  child: CompositedTransformTarget(
-                    link: _layerLink,
-                    child: TextField(
-                      focusNode: widget.searchFieldFocus,
-                      key: _searchFieldKey,
-                      enabled: !maxItemsSelected,
-                      controller: widget.searchFieldTextEditingController,
-                      style: widget.searchFieldTextStyle,
-                      enableSuggestions: widget.enableSuggestions,
-                      autocorrect: widget.autoCorrect,
-                      keyboardType:
-                          !widget.enableSuggestions || !widget.autoCorrect
-                              ? TextInputType.visiblePassword
-                              : null,
-                      decoration: widget.searchFieldInputDecoration ??
-                          InputDecoration(
-                            contentPadding: const EdgeInsets.only(left: 6),
-                            hintText: widget.hintText,
-                            hintStyle: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            suffixIcon: widget.showClearSearchFieldButton
-                                ? IconButton(
-                                    onPressed: _onClearTextField,
-                                    icon: const Icon(Icons.clear),
-                                  )
-                                : null,
-                          ),
-                      onChanged: (value) {
-                        showedItems = _searchAllItems(value);
-                        if (widget.itemsVisibility ==
-                            ShowedItemsVisibility.onType) {
-                          showAllItems = widget.itemsVisibility ==
-                                  ShowedItemsVisibility.onType &&
-                              widget.searchFieldTextEditingController.text
-                                  .isNotEmpty;
-                        }
-                        setState(() {});
-                      },
-                    ),
+              CompositedTransformTarget(
+                link: _layerLink,
+                child: TapRegion(
+                  onTapInside: (event) {
+                    _overlayPortalController.show();
+                  },
+                  child: _searchField(
+                    maxItemsSelected: maxItemsSelected,
+                    onChanged: (value) {
+                      showedItems = _searchAllItems(value);
+                      if (widget.itemsVisibility ==
+                          ShowedItemsVisibility.onType) {
+                        showAllItems = widget.itemsVisibility ==
+                                ShowedItemsVisibility.onType &&
+                            widget.searchFieldTextEditingController.text
+                                .isNotEmpty;
+                      }
+                      setState(() {});
+                    },
                   ),
                 ),
               ),
@@ -1611,65 +1563,17 @@ class _MultipleSearchSelectionState<T>
         ],
         if (widget.itemsVisibility != ShowedItemsVisibility.toggle &&
             !widget.isOverlay) ...[
-          DecoratedBox(
-            decoration: widget.searchFieldBoxDecoration ??
-                BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    left: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    right: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                    bottom: BorderSide(
-                      color: Colors.grey.withOpacity(0.5),
-                    ),
-                  ),
-                ),
-            child: TextField(
-              focusNode: widget.searchFieldFocus,
-              key: _searchFieldKey,
-              enabled: !maxItemsSelected,
-              controller: widget.searchFieldTextEditingController,
-              style: widget.searchFieldTextStyle,
-              enableSuggestions: widget.enableSuggestions,
-              autocorrect: widget.autoCorrect,
-              keyboardType: !widget.enableSuggestions || !widget.autoCorrect
-                  ? TextInputType.visiblePassword
-                  : null,
-              decoration: widget.searchFieldInputDecoration ??
-                  InputDecoration(
-                    contentPadding: const EdgeInsets.only(left: 6),
-                    hintText: widget.hintText,
-                    hintStyle: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide.none,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    suffixIcon: widget.showClearSearchFieldButton
-                        ? IconButton(
-                            onPressed: _onClearTextField,
-                            icon: const Icon(Icons.clear),
-                          )
-                        : null,
-                  ),
-              onChanged: (value) {
-                showedItems = _searchAllItems(value);
-                if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
-                  showAllItems = widget.itemsVisibility ==
-                          ShowedItemsVisibility.onType &&
-                      widget.searchFieldTextEditingController.text.isNotEmpty;
-                }
-                setState(() {});
-              },
-            ),
+          _searchField(
+            maxItemsSelected: maxItemsSelected,
+            onChanged: (value) {
+              showedItems = _searchAllItems(value);
+              if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
+                showAllItems =
+                    widget.itemsVisibility == ShowedItemsVisibility.onType &&
+                        widget.searchFieldTextEditingController.text.isNotEmpty;
+              }
+              setState(() {});
+            },
           ),
           if (showAllItems)
             Container(
