@@ -2,7 +2,7 @@
 
 ### New features
 
-- Introduces a new constructor `MultipleSearchSelection.overlay` in which the showed items, act as an overlay instead of pushing bottom widgets
+- Introduces a new constructor `MultipleSearchSelection.overlay` in which the showed items, act as an overlay instead of pushing bottom widgets. You can customise overlay's behaviour through `OverlayOptions`.
 
 | Overlay                                               | Default                                               |
 | ----------------------------------------------------- | ----------------------------------------------------- |
