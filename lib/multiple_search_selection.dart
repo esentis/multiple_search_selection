@@ -105,7 +105,6 @@ class MultipleSearchSelection<T> extends StatefulWidget {
     Widget? clearAllButton,
     VoidCallback? onTapClearAll,
     bool? caseSensitiveSearch,
-    FocusNode? searchFieldFocus,
     String hintText = 'Type here to search',
     double? showedItemExtent,
     int? maxSelectedItems,
