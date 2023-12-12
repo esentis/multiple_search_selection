@@ -1,4 +1,9 @@
-## 2.6.0 Breaking Changes & New Features
+## 2.6.1 📝 Improves documentation
+
+- Updates README to reflect recent changes
+- Improves internal documentation
+
+## 2.6.0 ✨🔥 Breaking Changes & New Features
 
 ### New features
 
@@ -32,7 +37,6 @@ Parameters renamed to better reflect their purpose :
   - `pickCreateItem` to `pickCreated`
   - `onItemCreated` to `onCreated`
   - `onDublicateItem` to `onDuplicate`
-- `textFieldFocus` to `searchFieldFocus`
 
 ## 2.5.6 ✨ New features
 
