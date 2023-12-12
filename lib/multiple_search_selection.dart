@@ -756,12 +756,19 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   /// This is the controller for the [MultipleSearchSelection].
   ///
   /// Use this controller to :
-  ///
-  /// 1. Get the items in the list.
-  /// 2. Get the picked items in the list.
+  /// 1. getAllItems
+  /// 2. getPickedItems
+  /// 3. searchItems
+  /// 4. clearSearchField
+  /// 5. clearAllPickedItems
+  /// 6. selectAllItems
   final MultipleSearchController? controller;
 
   /// The TextField that is used to search items.
+  ///
+  /// You can use this to customize the search field.
+  /// The `onChanged` of the `searchField` is used internally to search items,
+  /// so you can use the `onSearchChanged` callback to get the search query.
   final TextField searchField;
 
   /// Since the `onChanged` of the `searchField` is used internally to search items,
