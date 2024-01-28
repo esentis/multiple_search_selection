@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/createable/create_options.dart';
@@ -31,10 +33,10 @@ class OverlayConstructorExample extends StatelessWidget {
                 return Country(name: text, iso: text);
               },
               onDuplicate: (item) {
-                print('Duplicate item $item');
+                log('Duplicate item $item');
               },
               allowDuplicates: false,
-              onCreated: (c) => print('Country ${c.name} created'),
+              onCreated: (c) => log('Country ${c.name} created'),
               createBuilder: (text) => Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:example/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
@@ -22,7 +24,7 @@ class DefaultConstructorExample extends StatelessWidget {
             ),
           ),
           onSearchChanged: (text) {
-            print('Text is $text');
+            log('Text is $text');
           },
           controller: controller,
           itemsVisibility: ShowedItemsVisibility.onType,
