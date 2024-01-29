@@ -784,10 +784,9 @@ class _MultipleSearchSelectionState<T>
     extends State<MultipleSearchSelection<T>> {
   late List<T> showedItems;
   late List<T> allItems;
+  late List<T> pickedItems;
 
   bool showAllItems = false;
-
-  List<T> pickedItems = [];
 
   final GlobalKey _searchFieldKey = GlobalKey();
   final LayerLink _layerLink = LayerLink();
@@ -916,8 +915,10 @@ class _MultipleSearchSelectionState<T>
   }
 
   Future<void> _prepareItems() async {
-    showedItems = [...widget.items ?? []];
+    pickedItems = [...widget.initialPickedItems ?? []];
     allItems = [...widget.items ?? []];
+    allItems.removeWhere((e) => pickedItems.contains(e));
+    showedItems = allItems;
 
     if (widget.sortShowedItems ?? false) {
       showedItems.sort(
@@ -1355,8 +1356,6 @@ class _MultipleSearchSelectionState<T>
     _searchFieldTextEditingController =
         widget.searchField.controller ?? TextEditingController();
     _searchFieldFocusNode = widget.searchField.focusNode ?? FocusNode();
-
-    pickedItems.addAll(widget.initialPickedItems ?? []);
 
     if (widget.isOverlay) {
       _overlayPortalController = OverlayPortalController();
