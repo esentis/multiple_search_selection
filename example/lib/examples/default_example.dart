@@ -11,7 +11,7 @@ class DefaultConstructorExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MultipleSearchController controller = MultipleSearchController();
+    MultipleSearchController<Country> controller = MultipleSearchController();
     return Column(
       children: [
         MultipleSearchSelection<Country>(
@@ -20,6 +20,12 @@ class DefaultConstructorExample extends StatelessWidget {
               hintText: 'Search countries',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(6),
+              ),
+              suffixIcon: IconButton(
+                onPressed: controller.clearSearchField,
+                icon: const Icon(
+                  Icons.clear,
+                ),
               ),
             ),
           ),
