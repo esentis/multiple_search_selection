@@ -1,3 +1,8 @@
+## 2.6.2 🐛 Bug fixes
+
+- Removes `initialItems` from the `allItems` to avoid double records
+- Refactors `MultipleSearchController` avoiding `LateInitializationErrors`
+
 ## 2.6.1 📝 Improves documentation
 
 - Updates README to reflect recent changes
