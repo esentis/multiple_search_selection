@@ -1,4 +1,6 @@
 /// A highly customizable multiple selection widget with fuzzy search functionality
+// ignore_for_file: use_setters_to_change_properties
+
 library multiple_search_selection;
 
 import 'package:flutter/material.dart';
@@ -17,26 +19,88 @@ import 'package:multiple_search_selection/overlay/overlay_options.dart';
 /// 4. clearSearchField
 /// 5. clearAllPickedItems
 /// 6. selectAllItems
+// class MultipleSearchController<T> {
+//   /// Call this function to get the items in the list.
+//   late List<T> Function() getAllItems;
+
+//   /// Call this function to get the picked items in the list.
+//   late List<T> Function() getPickedItems;
+
+//   /// Call this function to search the items in the list.
+//   late List<T> Function(String term) searchItems;
+
+//   /// Call this function to clear the search field.
+//   late void Function() clearSearchField;
+
+//   /// Call this function to clear the picked items.
+//   late void Function() clearAllPickedItems;
+
+//   /// Call this function to select all the items.
+//   late void Function() selectAllItems;
+
+//   MultipleSearchController();
+// }
+
 class MultipleSearchController<T> {
-  /// Call this function to get the items in the list.
-  late List<T> Function() getAllItems;
+  Function()? clearSearchFieldCallback;
 
-  /// Call this function to get the picked items in the list.
-  late List<T> Function() getPickedItems;
+  Function()? clearAllPickedItemsCallback;
 
-  /// Call this function to search the items in the list.
-  late List<T> Function(String term) searchItems;
+  Function()? selectAllItemsCallback;
 
-  /// Call this function to clear the search field.
-  late void Function() clearSearchField;
+  List<T> Function()? getAllItemsCallback;
 
-  /// Call this function to clear the picked items.
-  late void Function() clearAllPickedItems;
+  List<T> Function(String)? searchItemsCallback;
 
-  /// Call this function to select all the items.
-  late void Function() selectAllItems;
+  List<T> Function()? getPickedItemsCallback;
 
-  MultipleSearchController();
+  void clearAllPickedItems() {
+    clearAllPickedItemsCallback?.call();
+  }
+
+  void selectAllItems() {
+    selectAllItemsCallback?.call();
+  }
+
+  void clearSearchField() {
+    clearSearchFieldCallback?.call();
+  }
+
+  List<T> getAllItems() {
+    return getAllItemsCallback?.call() ?? [];
+  }
+
+  List<T> searchItems(String term) {
+    return searchItemsCallback?.call(term) ?? [];
+  }
+
+  List<T> getPickedItems() {
+    return getPickedItemsCallback?.call() ?? [];
+  }
+
+  void _setClearSearchFieldCallback(Function()? callback) {
+    clearSearchFieldCallback = callback;
+  }
+
+  void _setGetAllItemsCallback(List<T> Function() callback) {
+    getAllItemsCallback = callback;
+  }
+
+  void _setSelectAllItemsCallback(Function()? callback) {
+    selectAllItemsCallback = callback;
+  }
+
+  void _setClearAllPickedItemsCallback(Function()? callback) {
+    clearAllPickedItemsCallback = callback;
+  }
+
+  void _setSearchItemsCallback(List<T> Function(String) callback) {
+    searchItemsCallback = callback;
+  }
+
+  void _setGetPickedItemsCallback(List<T> Function() callback) {
+    getPickedItemsCallback = callback;
+  }
 }
 
 enum FuzzySearch {
@@ -172,7 +236,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         hintText: hintText,
         showedItemExtent: showedItemExtent,
         placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
-        controller: controller,
+        controller: controller ?? MultipleSearchController(),
         searchField: searchField,
         onSearchChanged: onSearchChanged,
       );
@@ -300,7 +364,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         hintText: hintText,
         showedItemExtent: showedItemExtent,
         placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
-        controller: controller,
+        controller: controller ?? MultipleSearchController(),
         onSearchChanged: onSearchChanged,
       );
 
@@ -427,7 +491,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
         hintText: hintText,
         showedItemExtent: showedItemExtent,
         placePickedItemContainerBelow: placePickedItemContainerBelow ?? false,
-        controller: controller,
+        controller: controller ?? MultipleSearchController(),
         onSearchChanged: onSearchChanged,
       );
 
@@ -1344,14 +1408,12 @@ class _MultipleSearchSelectionState<T>
 
     showAllItems = widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
 
-    if (widget.controller != null) {
-      widget.controller!.getAllItems = () => allItems;
-      widget.controller!.getPickedItems = () => pickedItems;
-      widget.controller!.clearSearchField = _onClearSearchField;
-      widget.controller!.selectAllItems = _selectAllItems;
-      widget.controller!.clearAllPickedItems = _clearAllPickedItems;
-      widget.controller!.searchItems = (query) => _searchAllItems(query);
-    }
+    widget.controller?._setClearAllPickedItemsCallback(_clearAllPickedItems);
+    widget.controller?._setSelectAllItemsCallback(_selectAllItems);
+    widget.controller?._setClearSearchFieldCallback(_onClearSearchField);
+    widget.controller?._setGetAllItemsCallback(() => allItems);
+    widget.controller?._setGetPickedItemsCallback(() => pickedItems);
+    widget.controller?._setSearchItemsCallback(_searchAllItems);
 
     _searchFieldTextEditingController =
         widget.searchField.controller ?? TextEditingController();
@@ -1375,6 +1437,18 @@ class _MultipleSearchSelectionState<T>
         });
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _showedItemsScrollController.dispose();
+    _searchFieldTextEditingController.dispose();
+    _searchFieldFocusNode.dispose();
+    widget.controller?._setClearSearchFieldCallback(null);
+    widget.controller?._setSelectAllItemsCallback(null);
+    widget.controller?._setClearAllPickedItemsCallback(null);
+
+    super.dispose();
   }
 
   @override
