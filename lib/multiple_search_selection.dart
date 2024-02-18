@@ -60,7 +60,7 @@ class MultipleSearchController<T> {
     clearSearchFieldCallback = callback;
   }
 
-  void _setGetAllItemsCallback(List<T> Function() callback) {
+  void _setGetAllItemsCallback(List<T> Function()? callback) {
     getAllItemsCallback = callback;
   }
 
@@ -72,11 +72,11 @@ class MultipleSearchController<T> {
     clearAllPickedItemsCallback = callback;
   }
 
-  void _setSearchItemsCallback(List<T> Function(String) callback) {
+  void _setSearchItemsCallback(List<T> Function(String)? callback) {
     searchItemsCallback = callback;
   }
 
-  void _setGetPickedItemsCallback(List<T> Function() callback) {
+  void _setGetPickedItemsCallback(List<T> Function()? callback) {
     getPickedItemsCallback = callback;
   }
 }
@@ -1425,6 +1425,9 @@ class _MultipleSearchSelectionState<T>
     widget.controller?._setClearSearchFieldCallback(null);
     widget.controller?._setSelectAllItemsCallback(null);
     widget.controller?._setClearAllPickedItemsCallback(null);
+    widget.controller?._setGetAllItemsCallback(null);
+    widget.controller?._setGetPickedItemsCallback(null);
+    widget.controller?._setSearchItemsCallback(null);
 
     super.dispose();
   }
