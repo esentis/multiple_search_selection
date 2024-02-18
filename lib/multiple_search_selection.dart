@@ -19,28 +19,6 @@ import 'package:multiple_search_selection/overlay/overlay_options.dart';
 /// 4. clearSearchField
 /// 5. clearAllPickedItems
 /// 6. selectAllItems
-// class MultipleSearchController<T> {
-//   /// Call this function to get the items in the list.
-//   late List<T> Function() getAllItems;
-
-//   /// Call this function to get the picked items in the list.
-//   late List<T> Function() getPickedItems;
-
-//   /// Call this function to search the items in the list.
-//   late List<T> Function(String term) searchItems;
-
-//   /// Call this function to clear the search field.
-//   late void Function() clearSearchField;
-
-//   /// Call this function to clear the picked items.
-//   late void Function() clearAllPickedItems;
-
-//   /// Call this function to select all the items.
-//   late void Function() selectAllItems;
-
-//   MultipleSearchController();
-// }
-
 class MultipleSearchController<T> {
   Function()? clearSearchFieldCallback;
 
