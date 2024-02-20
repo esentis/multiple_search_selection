@@ -266,4 +266,19 @@ class Country {
     required this.name,
     required this.iso,
   });
+
+  @override
+  String toString() {
+    return 'Country(name: $name, iso: $iso)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Country && other.name == name && other.iso == iso;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ iso.hashCode;
 }

@@ -1,6 +1,6 @@
 name: multiple_search_selection
 description: A highly customizable multiple selection widget with fuzzy search functionality.
-version: 2.5.4
+version: 2.6.2
 homepage: "https://github.com/esentis/multiple_search_selection"
 screenshots:
   - description: "Main screenshot"
@@ -24,7 +24,7 @@ dependencies:
   lint: ^2.0.1
 
 dev_dependencies:
-  flutter_lints: ^2.0.0
+  flutter_lints: ^3.0.1
   flutter_test:
     sdk: flutter
 

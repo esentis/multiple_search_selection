@@ -1,3 +1,65 @@
+## 2.6.2 🐛 Bug fixes
+
+- Removes `initialItems` from the `allItems` to avoid double records
+- Refactors `MultipleSearchController` avoiding `LateInitializationErrors`
+
+## 2.6.1 📝 Improves documentation
+
+- Updates README to reflect recent changes
+- Improves internal documentation
+
+## 2.6.0 ✨🔥 Breaking Changes & New Features
+
+### New features
+
+- Introduces a new constructor `MultipleSearchSelection.overlay` in which the showed items, act as an overlay instead of pushing bottom widgets. You can customise overlay's behaviour through `OverlayOptions`.
+
+| Overlay                                               | Default                                               |
+| ----------------------------------------------------- | ----------------------------------------------------- |
+| ![Overlay](https://i.imgur.com/cQPqHyX.gif "Overlay") | ![Default](https://i.imgur.com/gjEAzW8.gif "Default") |
+
+### Breaking changes
+
+The implementation of `searchField` has been updated for enhanced customization. You can now use the `searchField` parameter to pass a fully customizable `TextField`. This change offers greater flexibility in tailoring the search field to your specific needs. Please note that the `onChanged` event is managed internally. For capturing changes in the search field, use `onSearchChanged` instead of `onChanged`.
+
+Below already exposed parameters are removed :
+
+- `searchFieldInputDecoration`
+- `searchFieldTextStyle`
+- `showClearSearchFieldButton`
+- `searchFieldInputDecoration`
+- `autoCorrect`
+- `enableSuggestions`
+- `searchFieldBoxDecoration`
+- `searchFieldTextEditingController`
+- `searchFieldFocus`
+
+Parameters renamed to better reflect their purpose :
+
+- At `CreateOptions` class:
+  - `createItem` to `create`
+  - `createItemBuilder` to `createBuilder`
+  - `pickCreateItem` to `pickCreated`
+  - `onItemCreated` to `onCreated`
+  - `onDublicateItem` to `onDuplicate`
+
+## 2.5.6 ✨ New features
+
+- Introduces a new parameter, `MultipleSearchController`, which serves as a `controller` for accessing both displayed and selected items. The only limitation is that it must be utilized after the widget has been constructed.
+
+```dart
+controller.getAllItems();
+controller.getPickedItems();
+```
+
+- Introduces additional options in `CreateOptions` for the `creatable` widget:
+  - `allowDuplicates`: This option is set to `true` by default. When set to `false`, it prohibits the selection of any new `T` item that already exists. It's important to note that `T` must implement the `==` method for the library to accurately determine whether the `T` item already exists among displayed or picked items.
+  - `onDuplicateItem(T)`: This callback function is triggered when an attempt is made to add a duplicate item.
+
+## 2.5.5 ✨ New features
+
+- Adds a new flag `placePickedItemContainerBelow` which defaults to `false`. Picked items will be displayed at the bottom instead of top
+
 ## 2.5.4 ✨🔥 New features & Breaking changes
 
 - Renames `textFieldFocus` to `searchFieldFocus`
