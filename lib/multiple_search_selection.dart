@@ -9,78 +9,6 @@ import 'package:multiple_search_selection/helpers/jaro.dart';
 import 'package:multiple_search_selection/helpers/levenshtein.dart';
 import 'package:multiple_search_selection/overlay/overlay_options.dart';
 
-/// This is the controller for the [MultipleSearchSelection].
-///
-/// Use this controller to :
-///
-/// 1. getAllItems
-/// 2. getPickedItems
-/// 3. searchItems
-/// 4. clearSearchField
-/// 5. clearAllPickedItems
-/// 6. selectAllItems
-class MultipleSearchController<T> {
-  Function()? clearSearchFieldCallback;
-
-  Function()? clearAllPickedItemsCallback;
-
-  Function()? selectAllItemsCallback;
-
-  List<T> Function()? getAllItemsCallback;
-
-  List<T> Function(String)? searchItemsCallback;
-
-  List<T> Function()? getPickedItemsCallback;
-
-  void clearAllPickedItems() {
-    clearAllPickedItemsCallback?.call();
-  }
-
-  void selectAllItems() {
-    selectAllItemsCallback?.call();
-  }
-
-  void clearSearchField() {
-    clearSearchFieldCallback?.call();
-  }
-
-  List<T> getAllItems() {
-    return getAllItemsCallback?.call() ?? [];
-  }
-
-  List<T> searchItems(String term) {
-    return searchItemsCallback?.call(term) ?? [];
-  }
-
-  List<T> getPickedItems() {
-    return getPickedItemsCallback?.call() ?? [];
-  }
-
-  void _setClearSearchFieldCallback(Function()? callback) {
-    clearSearchFieldCallback = callback;
-  }
-
-  void _setGetAllItemsCallback(List<T> Function()? callback) {
-    getAllItemsCallback = callback;
-  }
-
-  void _setSelectAllItemsCallback(Function()? callback) {
-    selectAllItemsCallback = callback;
-  }
-
-  void _setClearAllPickedItemsCallback(Function()? callback) {
-    clearAllPickedItemsCallback = callback;
-  }
-
-  void _setSearchItemsCallback(List<T> Function(String)? callback) {
-    searchItemsCallback = callback;
-  }
-
-  void _setGetPickedItemsCallback(List<T> Function()? callback) {
-    getPickedItemsCallback = callback;
-  }
-}
-
 enum FuzzySearch {
   levenshtein,
   jaro,
@@ -1664,5 +1592,83 @@ class _MultipleSearchSelectionState<T>
         ),
       ],
     );
+  }
+}
+
+/// This is the controller for the [MultipleSearchSelection].
+///
+/// Use this controller to :
+///
+/// 1. getAllItems
+/// 2. getPickedItems
+/// 3. searchItems
+/// 4. clearSearchField
+/// 5. clearAllPickedItems
+/// 6. selectAllItems
+class MultipleSearchController<T> {
+  Function()? clearSearchFieldCallback;
+
+  Function()? clearAllPickedItemsCallback;
+
+  Function()? selectAllItemsCallback;
+
+  List<T> Function()? getAllItemsCallback;
+
+  List<T> Function(String)? searchItemsCallback;
+
+  List<T> Function()? getPickedItemsCallback;
+
+  /// Clear all picked items.
+  void clearAllPickedItems() {
+    clearAllPickedItemsCallback?.call();
+  }
+
+  /// Select all items in the list.
+  void selectAllItems() {
+    selectAllItemsCallback?.call();
+  }
+
+  /// Clear the search field.
+  void clearSearchField() {
+    clearSearchFieldCallback?.call();
+  }
+
+  /// Returns all items in the list.
+  List<T> getAllItems() {
+    return getAllItemsCallback?.call() ?? [];
+  }
+
+  /// Search all items in the list.
+  List<T> searchItems(String term) {
+    return searchItemsCallback?.call(term) ?? [];
+  }
+
+  /// Returns the picked items.
+  List<T> getPickedItems() {
+    return getPickedItemsCallback?.call() ?? [];
+  }
+
+  void _setClearSearchFieldCallback(Function()? callback) {
+    clearSearchFieldCallback = callback;
+  }
+
+  void _setGetAllItemsCallback(List<T> Function()? callback) {
+    getAllItemsCallback = callback;
+  }
+
+  void _setSelectAllItemsCallback(Function()? callback) {
+    selectAllItemsCallback = callback;
+  }
+
+  void _setClearAllPickedItemsCallback(Function()? callback) {
+    clearAllPickedItemsCallback = callback;
+  }
+
+  void _setSearchItemsCallback(List<T> Function(String)? callback) {
+    searchItemsCallback = callback;
+  }
+
+  void _setGetPickedItemsCallback(List<T> Function()? callback) {
+    getPickedItemsCallback = callback;
   }
 }
