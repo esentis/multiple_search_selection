@@ -48,8 +48,9 @@ class DefaultConstructorExample extends StatelessWidget {
             ),
           ),
           onItemAdded: (c) {
-            controller.getAllItems();
-            controller.getPickedItems();
+            print(c);
+            print('All items length ${controller.getAllItems().length}');
+            print('Picked items length ${controller.getPickedItems().length}');
           },
           clearSearchFieldOnSelect: true,
           items: countries, // List<Country>
