@@ -969,13 +969,17 @@ class _MultipleSearchSelectionState<T>
               decoration: showAllItems
                   ? widget.showedItemsBoxDecoration ??
                       BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         border: Border(
-                          bottom:
-                              BorderSide(color: Colors.grey.withOpacity(0.5)),
-                          left: BorderSide(color: Colors.grey.withOpacity(0.5)),
-                          right:
-                              BorderSide(color: Colors.grey.withOpacity(0.5)),
+                          bottom: BorderSide(
+                            color: Colors.grey.withValues(alpha: 0.5),
+                          ),
+                          left: BorderSide(
+                            color: Colors.grey.withValues(alpha: 0.5),
+                          ),
+                          right: BorderSide(
+                            color: Colors.grey.withValues(alpha: 0.5),
+                          ),
                         ),
                       )
                   : null,
@@ -1313,7 +1317,7 @@ class _MultipleSearchSelectionState<T>
               BoxDecoration(
                 border: pickedItems.isNotEmpty
                     ? Border.all(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withValues(alpha: 0.5),
                       )
                     : null,
               ),
@@ -1490,25 +1494,26 @@ class _MultipleSearchSelectionState<T>
                                         maxHeight:
                                             widget.maximumShowItemsHeight,
                                       ),
-                                      decoration: widget
-                                              .showedItemsBoxDecoration ??
-                                          BoxDecoration(
-                                            color: Colors.grey.withOpacity(0.1),
-                                            border: Border(
-                                              bottom: BorderSide(
+                                      decoration:
+                                          widget.showedItemsBoxDecoration ??
+                                              BoxDecoration(
                                                 color: Colors.grey
-                                                    .withOpacity(0.5),
+                                                    .withValues(alpha: 0.1),
+                                                border: Border(
+                                                  bottom: BorderSide(
+                                                    color: Colors.grey
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                  left: BorderSide(
+                                                    color: Colors.grey
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                  right: BorderSide(
+                                                    color: Colors.grey
+                                                        .withValues(alpha: 0.5),
+                                                  ),
+                                                ),
                                               ),
-                                              left: BorderSide(
-                                                color: Colors.grey
-                                                    .withOpacity(0.5),
-                                              ),
-                                              right: BorderSide(
-                                                color: Colors.grey
-                                                    .withOpacity(0.5),
-                                              ),
-                                            ),
-                                          ),
                                       child: ScrollConfiguration(
                                         behavior:
                                             ScrollConfiguration.of(context)
@@ -1612,16 +1617,16 @@ class _MultipleSearchSelectionState<T>
               ),
               decoration: widget.showedItemsBoxDecoration ??
                   BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     border: Border(
                       bottom: BorderSide(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withValues(alpha: 0.5),
                       ),
                       left: BorderSide(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withValues(alpha: 0.5),
                       ),
                       right: BorderSide(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withValues(alpha: 0.5),
                       ),
                     ),
                   ),
