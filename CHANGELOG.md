@@ -1,3 +1,7 @@
+## 2.7.1 🗑️ Clean up deprecated code
+
+- Refactors withOpacity to withValues
+
 ## 2.7.0 ✨🔥 Breaking Changes & New Features
 
 - All examples are updated to reflect the breaking changes
