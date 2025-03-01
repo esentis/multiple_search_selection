@@ -1,3 +1,7 @@
+## 2.7.2 ♻️ Refactor code
+
+- Replace deprecated `scribbleEnabled` with `stylusHandwritingEnabled`
+
 ## 2.7.1 🗑️ Clean up deprecated code
 
 - Refactors withOpacity to withValues

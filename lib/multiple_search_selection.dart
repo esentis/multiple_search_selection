@@ -649,7 +649,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
   ///
   final Widget Function(List<Widget> pickedItems)? pickedItemsContainerBuilder;
 
-  /// This is the field to check when searching & sorting the List<T>.
+  /// This is the field to check when searching & sorting the List
   ///
   /// ### Example
   ///
@@ -844,7 +844,7 @@ class _MultipleSearchSelectionState<T>
       onTap: widget.searchField.onTap,
       onTapOutside: widget.searchField.onTapOutside,
       restorationId: widget.searchField.restorationId,
-      scribbleEnabled: widget.searchField.scribbleEnabled,
+      stylusHandwritingEnabled: widget.searchField.stylusHandwritingEnabled,
       scrollController: widget.searchField.scrollController,
       scrollPadding: widget.searchField.scrollPadding,
       scrollPhysics: widget.searchField.scrollPhysics,
@@ -917,7 +917,7 @@ class _MultipleSearchSelectionState<T>
 
           return widget.isOverlay
               ? GestureDetector(
-                  onTap: () async {
+                  onTap: () {
                     _onAddItem(item);
                   },
                   child: AbsorbPointer(
