@@ -122,3 +122,4 @@ lib/generated_plugin_registrant.dart
 #/.idea/
 .vscode
 .vscode/*
+.DS_Store
