@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:multiple_search_selection/helpers/extensions.dart';
+import 'package:multiple_search_selection/src/helpers/extensions.dart';
 // Code was inspired from Java version at rosettacode.org
 
 /// The Jaro distance is a measure of edit distance between two strings;
@@ -8,7 +8,7 @@ import 'package:multiple_search_selection/helpers/extensions.dart';
 /// its inverse, called the Jaro similarity, is a measure of two strings' similarity:
 ///
 /// the higher the value, the more similar the strings are.
-double getJaro(String a, String b, { bool caseSensitive = false }) {
+double getJaro(String a, String b, {bool caseSensitive = false}) {
   final s = caseSensitive ? a : a.toLowerCase();
   final t = caseSensitive ? b : b.toLowerCase();
 

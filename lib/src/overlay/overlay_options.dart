@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:multiple_search_selection/createable/create_options.dart';
-import 'package:multiple_search_selection/multiple_search_selection.dart';
+import 'package:multiple_search_selection/src/createable/create_options.dart';
+import 'package:multiple_search_selection/src/multiple_search_selection.dart';
 
 /// Pass this to the [MultipleSearchSelection.overlay] widget to customize the overlay behavior.
 class OverlayOptions<T> {

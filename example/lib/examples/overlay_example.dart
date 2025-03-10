@@ -2,9 +2,7 @@ import 'dart:developer';
 
 import 'package:example/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:multiple_search_selection/createable/create_options.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
-import 'package:multiple_search_selection/overlay/overlay_options.dart';
 
 class OverlayConstructorExample extends StatelessWidget {
   const OverlayConstructorExample({
