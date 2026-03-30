@@ -1,3 +1,40 @@
+# Changelog
+
+## 2.7.3
+
+### Fixed
+
+- Fixed `charAt(index)` to return `null` when `index == length` instead of throwing a `RangeError`.
+- Fixed `controller.selectAllItems()` so it respects `maxSelectedItems`.
+- Fixed ownership and disposal of `TextEditingController`, `FocusNode`, and `ScrollController` so externally provided instances are not disposed by the widget.
+- Fixed the overlay `FocusNode` listener lifecycle to avoid stale listeners when focus nodes change or outlive the widget.
+- Fixed selectable bulk actions so `selectAllItems()` and `clearAllPickedItems()` no longer remove, re-add, or duplicate visible items in selectable mode.
+- Fixed overlay creatable validation so the overlay constructor now applies `CreateOptions.validator`, matching the standard creatable path.
+- Fixed creatable flows so `onCreated` fires and `showedItems` is refreshed even when `pickCreated == false`.
+- Fixed `ShowedItemsVisibility.alwaysOn` so the showed-items panel stays visible after `selectAllItems()`.
+- Fixed parent-driven rebuild handling by syncing updates to `items`, `initialPickedItems`, `controller`, `searchField.controller`, `searchField.focusNode`, `showedItemsScrollController`, `pickedItemsScrollController`, `overlayOptions`, and `isOverlay`.
+- Fixed active search-state preservation so filtering is reapplied when the parent updates items or swaps the search controller.
+- Fixed runtime overlay transitions so switching between overlay and non-overlay variants no longer risks `LateInitializationError` or stale overlay callbacks.
+
+### Changed
+
+- Replaced `charAt` string splitting with direct indexing to avoid unnecessary list allocation.
+- Removed unreachable `Navigator.pop(context)` logic from `_onAddItem`.
+- `getAllItems()` and `getPickedItems()` now return unmodifiable lists instead of exposing mutable internal state.
+- `hintText` is now used as a fallback `InputDecoration` hint when the provided search field has no decoration.
+- `showedItemContainerHeight` and `showedItemContainerPadding` are now applied to showed-item rows.
+- Default picked-items scroll controller creation moved from the public constructors into `State`, so internally created controllers are owned and disposed correctly.
+- Removed the implicit `ValueKey(items.hashCode)` default key so state is preserved across normal parent rebuilds unless the caller explicitly provides a key.
+
+### Tests
+
+- Added `charAt` unit coverage for boundary conditions, negative indices, null input, empty strings, and the previous off-by-one crash case.
+- Added widget regression tests for search-state syncing, controller rebinding, selectable bulk actions, creatable validation, overlay callback rebinding, overlay transitions, and disposal of externally owned controllers/focus nodes.
+
+### Internal
+
+- Moved `lint` from `dependencies` to `dev_dependencies`.
+
 ## 2.7.2 ♻️ Refactor code
 
 - Replace deprecated `scribbleEnabled` with `stylusHandwritingEnabled`
