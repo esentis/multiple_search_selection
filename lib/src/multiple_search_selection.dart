@@ -93,7 +93,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       maxSelectedItems: maxSelectedItems,
       isCreatable: false,
       isOverlay: false,
-      key: key ?? ValueKey(items.hashCode),
+      key: key,
       clearSearchFieldOnSelect: clearSearchFieldOnSelect ?? false,
       fieldToCheck: fieldToCheck,
       itemBuilder: itemBuilder,
@@ -115,8 +115,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       pickedItemsBoxDecoration: pickedItemsBoxDecoration,
       pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
       pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-      pickedItemsScrollController:
-          pickedItemsScrollController ?? ScrollController(),
+      pickedItemsScrollController: pickedItemsScrollController,
       pickedItemsScrollPhysics: pickedItemsScrollPhysics,
       pickedItemsScrollbarColor: pickedItemsScrollbarColor,
       pickedItemsScrollbarMinOverscrollLength:
@@ -228,7 +227,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       isCreatable: true,
       createOptions: createOptions,
       isOverlay: false,
-      key: key ?? ValueKey(items.hashCode),
+      key: key,
       clearSearchFieldOnSelect: clearSearchFieldOnSelect ?? false,
       fieldToCheck: fieldToCheck,
       itemBuilder: itemBuilder,
@@ -249,8 +248,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       pickedItemsBoxDecoration: pickedItemsBoxDecoration,
       pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
       pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-      pickedItemsScrollController:
-          pickedItemsScrollController ?? ScrollController(),
+      pickedItemsScrollController: pickedItemsScrollController,
       pickedItemsScrollPhysics: pickedItemsScrollPhysics,
       pickedItemsScrollbarColor: pickedItemsScrollbarColor,
       pickedItemsScrollbarMinOverscrollLength:
@@ -367,7 +365,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       isCreatable: false,
       isOverlay: true,
       overlayOptions: overlayOptions,
-      key: key ?? ValueKey(items.hashCode),
+      key: key,
       clearSearchFieldOnSelect: clearSearchFieldOnSelect ?? false,
       fieldToCheck: fieldToCheck,
       itemBuilder: itemBuilder,
@@ -389,8 +387,7 @@ class MultipleSearchSelection<T> extends StatefulWidget {
       pickedItemsBoxDecoration: pickedItemsBoxDecoration,
       pickedItemsContainerMaxHeight: pickedItemsContainerMaxHeight,
       pickedItemsContainerMinHeight: pickedItemsContainerMinHeight,
-      pickedItemsScrollController:
-          pickedItemsScrollController ?? ScrollController(),
+      pickedItemsScrollController: pickedItemsScrollController,
       pickedItemsScrollPhysics: pickedItemsScrollPhysics,
       pickedItemsScrollbarColor: pickedItemsScrollbarColor,
       pickedItemsScrollbarMinOverscrollLength:
@@ -787,6 +784,13 @@ class _MultipleSearchSelectionState<T>
   final LayerLink _layerLink = LayerLink();
 
   late ScrollController _showedItemsScrollController;
+  late ScrollController _pickedItemsScrollController;
+
+  late bool _ownsTextEditingController;
+  late bool _ownsFocusNode;
+  late bool _ownsShowedItemsScrollController;
+  late bool _ownsPickedItemsScrollController;
+  VoidCallback? _focusNodeListener;
   late OverlayPortalController _overlayPortalController;
 
   late TextEditingController _searchFieldTextEditingController;
@@ -859,7 +863,8 @@ class _MultipleSearchSelectionState<T>
       spellCheckConfiguration: widget.searchField.spellCheckConfiguration,
       undoController: widget.searchField.undoController,
       style: widget.searchField.style,
-      decoration: widget.searchField.decoration,
+      decoration: widget.searchField.decoration ??
+          InputDecoration(hintText: widget.hintText),
     );
   }
 
@@ -915,31 +920,24 @@ class _MultipleSearchSelectionState<T>
           final item = showedItems[index];
           final bool isPicked = pickedItems.contains(item);
 
-          return widget.isOverlay
-              ? GestureDetector(
-                  onTap: () {
-                    _onAddItem(item);
-                  },
-                  child: AbsorbPointer(
-                    child: widget.itemBuilder(
-                      item,
-                      index,
-                      isPicked,
-                    ),
+          return SizedBox(
+            height: widget.showedItemContainerHeight,
+            child: Padding(
+              padding: widget.showedItemContainerPadding ?? EdgeInsets.zero,
+              child: GestureDetector(
+                onTap: () {
+                  _onAddItem(item);
+                },
+                child: AbsorbPointer(
+                  child: widget.itemBuilder(
+                    item,
+                    index,
+                    isPicked,
                   ),
-                )
-              : GestureDetector(
-                  onTap: () {
-                    _onAddItem(item);
-                  },
-                  child: AbsorbPointer(
-                    child: widget.itemBuilder(
-                      item,
-                      index,
-                      isPicked,
-                    ),
-                  ),
-                );
+                ),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -1047,6 +1045,50 @@ class _MultipleSearchSelectionState<T>
     }).toList();
   }
 
+  bool _meetsMinCharsToShowItems(String query) {
+    final minChars = widget.controller?.minCharsToShowItems;
+    return minChars == null || query.length >= minChars;
+  }
+
+  void _syncSearchStateFromTextField() {
+    final query = _searchFieldTextEditingController.text;
+    showedItems = _searchAllItems(query);
+
+    switch (widget.itemsVisibility) {
+      case null:
+      case ShowedItemsVisibility.alwaysOn:
+        showAllItems = true;
+        break;
+      case ShowedItemsVisibility.onType:
+        showAllItems = query.isNotEmpty && _meetsMinCharsToShowItems(query);
+        break;
+      case ShowedItemsVisibility.toggle:
+        break;
+    }
+  }
+
+  void _bindOverlayCallbacks(OverlayOptions<T>? overlayOptions) {
+    overlayOptions?.closeOverlay = () {
+      _overlayPortalController.hide();
+    };
+    overlayOptions?.showOverlay = () {
+      _overlayPortalController.show();
+    };
+  }
+
+  void _clearOverlayCallbacks(OverlayOptions<T>? overlayOptions) {
+    overlayOptions?.closeOverlay = null;
+    overlayOptions?.showOverlay = null;
+  }
+
+  void _createOverlayFocusListener() {
+    _focusNodeListener = () {
+      if (_searchFieldFocusNode.hasFocus) {
+        _overlayPortalController.show();
+      }
+    };
+  }
+
   void _onRemoveItem(T item) {
     final bool isSelectable = widget.controller?.isSelectable ?? false;
 
@@ -1075,13 +1117,6 @@ class _MultipleSearchSelectionState<T>
 
   void _onAddItem(T item) {
     final bool isSelectable = widget.controller?.isSelectable ?? false;
-
-    // If user has selected the maximum number of items, return
-    if (widget.maxSelectedItems != null &&
-        pickedItems.length >= widget.maxSelectedItems!) {
-      Navigator.pop(context);
-      return;
-    }
 
     // If the item is already picked, and the user does not allow dublicates return
     if (pickedItems.contains(item) &&
@@ -1163,6 +1198,8 @@ class _MultipleSearchSelectionState<T>
         widget.createOptions!.onCreated?.call(itemToAdd);
       } else {
         allItems.add(itemToAdd);
+        widget.createOptions!.onCreated?.call(itemToAdd);
+        showedItems = _searchAllItems(_searchFieldTextEditingController.text);
       }
 
       if (widget.clearSearchFieldOnSelect ?? false) {
@@ -1180,6 +1217,10 @@ class _MultipleSearchSelectionState<T>
       final T itemToAdd = widget.overlayOptions!.createOptions!
           .create(_searchFieldTextEditingController.text);
 
+      if (!widget.overlayOptions!.createOptions!.validator.call(itemToAdd)) {
+        return;
+      }
+
       if (allItems.contains(itemToAdd) || pickedItems.contains(itemToAdd)) {
         widget.overlayOptions!.createOptions!.onDuplicate?.call(itemToAdd);
         if (!widget.overlayOptions!.createOptions!.allowDuplicates) {
@@ -1196,6 +1237,8 @@ class _MultipleSearchSelectionState<T>
         widget.overlayOptions!.createOptions!.onCreated?.call(itemToAdd);
       } else {
         allItems.add(itemToAdd);
+        widget.overlayOptions!.createOptions!.onCreated?.call(itemToAdd);
+        showedItems = _searchAllItems(_searchFieldTextEditingController.text);
       }
 
       if (widget.clearSearchFieldOnSelect ?? false) {
@@ -1224,9 +1267,13 @@ class _MultipleSearchSelectionState<T>
   }
 
   void _selectAllItems() {
-    pickedItems.addAll(
-      showedItems,
-    );
+    final itemsToAdd = widget.maxSelectedItems != null
+        ? showedItems
+            .where((e) => !pickedItems.contains(e))
+            .take(widget.maxSelectedItems! - pickedItems.length)
+            .toList()
+        : showedItems;
+    pickedItems.addAll(itemsToAdd);
     if (widget.sortPickedItems) {
       pickedItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
@@ -1234,7 +1281,9 @@ class _MultipleSearchSelectionState<T>
             ),
       );
     }
-    allItems.removeWhere((e) => showedItems.contains(e));
+    if (!(widget.controller?.isSelectable ?? false)) {
+      allItems.removeWhere((e) => itemsToAdd.contains(e));
+    }
 
     showedItems = _searchAllItems(_searchFieldTextEditingController.text);
     if (showedItems.isNotEmpty) {
@@ -1251,8 +1300,12 @@ class _MultipleSearchSelectionState<T>
     widget.onTapSelectAll?.call();
 
     setState(() {
-      showAllItems = widget.itemsVisibility != ShowedItemsVisibility.onType &&
-          _searchFieldTextEditingController.text.isNotEmpty;
+      if (widget.itemsVisibility == ShowedItemsVisibility.alwaysOn) {
+        showAllItems = true;
+      } else if (widget.itemsVisibility == ShowedItemsVisibility.onType) {
+        showAllItems = _searchFieldTextEditingController.text.isNotEmpty;
+      }
+      // toggle mode: showAllItems is unchanged — the dialog controls its own visibility
     });
     if (widget.isOverlay) {
       _overlayPortalController.hide(); // Return focus to the TextField
@@ -1260,7 +1313,9 @@ class _MultipleSearchSelectionState<T>
   }
 
   void _clearAllPickedItems() {
-    allItems.addAll(pickedItems);
+    if (!(widget.controller?.isSelectable ?? false)) {
+      allItems.addAll(pickedItems);
+    }
     if (widget.sortShowedItems ?? false) {
       allItems.sort(
         (a, b) => widget.fieldToCheck(a).compareTo(
@@ -1330,14 +1385,12 @@ class _MultipleSearchSelectionState<T>
             thickness: widget.pickedItemsScrollbarThickness ?? 10,
             radius:
                 widget.pickedItemsScrollbarRadius ?? const Radius.circular(5),
-            controller:
-                widget.pickedItemsScrollController ?? ScrollController(),
+            controller: _pickedItemsScrollController,
             child: ScrollConfiguration(
               behavior:
                   ScrollConfiguration.of(context).copyWith(scrollbars: false),
               child: SingleChildScrollView(
-                controller:
-                    widget.pickedItemsScrollController ?? ScrollController(),
+                controller: _pickedItemsScrollController,
                 physics: widget.pickedItemsScrollPhysics,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -1395,46 +1448,158 @@ class _MultipleSearchSelectionState<T>
 
     _prepareItems();
 
+    _ownsShowedItemsScrollController =
+        widget.showedItemsScrollController == null;
     _showedItemsScrollController =
         widget.showedItemsScrollController ?? ScrollController();
+
+    _ownsPickedItemsScrollController =
+        widget.pickedItemsScrollController == null;
+    _pickedItemsScrollController =
+        widget.pickedItemsScrollController ?? ScrollController();
 
     showAllItems = widget.itemsVisibility == ShowedItemsVisibility.alwaysOn;
 
     widget.controller?._setClearAllPickedItemsCallback(_clearAllPickedItems);
     widget.controller?._setSelectAllItemsCallback(_selectAllItems);
     widget.controller?._setClearSearchFieldCallback(_onClearSearchField);
-    widget.controller?._setGetAllItemsCallback(() => allItems);
-    widget.controller?._setGetPickedItemsCallback(() => pickedItems);
+    widget.controller
+        ?._setGetAllItemsCallback(() => List<T>.unmodifiable(allItems));
+    widget.controller
+        ?._setGetPickedItemsCallback(() => List<T>.unmodifiable(pickedItems));
     widget.controller?._setSearchItemsCallback(_searchAllItems);
 
+    _ownsTextEditingController = widget.searchField.controller == null;
     _searchFieldTextEditingController =
         widget.searchField.controller ?? TextEditingController();
+    _ownsFocusNode = widget.searchField.focusNode == null;
     _searchFieldFocusNode = widget.searchField.focusNode ?? FocusNode();
+    _syncSearchStateFromTextField();
 
     if (widget.isOverlay) {
       _overlayPortalController = OverlayPortalController();
-      widget.overlayOptions?.closeOverlay = () {
-        _overlayPortalController.hide();
-      };
-
-      widget.overlayOptions?.showOverlay = () {
-        _overlayPortalController.show();
-      };
-
+      _bindOverlayCallbacks(widget.overlayOptions);
+      _createOverlayFocusListener();
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        _searchFieldFocusNode.addListener(() {
-          if (_searchFieldFocusNode.hasFocus) {
-            _overlayPortalController.show();
-          }
-        });
+        _searchFieldFocusNode.addListener(_focusNodeListener!);
       });
     }
   }
 
   @override
+  void didUpdateWidget(MultipleSearchSelection<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    var shouldSyncSearchState = false;
+
+    if (widget.items != oldWidget.items ||
+        widget.initialPickedItems != oldWidget.initialPickedItems) {
+      _prepareItems();
+      shouldSyncSearchState = true;
+    }
+
+    if (widget.showedItemsScrollController !=
+        oldWidget.showedItemsScrollController) {
+      if (_ownsShowedItemsScrollController)
+        _showedItemsScrollController.dispose();
+      _ownsShowedItemsScrollController =
+          widget.showedItemsScrollController == null;
+      _showedItemsScrollController =
+          widget.showedItemsScrollController ?? ScrollController();
+    }
+
+    if (widget.searchField.controller != oldWidget.searchField.controller) {
+      if (_ownsTextEditingController) {
+        _searchFieldTextEditingController.dispose();
+      }
+      _ownsTextEditingController = widget.searchField.controller == null;
+      _searchFieldTextEditingController =
+          widget.searchField.controller ?? TextEditingController();
+      shouldSyncSearchState = true;
+    }
+
+    if (widget.searchField.focusNode != oldWidget.searchField.focusNode) {
+      if (_focusNodeListener != null) {
+        _searchFieldFocusNode.removeListener(_focusNodeListener!);
+      }
+      if (_ownsFocusNode) _searchFieldFocusNode.dispose();
+      _ownsFocusNode = widget.searchField.focusNode == null;
+      _searchFieldFocusNode = widget.searchField.focusNode ?? FocusNode();
+      if (widget.isOverlay && _focusNodeListener != null) {
+        _searchFieldFocusNode.addListener(_focusNodeListener!);
+      }
+    }
+
+    if (widget.pickedItemsScrollController !=
+        oldWidget.pickedItemsScrollController) {
+      if (_ownsPickedItemsScrollController)
+        _pickedItemsScrollController.dispose();
+      _ownsPickedItemsScrollController =
+          widget.pickedItemsScrollController == null;
+      _pickedItemsScrollController =
+          widget.pickedItemsScrollController ?? ScrollController();
+    }
+
+    if (widget.isOverlay != oldWidget.isOverlay) {
+      if (widget.isOverlay) {
+        _overlayPortalController = OverlayPortalController();
+        _bindOverlayCallbacks(widget.overlayOptions);
+        _createOverlayFocusListener();
+        _searchFieldFocusNode.addListener(_focusNodeListener!);
+      } else {
+        if (_focusNodeListener != null) {
+          _searchFieldFocusNode.removeListener(_focusNodeListener!);
+          _focusNodeListener = null;
+        }
+        _clearOverlayCallbacks(oldWidget.overlayOptions);
+        _clearOverlayCallbacks(widget.overlayOptions);
+      }
+    } else if (widget.isOverlay &&
+        widget.overlayOptions != oldWidget.overlayOptions) {
+      _clearOverlayCallbacks(oldWidget.overlayOptions);
+      _bindOverlayCallbacks(widget.overlayOptions);
+    }
+
+    if (widget.controller != oldWidget.controller) {
+      oldWidget.controller?._setClearAllPickedItemsCallback(null);
+      oldWidget.controller?._setSelectAllItemsCallback(null);
+      oldWidget.controller?._setClearSearchFieldCallback(null);
+      oldWidget.controller?._setGetAllItemsCallback(null);
+      oldWidget.controller?._setGetPickedItemsCallback(null);
+      oldWidget.controller?._setSearchItemsCallback(null);
+
+      widget.controller?._setClearAllPickedItemsCallback(_clearAllPickedItems);
+      widget.controller?._setSelectAllItemsCallback(_selectAllItems);
+      widget.controller?._setClearSearchFieldCallback(_onClearSearchField);
+      widget.controller
+          ?._setGetAllItemsCallback(() => List<T>.unmodifiable(allItems));
+      widget.controller
+          ?._setGetPickedItemsCallback(() => List<T>.unmodifiable(pickedItems));
+      widget.controller?._setSearchItemsCallback(_searchAllItems);
+      shouldSyncSearchState = true;
+    }
+
+    if (widget.itemsVisibility != oldWidget.itemsVisibility) {
+      shouldSyncSearchState = true;
+    }
+
+    if (shouldSyncSearchState) {
+      _syncSearchStateFromTextField();
+    }
+  }
+
+  @override
   void dispose() {
-    _searchFieldTextEditingController.dispose();
-    _searchFieldFocusNode.dispose();
+    if (_focusNodeListener != null) {
+      _searchFieldFocusNode.removeListener(_focusNodeListener!);
+    }
+    _clearOverlayCallbacks(widget.overlayOptions);
+    if (_ownsTextEditingController) _searchFieldTextEditingController.dispose();
+    if (_ownsFocusNode) _searchFieldFocusNode.dispose();
+    if (_ownsShowedItemsScrollController)
+      _showedItemsScrollController.dispose();
+    if (_ownsPickedItemsScrollController)
+      _pickedItemsScrollController.dispose();
     widget.controller?._setClearSearchFieldCallback(null);
     widget.controller?._setSelectAllItemsCallback(null);
     widget.controller?._setClearAllPickedItemsCallback(null);
