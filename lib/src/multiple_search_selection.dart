@@ -3,7 +3,7 @@
 
 library multiple_search_selection;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:multiple_search_selection/src/createable/create_options.dart';
 import 'package:multiple_search_selection/src/helpers/jaro.dart';
 import 'package:multiple_search_selection/src/helpers/levenshtein.dart';
@@ -1638,6 +1638,7 @@ class _MultipleSearchSelectionState<T>
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
                         widget.onTapShowItems?.call();
+                        showAllItems = true;
                         showDialog(
                           context: context,
                           builder: (context) => StatefulBuilder(

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
 
 Finder _item(String item) => find.text('item:$item');
@@ -788,6 +788,40 @@ void main() {
       expect(() => controller.addListener(() {}), returnsNormally);
       expect(() => controller.text = 'Pear', returnsNormally);
       expect(() => focusNode.addListener(() {}), returnsNormally);
+    });
+  });
+
+  group('Toggle Dialog', () {
+    testWidgets('shows, filters and picks items in the dialog', (
+      WidgetTester tester,
+    ) async {
+      final picked = <String>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: MultipleSearchSelection<String>(
+              searchField: const TextField(),
+              items: const ['Apple', 'Banana'],
+              itemsVisibility: ShowedItemsVisibility.toggle,
+              onItemAdded: picked.add,
+              pickedItemBuilder: (item) => Text('picked:$item'),
+              fieldToCheck: (item) => item,
+              itemBuilder: (item, index, isPicked) => Text('item:$item'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show items'), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(_item('Apple'), findsOneWidget);
+      expect(_item('Banana'), findsOneWidget);
+
+      await _enterSearchText(tester, 'Ban');
+      expect(_item('Apple'), findsNothing);
+
+      await _tapItem(tester, 'Banana');
+      expect(picked, ['Banana']);
     });
   });
 }

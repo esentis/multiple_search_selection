@@ -1,5 +1,25 @@
 # Changelog
 
+## 3.0.0
+
+### Breaking
+
+- Migrated from `package:flutter/material.dart` to the standalone [`material_ui`](https://pub.dev/packages/material_ui) package ([#57](https://github.com/esentis/multiple_search_selection/issues/57)). `searchField` now expects a `TextField` from `package:material_ui/material_ui.dart`.
+- Minimum SDK raised to Dart `3.12.0` / Flutter `3.44.0`, as required by `material_ui`.
+
+### Fixed
+
+- `ShowedItemsVisibility.toggle` now shows the items in its dialog. Previously the dialog opened empty.
+
+### Migration
+
+- Run `flutter pub add material_ui` and `dart fix --apply --code=migrate_design_widgets` in your app.
+- Apps still on `package:flutter/material.dart` should stay on `multiple_search_selection: ^2.7.3`.
+
+### Tests
+
+- Added a widget test for the toggle dialog.
+
 ## 2.7.3
 
 ### Fixed

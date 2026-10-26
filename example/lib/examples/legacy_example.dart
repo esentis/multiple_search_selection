@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:example/constants.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:multiple_search_selection/multiple_search_selection.dart';
 
 class LegacyExample extends StatelessWidget {

@@ -4,7 +4,7 @@ import 'package:example/examples/legacy_example.dart';
 import 'package:example/examples/overlay_example.dart';
 import 'package:example/examples/selectable_example.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   runApp(const MyApp());
